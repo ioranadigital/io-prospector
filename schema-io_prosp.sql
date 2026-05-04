@@ -38,7 +38,7 @@ INSERT INTO io_prosp_audit_rules (key, category, penalty, label, description) VA
 
 -- 2. SEARCH_SESSIONS
 CREATE TABLE io_prosp_search_sessions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id TEXT PRIMARY KEY,
   query TEXT NOT NULL,
   city TEXT NOT NULL,
   category TEXT,

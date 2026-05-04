@@ -11,6 +11,8 @@ export async function saveProspectionToSupabase(prospection: {
   total_found: number;
 }) {
   try {
+    console.log('Guardando prospección:', prospection);
+
     const { data, error } = await supabase
       .from('io_prosp_search_sessions')
       .upsert(
@@ -29,10 +31,16 @@ export async function saveProspectionToSupabase(prospection: {
         { onConflict: 'id' }
       );
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error:', error);
+      throw new Error(error.message || 'Error desconocido en Supabase');
+    }
+
+    console.log('Prospección guardada exitosamente:', data);
     return data;
-  } catch (error) {
-    console.error('Error saving prospection to Supabase:', error);
-    throw error;
+  } catch (error: any) {
+    const errorMsg = error?.message || 'Error desconocido';
+    console.error('Error saving prospection:', errorMsg);
+    throw new Error(errorMsg);
   }
 }

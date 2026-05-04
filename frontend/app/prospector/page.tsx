@@ -120,10 +120,11 @@ export default function ProspectorPage() {
         status: 'completed',
         total_found: prospectionStatus.result?.leadsCount || 0,
       });
-      toast.success('✅ Prospección guardada en admin');
-    } catch (error) {
-      toast.error('Error al guardar prospección');
-      console.error(error);
+      toast.success('✅ Prospección guardada en Histórico');
+    } catch (error: any) {
+      const errorMsg = error?.message || 'Error desconocido';
+      toast.error(`Error: ${errorMsg}`);
+      console.error('Save error:', error);
     }
   };
 
