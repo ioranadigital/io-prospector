@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase, CLIENT_ID } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import { Trash2, Plus, Eye } from 'lucide-react';
 

@@ -24,13 +24,17 @@ export default function DashboardPage() {
       console.log('Processed history data:', historyData);
 
       // Verificar cuáles están guardadas en Supabase
-      const { data: savedSessions, error: dbError } = await supabase
-        .from('io_prosp_search_sessions')
-        .select('id');
+      let savedIds = new Set();
+      try {
+        const { data: savedSessions, error: dbError } = await supabase
+          .from('io_prosp_search_sessions')
+          .select('id');
 
-      console.log('Saved sessions:', savedSessions, 'Error:', dbError);
-
-      const savedIds = new Set(savedSessions?.map((s: any) => s.id) || []);
+        console.log('Saved sessions:', savedSessions, 'Error:', dbError);
+        savedIds = new Set(savedSessions?.map((s: any) => s.id) || []);
+      } catch (dbErr) {
+        console.error('Error fetching saved sessions:', dbErr);
+      }
 
       // Marcar cuáles están guardadas
       const enrichedHistory = historyData.map((item: any) => ({

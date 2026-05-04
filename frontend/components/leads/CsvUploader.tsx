@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { supabase, CLIENT_ID } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import { Upload } from 'lucide-react';
 
