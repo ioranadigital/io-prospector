@@ -75,10 +75,11 @@ npm run dev
 io-prospector/
 ├── frontend/                    # Next.js 16 + TypeScript
 │   ├── app/
-│   │   ├── admin/              # Gestión de plantillas y prospecciones
 │   │   ├── prospector/         # Motor de búsqueda (Google scraping)
 │   │   ├── leads/              # Tabla de leads y detalles
-│   │   └── dashboard/          # Métricas históricas
+│   │   ├── dashboard/          # Histórico de prospecciones + eliminar
+│   │   ├── admin/              # Gestión de plantillas
+│   │   └── guide/              # Instrucciones de uso interactivas
 │   └── components/
 │       ├── leads/              # LeadsTable, LeadDetailModal, SendModal
 │       ├── templates/          # TemplatesAdmin
@@ -90,6 +91,7 @@ io-prospector/
 │       ├── send-email/         # Edge Function para enviar emails
 │       └── send-whatsapp/      # Edge Function para enviar WhatsApp
 ├── schema-io_prosp.sql         # Tablas principales
+├── setup-prospections-table.sql # Setup prospecciones con RLS
 └── setup-plantillas-analisis.sql  # Plantillas iniciales
 ```
 
@@ -151,12 +153,20 @@ En el modal completo puedes:
    - **GMB**: `{{gmb_rating}}`, `{{review_count}}`, `{{gmb_claimed}}`, `{{photo_count}}`
    - **Contexto**: `{{main_competitor}}`, `{{missing_service}}`
 
-### Fase 5: Limpiar Prospecciones (Admin)
+### Fase 5: Ver Histórico y Eliminar Prospecciones (📈 Dashboard)
 
-En `/admin` → **Prospecciones Guardadas**:
-- Listar todas las búsquedas realizadas
-- Ver leads encontrados por sesión
-- **Eliminar prospecciones de prueba** (borra sesión + leads asociados)
+1. **Ir a** `/dashboard`
+2. **Métricas**:
+   - Total prospecciones realizadas
+   - Total leads acumulados
+   - Última búsqueda realizada
+3. **Tabla de Histórico**:
+   - Ver todas las búsquedas completadas
+   - Columnas: Estado, Búsqueda, Ciudad, Leads, Fecha
+   - **ACCIONES** (solo para completadas):
+     - 👁️ **Ver** — Abre dashboard detallado en backend
+     - 📥 **CSV** — Descarga datos en formato CSV
+     - 🗑️ **Eliminar** — Borra prospección + todos sus leads (confirmación requerida)
 
 ### Fase 6: Rastrear Actividades (📋 Historial)
 
@@ -335,10 +345,16 @@ Histórico de búsquedas:
 ## 📈 Métricas y Reporting
 
 **Dashboard** (`/dashboard`):
-- Total prospecciones realizadas
-- Total leads acumulados
-- Última búsqueda
-- Tabla histórica con acciones (descargar CSV, ver dashboard detallado)
+- **Resumen**: Total prospecciones realizadas, leads acumulados, última búsqueda
+- **Tabla Histórica**:
+  - Estado: Completada ✅ / Error ❌ / En progreso ⏳
+  - Búsqueda: término usado + rango de páginas
+  - Ciudad y leads encontrados
+  - Fecha y hora exacta
+  - **Acciones por prospección**:
+    - 👁️ Ver dashboard detallado
+    - 📥 Descargar resultados en CSV
+    - 🗑️ Eliminar prospección (y todos sus leads)
 
 **Tabla de Actividades** (`/leads` → Historial):
 - Filtrar por tipo (Email/WhatsApp)
