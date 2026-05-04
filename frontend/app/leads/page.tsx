@@ -25,11 +25,15 @@ export default function LeadsPage() {
         .select('category');
 
       console.log('All leads data:', data);
+      console.log('Sample lead:', data?.[0]);
       console.log('Error:', error);
 
       if (error) throw error;
 
-      // Obtener categorías únicas
+      // Obtener categorías únicas - revisar qué campos tiene
+      const leadFields = data?.[0] ? Object.keys(data[0]) : [];
+      console.log('Lead fields:', leadFields);
+
       const uniqueCategories = Array.from(new Set(data?.map(d => d.category).filter(Boolean) || []))
         .sort() as string[];
 
