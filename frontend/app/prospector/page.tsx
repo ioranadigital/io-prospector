@@ -163,6 +163,9 @@ export default function ProspectorPage() {
         status: 'completed',
         total_found: prospectionStatus.result?.leadsCount || 0,
       });
+      const newSet = new Set(savedProspections);
+      newSet.add(prospectionId!);
+      setSavedProspections(newSet);
       toast.success('✅ Prospección guardada en Histórico');
     } catch (error: any) {
       const errorMsg = error?.message || 'Error desconocido';
@@ -436,7 +439,9 @@ export default function ProspectorPage() {
                             status: 'completed',
                             total_found: h.result?.leadsCount || 0,
                           });
-                          setSavedProspections(prev => new Set([...prev, h.id]));
+                          const newSet = new Set(savedProspections);
+                          newSet.add(h.id);
+                          setSavedProspections(newSet);
                           toast.success('✅ Prospección guardada');
                         } catch (error: any) {
                           toast.error(`Error: ${error?.message || 'Error desconocido'}`);

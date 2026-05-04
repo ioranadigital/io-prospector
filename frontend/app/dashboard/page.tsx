@@ -19,13 +19,16 @@ export default function DashboardPage() {
     setLoading(true);
     try {
       const data = await api.getProspectionHistory();
+      console.log('API History data:', data);
       const historyData = Array.isArray(data) ? data : [];
+      console.log('Processed history data:', historyData);
 
       // Verificar cuáles están guardadas en Supabase
-      const { data: savedSessions } = await supabase
+      const { data: savedSessions, error: dbError } = await supabase
         .from('io_prosp_search_sessions')
-        .select('id')
-        .catch(() => ({ data: [] }));
+        .select('id');
+
+      console.log('Saved sessions:', savedSessions, 'Error:', dbError);
 
       const savedIds = new Set(savedSessions?.map((s: any) => s.id) || []);
 
@@ -38,6 +41,7 @@ export default function DashboardPage() {
         },
       }));
 
+      console.log('Enriched history:', enrichedHistory);
       setHistory(enrichedHistory);
     } catch (error) {
       console.error('Error loading history:', error);
