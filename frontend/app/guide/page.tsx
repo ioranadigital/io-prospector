@@ -225,7 +225,7 @@ export default function GuidePage() {
             <p className="text-zinc-300 mb-3">Crea y edita plantillas de Email/WhatsApp reutilizables:</p>
             <ul className="text-sm text-zinc-400 space-y-2">
               <li>✅ Categorías: Análisis Inicial, Prospección, Seguimiento, General</li>
-              <li>✅ Variables dinámicas: {{business_name}}, {{audit_score}}, {{gmb_rating}}, etc.</li>
+              <li>✅ Variables dinámicas: <code className="bg-zinc-800 px-1 py-0.5 rounded text-xs">{'{{business_name}}'}</code>, <code className="bg-zinc-800 px-1 py-0.5 rounded text-xs">{'{{audit_score}}'}</code>, <code className="bg-zinc-800 px-1 py-0.5 rounded text-xs">{'{{gmb_rating}}'}</code>, etc.</li>
               <li>✅ Vista previa en tiempo real</li>
               <li>✅ Activa/desactiva plantillas fácilmente</li>
             </ul>
@@ -236,19 +236,19 @@ export default function GuidePage() {
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="bg-zinc-800 border border-zinc-700 rounded p-2">
                 <p className="font-semibold text-blue-400">SEO</p>
-                <p className="text-zinc-400 text-xs">{{audit_score}}, {{seo_gap}}</p>
+                <p className="text-zinc-400 text-xs font-mono">{'{{audit_score}}'}, {'{{seo_gap}}'}</p>
               </div>
               <div className="bg-zinc-800 border border-zinc-700 rounded p-2">
                 <p className="font-semibold text-yellow-400">GMB</p>
-                <p className="text-zinc-400 text-xs">{{gmb_rating}}, {{review_count}}</p>
+                <p className="text-zinc-400 text-xs font-mono">{'{{gmb_rating}}'}, {'{{review_count}}'}</p>
               </div>
               <div className="bg-zinc-800 border border-zinc-700 rounded p-2">
                 <p className="font-semibold text-green-400">Negocio</p>
-                <p className="text-zinc-400 text-xs">{{business_name}}, {{website}}</p>
+                <p className="text-zinc-400 text-xs font-mono">{'{{business_name}}'}, {'{{website}}'}</p>
               </div>
               <div className="bg-zinc-800 border border-zinc-700 rounded p-2">
                 <p className="font-semibold text-purple-400">Contexto</p>
-                <p className="text-zinc-400 text-xs">{{main_competitor}}</p>
+                <p className="text-zinc-400 text-xs font-mono">{'{{main_competitor}}'}</p>
               </div>
             </div>
           </div>
@@ -328,15 +328,15 @@ export default function GuidePage() {
             <h3 className="text-lg font-semibold mb-3">Variables SEO</h3>
             <div className="space-y-2 text-sm">
               <div className="bg-zinc-800 border border-zinc-700 rounded p-2">
-                <p className="font-mono text-blue-400">{{audit_score}}</p>
+                <p className="font-mono text-blue-400">{'{{audit_score}}'}</p>
                 <p className="text-zinc-400">Puntuación de auditoría (0-100)</p>
               </div>
               <div className="bg-zinc-800 border border-zinc-700 rounded p-2">
-                <p className="font-mono text-blue-400">{{seo_gap}}</p>
+                <p className="font-mono text-blue-400">{'{{seo_gap}}'}</p>
                 <p className="text-zinc-400">Error principal detectado</p>
               </div>
               <div className="bg-zinc-800 border border-zinc-700 rounded p-2">
-                <p className="font-mono text-blue-400">{{ssl_active}}</p>
+                <p className="font-mono text-blue-400">{'{{ssl_active}}'}</p>
                 <p className="text-zinc-400">¿Tiene SSL? (sí/no)</p>
               </div>
             </div>
@@ -346,15 +346,15 @@ export default function GuidePage() {
             <h3 className="text-lg font-semibold mb-3">Variables GMB</h3>
             <div className="space-y-2 text-sm">
               <div className="bg-zinc-800 border border-zinc-700 rounded p-2">
-                <p className="font-mono text-yellow-400">{{gmb_rating}}</p>
+                <p className="font-mono text-yellow-400">{'{{gmb_rating}}'}</p>
                 <p className="text-zinc-400">Rating en Google Maps (0-5 estrellas)</p>
               </div>
               <div className="bg-zinc-800 border border-zinc-700 rounded p-2">
-                <p className="font-mono text-yellow-400">{{review_count}}</p>
+                <p className="font-mono text-yellow-400">{'{{review_count}}'}</p>
                 <p className="text-zinc-400">Número de reseñas</p>
               </div>
               <div className="bg-zinc-800 border border-zinc-700 rounded p-2">
-                <p className="font-mono text-yellow-400">{{gmb_claimed}}</p>
+                <p className="font-mono text-yellow-400">{'{{gmb_claimed}}'}</p>
                 <p className="text-zinc-400">¿Reclamado? (sí/no)</p>
               </div>
             </div>
@@ -364,15 +364,15 @@ export default function GuidePage() {
             <h3 className="text-lg font-semibold mb-3">Variables de Negocio</h3>
             <div className="space-y-2 text-sm">
               <div className="bg-zinc-800 border border-zinc-700 rounded p-2">
-                <p className="font-mono text-green-400">{{business_name}}</p>
+                <p className="font-mono text-green-400">{'{{business_name}}'}</p>
                 <p className="text-zinc-400">Nombre del negocio</p>
               </div>
               <div className="bg-zinc-800 border border-zinc-700 rounded p-2">
-                <p className="font-mono text-green-400">{{website}}</p>
+                <p className="font-mono text-green-400">{'{{website}}'}</p>
                 <p className="text-zinc-400">Sitio web</p>
               </div>
               <div className="bg-zinc-800 border border-zinc-700 rounded p-2">
-                <p className="font-mono text-green-400">{{main_competitor}}</p>
+                <p className="font-mono text-green-400">{'{{main_competitor}}'}</p>
                 <p className="text-zinc-400">Competidor principal</p>
               </div>
             </div>
@@ -403,7 +403,7 @@ export default function GuidePage() {
 
           <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
             <p className="font-semibold mb-2">¿Cómo funcionan las variables de plantillas?</p>
-            <p className="text-sm text-zinc-400">Se reemplazan automáticamente con datos reales del lead. Ej: {{business_name}} → "Clínica Veterinaria Torres".</p>
+            <p className="text-sm text-zinc-400">Se reemplazan automáticamente con datos reales del lead. Ej: <code className="bg-zinc-900 px-1 py-0.5 rounded text-xs font-mono">{'{{business_name}}'}</code> → "Clínica Veterinaria Torres".</p>
           </div>
 
           <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
