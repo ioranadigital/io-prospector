@@ -33,7 +33,7 @@ export default function DashboardPage() {
       const enrichedHistory = historyData.map((item: any) => ({
         ...item,
         result: {
-          ...item.result,
+          ...(item.result || {}),
           isSaved: savedIds.has(item.id),
         },
       }));

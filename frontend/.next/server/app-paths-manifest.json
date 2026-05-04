@@ -2,5 +2,6 @@
   "/prospector/page": "app/prospector/page.js",
   "/dashboard/page": "app/dashboard/page.js",
   "/admin/page": "app/admin/page.js",
-  "/guide/page": "app/guide/page.js"
+  "/guide/page": "app/guide/page.js",
+  "/leads/page": "app/leads/page.js"
 }
