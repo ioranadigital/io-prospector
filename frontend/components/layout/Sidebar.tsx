@@ -14,8 +14,7 @@ const NAV_SECTIONS = [
   {
     title: 'Análisis',
     items: [
-      { href: '/dashboard', icon: BarChart3, label: '📈 Dashboard', desc: 'Métricas' },
-      { href: '/historico', icon: ClipboardList, label: '📋 Histórico', desc: 'Prospecciones guardadas' },
+      { href: '/dashboard', icon: BarChart3, label: '📈 Dashboard', desc: 'Histórico de prospecciones' },
     ]
   },
   {
