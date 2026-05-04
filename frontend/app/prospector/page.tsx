@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Loader2, Play, CheckCircle, AlertCircle, Download, Eye, Clock, Save, Trash2 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 import { SECTORS } from '@/lib/sectors';
 import { getComunidadesAutonomas, getProvincias, getMunicipios } from '@/lib/geographic-data';
 import toast from 'react-hot-toast';
@@ -21,12 +22,30 @@ export default function ProspectorPage() {
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [whatsappModalOpen, setWhatsappModalOpen] = useState(false);
   const [selectedLeads, setSelectedLeads] = useState<any[]>([]);
+  const [savedProspections, setSavedProspections] = useState<Set<string>>(new Set());
 
   const selectedCategory = SECTORS.find(s => s.category === selectedCategoryGroup);
 
   // Cargar historial
   useEffect(() => {
-    api.getProspectionHistory().then((h: any) => setHistory(Array.isArray(h) ? h : [])).catch(() => {});
+    const loadHistory = async () => {
+      try {
+        const h = await api.getProspectionHistory();
+        setHistory(Array.isArray(h) ? h : []);
+
+        // Verificar cuáles están guardadas en Supabase
+        const { data: savedSessions } = await supabase
+          .from('io_prosp_search_sessions')
+          .select('id')
+          .catch(() => ({ data: [] }));
+
+        const savedIds = new Set(savedSessions?.map((s: any) => s.id) || []);
+        setSavedProspections(savedIds);
+      } catch (error) {
+        console.error('Error loading history:', error);
+      }
+    };
+    loadHistory();
   }, []);
 
   // Polling de estado cuando hay prospección en progreso
@@ -100,6 +119,30 @@ export default function ProspectorPage() {
     // Recargar leads para reflejar cambios de estado
     if (prospectionId) {
       api.getLeads({ session_id: prospectionId }).then(l => setLeads(Array.isArray(l) ? l : [])).catch(() => {});
+    }
+  };
+
+  const handleDeleteProspection = async (prospectionId: string, query: string, isSaved: boolean) => {
+    if (!confirm(`¿Eliminar la prospección "${query}"?${isSaved ? ' Se borrarán también todos sus leads.' : ''} Esta acción NO se puede deshacer.`)) {
+      return;
+    }
+
+    try {
+      if (isSaved) {
+        // Eliminar leads asociados
+        await supabase.from('io_prosp_leads').delete().eq('session_id', prospectionId);
+        // Eliminar prospección guardada
+        await supabase.from('io_prosp_search_sessions').delete().eq('id', prospectionId);
+        setSavedProspections(prev => {
+          const next = new Set(prev);
+          next.delete(prospectionId);
+          return next;
+        });
+      }
+      toast.success('✅ Prospección eliminada');
+    } catch (error) {
+      toast.error('Error al eliminar prospección');
+      console.error(error);
     }
   };
 
@@ -393,13 +436,19 @@ export default function ProspectorPage() {
                             status: 'completed',
                             total_found: h.result?.leadsCount || 0,
                           });
+                          setSavedProspections(prev => new Set([...prev, h.id]));
                           toast.success('✅ Prospección guardada');
                         } catch (error: any) {
                           toast.error(`Error: ${error?.message || 'Error desconocido'}`);
                         }
                       }}
-                      className="text-xs px-2 py-1 bg-green-900 hover:bg-green-800 text-green-200 rounded transition-colors"
-                      title="Guardar en Histórico"
+                      disabled={savedProspections.has(h.id)}
+                      className={`text-xs px-2 py-1 rounded transition-colors ${
+                        savedProspections.has(h.id)
+                          ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
+                          : 'bg-green-900 hover:bg-green-800 text-green-200'
+                      }`}
+                      title={savedProspections.has(h.id) ? 'Ya guardada' : 'Guardar en Histórico'}
                     >
                       <Save size={12} />
                     </button>
@@ -428,6 +477,13 @@ export default function ProspectorPage() {
                     >
                       <Download size={12} />
                     </a>
+                    <button
+                      onClick={() => handleDeleteProspection(h.id, h.params?.query || h.params?.category, savedProspections.has(h.id))}
+                      className="text-xs px-2 py-1 bg-red-900 hover:bg-red-800 text-red-200 rounded transition-colors"
+                      title={savedProspections.has(h.id) ? 'Eliminar (con leads)' : 'Eliminar'}
+                    >
+                      <Trash2 size={12} />
+                    </button>
                   </div>
                 )}
               </div>
