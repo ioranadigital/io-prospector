@@ -34,13 +34,19 @@ export default function ProspectorPage() {
         setHistory(Array.isArray(h) ? h : []);
 
         // Verificar cuáles están guardadas en Supabase
-        const { data: savedSessions } = await supabase
-          .from('io_prosp_search_sessions')
-          .select('id')
-          .catch(() => ({ data: [] }));
+        try {
+          const { data: savedSessions, error } = await supabase
+            .from('io_prosp_search_sessions')
+            .select('id');
 
-        const savedIds = new Set(savedSessions?.map((s: any) => s.id) || []);
-        setSavedProspections(savedIds);
+          if (error) throw error;
+          const savedIds = new Set(savedSessions?.map((s: any) => s.id) || []);
+          setSavedProspections(savedIds);
+          console.log('Loaded saved prospections:', Array.from(savedIds));
+        } catch (dbError) {
+          console.error('Error loading saved prospections:', dbError);
+          setSavedProspections(new Set());
+        }
       } catch (error) {
         console.error('Error loading history:', error);
       }
