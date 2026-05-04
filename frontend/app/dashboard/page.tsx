@@ -1,8 +1,10 @@
 // frontend/app/dashboard/page.tsx
 'use client';
 import { useState, useEffect } from 'react';
-import { Download, Eye, Calendar, MapPin, TrendingUp, RefreshCw } from 'lucide-react';
+import { Download, Eye, Calendar, MapPin, TrendingUp, RefreshCw, Trash2 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
+import toast from 'react-hot-toast';
 
 export default function DashboardPage() {
   const [history, setHistory] = useState<any[]>([]);
@@ -33,6 +35,24 @@ export default function DashboardPage() {
 
   const totalLeads = history.reduce((acc, h) => acc + (h.result?.leadsCount || 0), 0);
   const completedProspections = history.filter(h => h.status === 'completed').length;
+
+  const handleDeleteProspection = async (prospectionId: string, query: string) => {
+    if (!confirm(`¿Eliminar la prospección "${query}"? Se borrarán también todos sus leads. Esta acción NO se puede deshacer.`)) {
+      return;
+    }
+
+    try {
+      // Eliminar leads asociados
+      await supabase.from('io_prosp_leads').delete().eq('session_id', prospectionId);
+      // Eliminar prospección
+      await supabase.from('io_prosp_search_sessions').delete().eq('id', prospectionId);
+      toast.success('✅ Prospección eliminada');
+      loadHistory();
+    } catch (error) {
+      toast.error('Error al eliminar prospección');
+      console.error(error);
+    }
+  };
 
   return (
     <div className="space-y-6 fade-in">
@@ -145,6 +165,12 @@ export default function DashboardPage() {
                           >
                             <Download size={12} /> CSV
                           </a>
+                          <button
+                            onClick={() => handleDeleteProspection(item.id, item.params?.query || item.params?.category)}
+                            className="flex items-center gap-1 px-2 py-1 text-xs bg-red-900 hover:bg-red-800 text-red-200 rounded transition-colors"
+                          >
+                            <Trash2 size={12} /> Eliminar
+                          </button>
                         </>
                       )}
                       {item.status === 'error' && (
