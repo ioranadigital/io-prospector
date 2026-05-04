@@ -24,18 +24,12 @@ export default function LeadsPage() {
         .from('io_prosp_leads')
         .select('*');
 
-      console.log('All leads data:', data);
-      console.log('Sample lead:', data?.[0]);
-      console.log('Error:', error);
-
       if (error) throw error;
 
-      // Obtener categorías únicas
+      // Obtener categorías únicas de prospecciones
       const uniqueCategories = Array.from(new Set(data?.map(d => d.category).filter(Boolean) || []))
         .sort() as string[];
 
-      console.log('Unique categories:', uniqueCategories);
-      console.log('All categories (with nulls):', data?.map(d => d.category));
       setCategories(uniqueCategories);
     } catch (error) {
       console.error('Error loading categories:', error);
