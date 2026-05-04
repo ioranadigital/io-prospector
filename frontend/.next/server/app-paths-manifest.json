@@ -1,0 +1,6 @@
+{
+  "/prospector/page": "app/prospector/page.js",
+  "/leads/page": "app/leads/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/admin/page": "app/admin/page.js"
+}

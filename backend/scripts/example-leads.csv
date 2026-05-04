@@ -1,0 +1,20 @@
+Company_Name,First_Name,Email,Website,Phone,GMB_Rating,Review_Count,GMB_Claimed,Has_Website,SSL_Active,Main_Competitor,Missing_Service,Icebreaker,SEO_Gap
+Fontanería García,Carlos,carlos@fontaneria.es,https://fontaneria-garcia.es,+34 912345678,3.8,42,Sí,Sí,No,Fontanería López,"Servicios de urgencia 24h","He visto la foto de la inundación resuelta en Maps","Tu web tarda 8 segundos en cargar — pierde visitantes"
+Restaurant El Pulpo,María,maria@pulpo.es,,+34 934567890,4.2,156,No,No,,Restaurante Mariscos,"Reservas online","Tus reseñas de ceviche son increíbles",
+Electricista Domínguez,Juan,j.dominguez@elec.es,https://elec-dominguez.com,+34 956123456,2.1,38,Sí,Sí,Sí,Electricista Martínez,"Instalación domótica","Reparaste aquel apagón masivo hace 3 meses","Rating de 2.1 — hay 8 reseñas negativas sobre tardanza"
+Peluquería Bella Imagen,Sandra,sandra@bellaimagen.es,https://bellaimagen.es,+34 971234567,4.7,89,Sí,Sí,Sí,Peluquería Shampoo & Cut,"Tratamientos capilares premium",,Tu web no aparecer en local pack de "peluquería + ciudad"
+Gestoría López & Asociados,Jorge,info@gestorialopez.es,,+34 985654321,3.5,22,No,No,,Gestoría Fernández,"Asesoramiento fiscal startups",,Sin presencia web — Google te asigna rating bajo por defecto
+Veterinario PetCare,Dra. Elena,elena@petcare.es,https://petcare-veterinarios.es,+34 943567890,4.8,127,Sí,Sí,No,Veterinario San Juan,"Cirugía de mascotas",,Tu sitio no tiene certificado SSL — clientes en móvil ven advertencia
+Carpintería Artesanal,Miguel,miguel@carpinteria.es,https://carpinteria-artesanal.es,+34 920123456,3.2,15,Sí,Sí,Sí,Carpintería Tradicional,"Diseño de cocinas integrales","Ese mueble de roble es una obra de arte",tu página carece de portfolio visual
+Academia Idiomas Global,Roberto,info@academiaglobal.es,https://academiaglobal.es,+34 934456789,4.5,67,No,Sí,Sí,Academia International,"Clases de mandarín",,"Tu perfil GMB NO está reclamado — alguien podría controlarlo"
+Taller Mecánico Rápido,Antonio,antonio@tallerrapido.es,https://taller-mecanico.es,+34 956789012,2.8,44,Sí,Sí,Sí,Taller Mecánico Express,"Reparación transmisión automática","Ese turbo que instalaste cambió todo","Tienes 18 reseñas 1⭐ — responde a críticas"
+Centro Estética Glow,Anouk,hola@estética-glow.es,https://estetica-glow.es,+34 971345678,4.9,203,Sí,Sí,Sí,Estética Luxury,"Tratamientos faciales con radiofrecuencia",,
+Asesoría Fiscal García,Elena,elena@asesoriafiscal.es,,+34 981123456,3.9,28,No,No,,Asesoría Impuestos Plus,"Asesoramiento sociedades mercantiles","Sacaste un aumento fiscal impresionante el año pasado",Sin página web — pierde 40% de búsquedas locales
+Panadería Artesana,Javier,javier@panaderia.es,https://panaderia-artesana.es,+34 934123456,4.6,112,Sí,Sí,No,Panadería Tradicional,"Pan integral sin aditivos",,Tu HTTPS no está activo — Google te penaliza
+Inmobiliaria Torres,Sofia,sofia@inmobiliaria-torres.es,https://inmobiliaria-torres.es,+34 956234567,4.1,58,Sí,Sí,Sí,Inmobiliaria Casas Perfectas,"Venta de pisos nuevos",,
+Dentista Sonrisas,Dr. Martín,martin@dentista-sonrisas.es,https://dentista-sonrisas.es,+34 943234567,4.8,89,Sí,Sí,Sí,Dentista Salud Dental,"Ortodoncia invisible Invisalign",,
+Agencia Marketing Local,Pablo,pablo@marketing-local.es,https://marketing-local.es,+34 912456789,4.3,35,No,Sí,Sí,Agencia Marketing Pro,"Growth hacking para startups",,Perfil GMB sin reclamar — apareces pero sin control
+Pizzería Casa Mía,Roberto,info@pizzeria-casamia.es,https://pizzeria-casamia.es,+34 974123456,3.6,71,Sí,Sí,No,Pizzería El Horno,"Horno de leña tradicional",,Sin HTTPS — pierde confianza y ranking
+Consultoría Empresarial X,Carlos,carlos@consultoria-x.es,https://consultoria-x.es,+34 985345678,4.2,19,Sí,Sí,Sí,Consultoría Estratégica Plus,"Optimización procesos administrativos",,
+Yoga Studio Zen,Marta,marta@yogastudio.es,https://yogastudio-zen.es,+34 971456789,4.7,94,Sí,Sí,Sí,Estudio Yoga Balance,"Clases de yoga vinyasa",,
+Óptica visión Clara,Fernando,fernando@opticavision.es,,+34 956345678,3.7,33,No,No,,Óptica Salud Visual,"Gafas progresivas premium","Ese diagnóstico de astigmatismo fue muy acertado",Sin web — en móvil búsqueda local pierde el 60%
