@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { Download, Eye, Calendar, MapPin, TrendingUp, RefreshCw } from 'lucide-react';
 import { api } from '@/lib/api';
-import { ProspectionsAdmin } from '@/components/prospections/ProspectionsAdmin';
 
 export default function DashboardPage() {
   const [history, setHistory] = useState<any[]>([]);
@@ -87,11 +86,6 @@ export default function DashboardPage() {
             }
           </p>
         </div>
-      </div>
-
-      {/* Prospecciones Guardadas */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
-        <ProspectionsAdmin />
       </div>
 
       {/* Tabla de histórico */}

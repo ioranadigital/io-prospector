@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, BarChart3, Settings, Database, Zap } from 'lucide-react';
+import { Search, BarChart3, Settings, Database, Zap, ClipboardList } from 'lucide-react';
 
 const NAV_SECTIONS = [
   {
@@ -15,6 +15,7 @@ const NAV_SECTIONS = [
     title: 'Análisis',
     items: [
       { href: '/dashboard', icon: BarChart3, label: '📈 Dashboard', desc: 'Métricas' },
+      { href: '/historico', icon: ClipboardList, label: '📋 Histórico', desc: 'Prospecciones guardadas' },
     ]
   },
   {

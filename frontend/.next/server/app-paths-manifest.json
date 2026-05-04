@@ -1,7 +1,7 @@
 {
-  "/leads/page": "app/leads/page.js",
   "/prospector/page": "app/prospector/page.js",
   "/dashboard/page": "app/dashboard/page.js",
+  "/leads/page": "app/leads/page.js",
   "/admin/page": "app/admin/page.js",
   "/guide/page": "app/guide/page.js"
 }
