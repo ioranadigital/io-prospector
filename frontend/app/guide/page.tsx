@@ -253,17 +253,6 @@ export default function GuidePage() {
             </div>
           </div>
 
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Prospecciones Guardadas</h3>
-            <p className="text-zinc-300 mb-3">Manage all your search sessions:</p>
-            <ul className="text-sm text-zinc-400 space-y-2">
-              <li>✅ Ver todas las búsquedas realizadas</li>
-              <li>✅ Estado: Completada, En progreso, Error</li>
-              <li>✅ Leads encontrados por sesión</li>
-              <li>✅ Eliminar prospecciones de prueba (borra session + leads)</li>
-              <li>✅ Botón Actualizar para refrescar</li>
-            </ul>
-          </div>
         </div>
       ),
     },
@@ -301,18 +290,13 @@ export default function GuidePage() {
               <li>✅ Ciudad/ubicación</li>
               <li>✅ Leads encontrados</li>
               <li>✅ Fecha y hora</li>
-              <li>✅ Acciones (Ver dashboard, Descargar CSV)</li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Prospecciones Guardadas</h3>
-            <p className="text-zinc-300 mb-3">Gestiona tus prospecciones de prueba:</p>
-            <ul className="text-sm text-zinc-400 space-y-2">
-              <li>✅ Ver lista de prospecciones guardadas</li>
-              <li>✅ Leads por sesión</li>
-              <li>✅ Eliminar con confirmación</li>
-              <li>✅ Borra automáticamente todos los leads asociados</li>
+              <li>✅ Acciones por prospección completada:
+                <ul className="mt-1 ml-4 space-y-1">
+                  <li>👁️ <strong>Ver:</strong> Abre dashboard detallado en backend</li>
+                  <li>📥 <strong>CSV:</strong> Descarga resultados en CSV</li>
+                  <li>🗑️ <strong>Eliminar:</strong> Borra prospección + todos sus leads (confirmación requerida)</li>
+                </ul>
+              </li>
             </ul>
           </div>
         </div>
@@ -408,7 +392,7 @@ export default function GuidePage() {
 
           <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
             <p className="font-semibold mb-2">¿Se pueden eliminar prospecciones?</p>
-            <p className="text-sm text-zinc-400">Sí, en Admin → Prospecciones Guardadas. Se elimina la sesión y TODOS sus leads asociados (irreversible).</p>
+            <p className="text-sm text-zinc-400">Sí, en Dashboard → Acciones (columna roja "🗑️ Eliminar"). Se requiere confirmación y se elimina la sesión con TODOS sus leads asociados (irreversible).</p>
           </div>
 
           <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
