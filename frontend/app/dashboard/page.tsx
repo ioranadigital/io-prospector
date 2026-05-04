@@ -1,10 +1,11 @@
 // frontend/app/dashboard/page.tsx
 'use client';
 import { useState, useEffect } from 'react';
-import { Download, Eye, Calendar, MapPin, TrendingUp, RefreshCw, Trash2 } from 'lucide-react';
+import { Download, Eye, Calendar, MapPin, TrendingUp, RefreshCw, Trash2, Save } from 'lucide-react';
 import { api } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
+import { saveProspectionToSupabase } from '@/lib/prospections';
 
 export default function DashboardPage() {
   const [history, setHistory] = useState<any[]>([]);
@@ -18,7 +19,26 @@ export default function DashboardPage() {
     setLoading(true);
     try {
       const data = await api.getProspectionHistory();
-      setHistory(Array.isArray(data) ? data : []);
+      const historyData = Array.isArray(data) ? data : [];
+
+      // Verificar cuáles están guardadas en Supabase
+      const { data: savedSessions } = await supabase
+        .from('io_prosp_search_sessions')
+        .select('id')
+        .catch(() => ({ data: [] }));
+
+      const savedIds = new Set(savedSessions?.map((s: any) => s.id) || []);
+
+      // Marcar cuáles están guardadas
+      const enrichedHistory = historyData.map((item: any) => ({
+        ...item,
+        result: {
+          ...item.result,
+          isSaved: savedIds.has(item.id),
+        },
+      }));
+
+      setHistory(enrichedHistory);
     } catch (error) {
       console.error('Error loading history:', error);
     }
@@ -35,6 +55,26 @@ export default function DashboardPage() {
 
   const totalLeads = history.reduce((acc, h) => acc + (h.result?.leadsCount || 0), 0);
   const completedProspections = history.filter(h => h.status === 'completed').length;
+
+  const handleSaveProspection = async (item: any) => {
+    try {
+      await saveProspectionToSupabase({
+        id: item.id,
+        query: item.params?.query || item.params?.category,
+        city: item.params?.municipio || item.params?.city,
+        category: item.params?.category,
+        pages_from: item.params?.pagesFrom,
+        pages_to: item.params?.pagesTo,
+        status: 'completed',
+        total_found: item.result?.leadsCount || 0,
+      });
+      toast.success('✅ Prospección guardada');
+      loadHistory();
+    } catch (error: any) {
+      toast.error(`Error: ${error?.message || 'Error desconocido'}`);
+      console.error(error);
+    }
+  };
 
   const handleDeleteProspection = async (prospectionId: string, query: string) => {
     if (!confirm(`¿Eliminar la prospección "${query}"? Se borrarán también todos sus leads. Esta acción NO se puede deshacer.`)) {
@@ -150,6 +190,18 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-2">
                       {item.status === 'completed' && (
                         <>
+                          <button
+                            onClick={() => handleSaveProspection(item)}
+                            disabled={item.result?.isSaved}
+                            className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
+                              item.result?.isSaved
+                                ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
+                                : 'bg-green-900 hover:bg-green-800 text-green-200'
+                            }`}
+                            title={item.result?.isSaved ? 'Ya guardada' : 'Guardar en Histórico'}
+                          >
+                            <Save size={12} /> Guardar
+                          </button>
                           <a
                             href={`http://localhost:4001/api/scraping/view/${item.id}/dashboard`}
                             target="_blank"
@@ -167,7 +219,13 @@ export default function DashboardPage() {
                           </a>
                           <button
                             onClick={() => handleDeleteProspection(item.id, item.params?.query || item.params?.category)}
-                            className="flex items-center gap-1 px-2 py-1 text-xs bg-red-900 hover:bg-red-800 text-red-200 rounded transition-colors"
+                            disabled={!item.result?.isSaved}
+                            className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
+                              item.result?.isSaved
+                                ? 'bg-red-900 hover:bg-red-800 text-red-200'
+                                : 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
+                            }`}
+                            title={item.result?.isSaved ? 'Eliminar prospección y leads' : 'Solo se pueden eliminar prospecciones guardadas'}
                           >
                             <Trash2 size={12} /> Eliminar
                           </button>
