@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Search, Loader2, Play, CheckCircle, AlertCircle, Download, Eye, Clock, Save } from 'lucide-react';
+import { Search, Loader2, Play, CheckCircle, AlertCircle, Download, Eye, Clock, Save, Trash2 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { SECTORS } from '@/lib/sectors';
 import { getComunidadesAutonomas, getProvincias, getMunicipios } from '@/lib/geographic-data';
@@ -381,15 +381,53 @@ export default function ProspectorPage() {
                 {h.status === 'completed' && (
                   <div className="flex gap-1">
                     <button
-                      onClick={() => {
-                        setProspectionId(h.id);
-                        setProspectionStatus(h);
-                        api.getLeads({ session_id: h.id }).then(l => setLeads(Array.isArray(l) ? l : [])).catch(() => {});
+                      onClick={async () => {
+                        try {
+                          await saveProspectionToSupabase({
+                            id: h.id,
+                            query: h.params?.query || h.params?.category,
+                            city: h.params?.municipio,
+                            category: h.params?.category,
+                            pages_from: h.params?.pagesFrom,
+                            pages_to: h.params?.pagesTo,
+                            status: 'completed',
+                            total_found: h.result?.leadsCount || 0,
+                          });
+                          toast.success('✅ Prospección guardada');
+                        } catch (error: any) {
+                          toast.error(`Error: ${error?.message || 'Error desconocido'}`);
+                        }
                       }}
-                      className="text-xs px-2 py-1 bg-purple-900 hover:bg-purple-800 text-purple-200 rounded"
+                      className="text-xs px-2 py-1 bg-green-900 hover:bg-green-800 text-green-200 rounded transition-colors"
+                      title="Guardar en Histórico"
                     >
-                      Ver
+                      <Save size={12} />
                     </button>
+                    <a
+                      href={`${api.downloadFile(h.id, 'csv')}`}
+                      download
+                      className="text-xs px-2 py-1 bg-blue-900 hover:bg-blue-800 text-blue-200 rounded transition-colors"
+                      title="Descargar CSV"
+                    >
+                      <Download size={12} />
+                    </a>
+                    <a
+                      href={`http://localhost:4001/api/scraping/view/${h.id}/dashboard`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs px-2 py-1 bg-purple-900 hover:bg-purple-800 text-purple-200 rounded transition-colors"
+                      title="Ver Dashboard"
+                    >
+                      <Eye size={12} />
+                    </a>
+                    <a
+                      href={`${api.downloadFile(h.id, 'emails')}`}
+                      download
+                      className="text-xs px-2 py-1 bg-emerald-900 hover:bg-emerald-800 text-emerald-200 rounded transition-colors"
+                      title="Descargar Emails"
+                    >
+                      <Download size={12} />
+                    </a>
                   </div>
                 )}
               </div>
