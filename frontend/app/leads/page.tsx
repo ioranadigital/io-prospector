@@ -22,14 +22,18 @@ export default function LeadsPage() {
     try {
       const { data, error } = await supabase
         .from('io_prosp_leads')
-        .select('category')
-        .neq('category', null);
+        .select('category');
+
+      console.log('All leads data:', data);
+      console.log('Error:', error);
 
       if (error) throw error;
 
       // Obtener categorías únicas
       const uniqueCategories = Array.from(new Set(data?.map(d => d.category).filter(Boolean) || []))
         .sort() as string[];
+
+      console.log('Unique categories:', uniqueCategories);
       setCategories(uniqueCategories);
     } catch (error) {
       console.error('Error loading categories:', error);
