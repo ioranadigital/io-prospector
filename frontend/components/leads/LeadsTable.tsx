@@ -24,8 +24,9 @@ type LeadActivity = {
   };
 };
 
-export function LeadsTable({ refreshTrigger }: { refreshTrigger: number }) {
+export function LeadsTable({ refreshTrigger, filterCategory }: { refreshTrigger: number; filterCategory: string | null }) {
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [allLeads, setAllLeads] = useState<Lead[]>([]);
   const [activities, setActivities] = useState<LeadActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -39,6 +40,16 @@ export function LeadsTable({ refreshTrigger }: { refreshTrigger: number }) {
   useEffect(() => {
     loadLeads();
   }, [refreshTrigger]);
+
+  useEffect(() => {
+    // Filtrar leads por categoría
+    if (filterCategory === null) {
+      setLeads(allLeads);
+    } else {
+      setLeads(allLeads.filter(lead => lead.category === filterCategory));
+    }
+    setSelected(new Set()); // Limpiar selección
+  }, [filterCategory, allLeads]);
 
   const loadLeads = async () => {
     try {
@@ -56,6 +67,7 @@ export function LeadsTable({ refreshTrigger }: { refreshTrigger: number }) {
       if (leadsError) throw leadsError;
       if (activitiesError) throw activitiesError;
 
+      setAllLeads(leadsData || []);
       setLeads(leadsData || []);
       setActivities(activitiesData || []);
     } catch (error) {
