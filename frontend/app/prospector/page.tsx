@@ -1,10 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Search, Loader2, Play, CheckCircle, AlertCircle, Download, Eye, Clock } from 'lucide-react';
+import { Search, Loader2, Play, CheckCircle, AlertCircle, Download, Eye, Clock, Save } from 'lucide-react';
 import { api } from '@/lib/api';
 import { SECTORS } from '@/lib/sectors';
 import { getComunidadesAutonomas, getProvincias, getMunicipios } from '@/lib/geographic-data';
 import toast from 'react-hot-toast';
+import { saveProspectionToSupabase } from '@/lib/prospections';
 import { LeadsTable } from '@/components/LeadsTable';
 import { EmailSendModal } from '@/components/EmailSendModal';
 import { WhatsAppSendModal } from '@/components/WhatsAppSendModal';
@@ -99,6 +100,30 @@ export default function ProspectorPage() {
     // Recargar leads para reflejar cambios de estado
     if (prospectionId) {
       api.getLeads({ session_id: prospectionId }).then(l => setLeads(Array.isArray(l) ? l : [])).catch(() => {});
+    }
+  };
+
+  const handleSaveProspection = async () => {
+    if (!prospectionStatus || prospectionStatus.status !== 'completed') {
+      toast.error('Solo se pueden guardar prospecciones completadas');
+      return;
+    }
+
+    try {
+      await saveProspectionToSupabase({
+        id: prospectionId!,
+        query: form.query || form.category,
+        city: form.municipio,
+        category: form.category,
+        pages_from: form.pagesFrom,
+        pages_to: form.pagesTo,
+        status: 'completed',
+        total_found: prospectionStatus.result?.leadsCount || 0,
+      });
+      toast.success('✅ Prospección guardada en admin');
+    } catch (error) {
+      toast.error('Error al guardar prospección');
+      console.error(error);
     }
   };
 
@@ -275,7 +300,13 @@ export default function ProspectorPage() {
               <p className="text-zinc-400 text-sm">{prospectionStatus?.result?.leadsCount} leads encontrados y analizados</p>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-4 gap-3">
+            <button
+              onClick={handleSaveProspection}
+              className="flex items-center justify-center gap-2 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors"
+            >
+              <Save size={16} /> Guardar
+            </button>
             <a
               href={`${api.downloadFile(prospectionId!, 'csv')}`}
               download

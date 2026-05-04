@@ -22,6 +22,12 @@ const NAV_SECTIONS = [
     items: [
       { href: '/admin', icon: Settings, label: '⚙️ Admin', desc: 'Configuración' },
     ]
+  },
+  {
+    title: 'Ayuda',
+    items: [
+      { href: '/guide', icon: Zap, label: '📖 Guía', desc: 'Instrucciones de uso' },
+    ]
   }
 ];
 
