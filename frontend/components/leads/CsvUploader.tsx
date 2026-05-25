@@ -5,6 +5,8 @@ import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import { Upload } from 'lucide-react';
 
+const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID || 'default';
+
 export function CsvUploader({ onSuccess }: { onSuccess: () => void }) {
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
