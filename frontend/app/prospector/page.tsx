@@ -91,7 +91,7 @@ export default function ProspectorPage() {
 
     setLoading(true);
     try {
-      const result = await api.startProspection({
+      const result = (await api.startProspection({
         query: form.query || form.category,
         city: form.municipio,
         ccaa: form.ccaa,
@@ -100,9 +100,9 @@ export default function ProspectorPage() {
         category: form.category || form.query,
         pagesFrom: form.pagesFrom,
         pagesTo: form.pagesTo,
-      });
+      })) as any;
 
-      setProspectionId(result.id);
+      setProspectionId(result?.id);
       setProspectionStatus({ status: 'starting', progress: 0 });
       toast.success('🚀 Scraping iniciado...');
     } catch (e: any) {
