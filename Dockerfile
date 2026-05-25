@@ -11,6 +11,9 @@ COPY frontend/package*.json ./frontend/
 COPY backend/ ./backend/
 COPY frontend/ ./frontend/
 
+# Copiar .env para build time (NEXT_PUBLIC_ variables)
+COPY frontend/.env ./frontend/.env
+
 # Instalar TODAS las dependencias (incluyendo dev para el build)
 RUN cd backend && npm ci && cd ..
 RUN cd frontend && npm ci && npm run build && cd ..
