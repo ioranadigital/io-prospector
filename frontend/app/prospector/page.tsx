@@ -217,7 +217,7 @@ export default function ProspectorPage() {
               className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500"
             >
               <option value="">Seleccionar categoría...</option>
-              {SECTORS.map(sector => (
+              {SECTORS.map((sector: any) => (
                 <option key={sector.category} value={sector.category}>{sector.category}</option>
               ))}
             </select>
@@ -231,7 +231,7 @@ export default function ProspectorPage() {
               className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="">Seleccionar sector...</option>
-              {selectedCategory?.subcategories.map(sub => (
+              {selectedCategory?.subcategories.map((sub: string) => (
                 <option key={sub} value={sub}>{sub}</option>
               ))}
             </select>
@@ -258,7 +258,7 @@ export default function ProspectorPage() {
               className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500"
             >
               <option value="">Seleccionar CCAA...</option>
-              {getComunidadesAutonomas().map(ccaa => (
+              {getComunidadesAutonomas().map((ccaa: string) => (
                 <option key={ccaa} value={ccaa}>{ccaa}</option>
               ))}
             </select>
@@ -273,7 +273,7 @@ export default function ProspectorPage() {
               className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="">Seleccionar provincia...</option>
-              {form.ccaa && getProvincias(form.ccaa).map(provincia => (
+              {form.ccaa && getProvincias(form.ccaa).map((provincia: string) => (
                 <option key={provincia} value={provincia}>{provincia}</option>
               ))}
             </select>
@@ -288,7 +288,7 @@ export default function ProspectorPage() {
               className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="">Seleccionar municipio...</option>
-              {form.provincia && getMunicipios(form.ccaa, form.provincia).map(municipio => (
+              {form.provincia && getMunicipios(form.ccaa, form.provincia).map((municipio: string) => (
                 <option key={municipio} value={municipio}>{municipio}</option>
               ))}
             </select>
