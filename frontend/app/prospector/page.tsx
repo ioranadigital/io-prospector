@@ -60,10 +60,10 @@ export default function ProspectorPage() {
 
     const interval = setInterval(async () => {
       try {
-        const status = await api.getProspectionStatus(prospectionId);
+        const status = (await api.getProspectionStatus(prospectionId)) as any;
         setProspectionStatus(status);
 
-        if (status.status === 'completed') {
+        if (status?.status === 'completed') {
           setLoading(false);
           clearInterval(interval); // Detener polling cuando completa
           toast.success('✅ Prospección completada');
@@ -72,10 +72,10 @@ export default function ProspectorPage() {
           setLeads(Array.isArray(leadsData) ? leadsData : []);
           // Recargar historial
           api.getProspectionHistory().then((h: any) => setHistory(Array.isArray(h) ? h : [])).catch(() => {});
-        } else if (status.status === 'error') {
+        } else if (status?.status === 'error') {
           setLoading(false);
           clearInterval(interval); // Detener polling cuando hay error
-          toast.error(`❌ Error: ${status.error}`);
+          toast.error(`❌ Error: ${status?.error}`);
         }
       } catch (err) {
         console.error('Status polling error:', err);
@@ -153,7 +153,7 @@ export default function ProspectorPage() {
   };
 
   const handleSaveProspection = async () => {
-    if (!prospectionStatus || prospectionStatus.status !== 'completed') {
+    if (!prospectionStatus || (prospectionStatus as any).status !== 'completed') {
       toast.error('Solo se pueden guardar prospecciones completadas');
       return;
     }
@@ -167,7 +167,7 @@ export default function ProspectorPage() {
         pages_from: form.pagesFrom,
         pages_to: form.pagesTo,
         status: 'completed',
-        total_found: prospectionStatus.result?.leadsCount || 0,
+        total_found: (prospectionStatus as any).result?.leadsCount || 0,
       });
       const newSet = new Set(savedProspections);
       newSet.add(prospectionId!);
