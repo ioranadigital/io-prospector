@@ -2,16 +2,19 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Instalar dependencias para ambos (backend y frontend)
+# Copiar package.json primero
 COPY backend/package*.json ./backend/
 COPY frontend/package*.json ./frontend/
 
-RUN cd backend && npm ci --omit=dev && cd ..
-RUN cd frontend && npm ci --omit=dev && npm run build && cd ..
-
-# Copiar código
+# Copiar código ANTES de instalar/build
 COPY backend/ ./backend/
 COPY frontend/ ./frontend/
+
+# Instalar dependencias backend
+RUN cd backend && npm ci --omit=dev && cd ..
+
+# Instalar dependencias frontend y build
+RUN cd frontend && npm ci --omit=dev && npm run build && cd ..
 
 EXPOSE 3000 4000
 
