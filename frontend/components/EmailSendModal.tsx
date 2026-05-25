@@ -57,12 +57,12 @@ export function EmailSendModal({ leads, isOpen, onClose, onSuccess }: EmailSendM
 
     try {
       // API para envío masivo
-      const response = await api.sendBulkEmails({
+      const response = (await api.sendBulkEmails({
         lead_ids: leads.map(l => l.id),
         subject: customSubject,
         body: customBody,
         template_id: selectedTemplate?.id,
-      });
+      })) as any;
 
       // Simular progreso (en prod: usar WebSocket o polling)
       const interval = setInterval(() => {
@@ -71,7 +71,7 @@ export function EmailSendModal({ leads, isOpen, onClose, onSuccess }: EmailSendM
 
       // Esperar a que termine
       const checkStatus = async () => {
-        const status = await api.getBulkEmailStatus(response.batch_id);
+        const status = (await api.getBulkEmailStatus(response?.batch_id)) as any;
         if (status.completed) {
           clearInterval(interval);
           setProgress(100);

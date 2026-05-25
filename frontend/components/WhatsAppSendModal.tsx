@@ -56,16 +56,16 @@ export function WhatsAppSendModal({ leads, isOpen, onClose, onSuccess }: WhatsAp
     setSending(true);
 
     try {
-      const response = await api.sendBulkWhatsApp({
+      const response = (await api.sendBulkWhatsApp({
         lead_ids: validLeads.map(l => l.id),
         message: customMessage,
         intensity,
         template_id: selectedTemplate?.id,
-      });
+      })) as any;
 
       // Esperar a que termine
       const checkStatus = async () => {
-        const status = await api.getBulkWhatsAppStatus(response.batch_id);
+        const status = (await api.getBulkWhatsAppStatus(response?.batch_id)) as any;
         if (status.completed) {
           setSent(true);
           setSending(false);
