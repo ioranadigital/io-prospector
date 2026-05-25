@@ -10,14 +10,15 @@ export function ScriptModal({ lead, onClose }: { lead: any; onClose: () => void 
   const [saving,     setSaving]     = useState(false);
 
   useEffect(() => {
-    api.getTemplates('call_script').then((t: any[]) => {
+    api.getTemplates('call_script').then((result: any) => {
+      const t = result as any[];
       if (t[0]) setScript(
         t[0].body
           .replace(/\{\{business_name\}\}/g, lead.business_name)
           .replace(/\{\{audit_score\}\}/g,   lead.audit_score ?? '?')
       );
     });
-    api.getTemplates('objection').then((t: any[]) => setObjections(t));
+    api.getTemplates('objection').then((result: any) => setObjections(result as any[]));
   }, []);
 
   async function saveNote() {

@@ -96,7 +96,7 @@ export const getProvincias = (comunidad: string) => {
 export const getMunicipios = (comunidad: string, provincia: string) => {
   const ccaa = geographicData[comunidad as keyof typeof geographicData];
   if (!ccaa) return [];
-  const prv = ccaa[provincia as keyof typeof ccaa];
+  const prv = ccaa[provincia as keyof typeof ccaa] as string[] | undefined;
   if (!prv) return [];
   return prv.sort();
 };
