@@ -1,6 +1,16 @@
 # Stage 1: Build
 FROM node:20-alpine AS builder
 
+# Build arguments for NEXT_PUBLIC variables (default values)
+ARG NEXT_PUBLIC_SUPABASE_URL=https://zvehtloitnuglyjtxwye.supabase.co
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_B0gQyDyf-p2vDg2UhytfDg_H54mWXbB
+ARG NEXT_PUBLIC_API_URL=http://localhost:5000/api
+
+# Set environment variables from build args
+ENV NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
 WORKDIR /app
 
 # Copiar package.json
@@ -10,9 +20,6 @@ COPY frontend/package*.json ./frontend/
 # Copiar código
 COPY backend/ ./backend/
 COPY frontend/ ./frontend/
-
-# Copiar .env para build time (NEXT_PUBLIC_ variables)
-COPY frontend/.env ./frontend/.env
 
 # Instalar TODAS las dependencias (incluyendo dev para el build)
 RUN cd backend && npm ci && cd ..
