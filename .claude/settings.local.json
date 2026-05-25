@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__filesystem__directory_tree",
+      "mcp__filesystem__list_directory",
+      "mcp__filesystem__read_text_file",
+      "Bash(Get-ChildItem -Path . -Recurse -Include \".env\" -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object FullName)",
+      "PowerShell(Get-ChildItem -Path . -Recurse -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -in @\\(\".next\", \".turbo\", \"dist\", \"build\"\\) } | Select-Object FullName)",
+      "mcp__filesystem__write_file",
+      "mcp__filesystem__edit_file",
+      "Bash(npm ls *)",
+      "Bash(npm cache *)",
+      "Bash(rm -rf .next)",
+      "Bash(npm run *)",
+      "Bash(xargs grep -l \"template\\\\|message\\\\|email\\\\|whatsapp\")",
+      "Bash(git add *)",
+      "Bash(git commit -m 'feat: rename database tables from io_prosp_ to io_pro_ and configure environment variables *)"
+    ]
+  }
+}
