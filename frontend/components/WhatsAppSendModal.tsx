@@ -30,7 +30,7 @@ export function WhatsAppSendModal({ leads, isOpen, onClose, onSuccess }: WhatsAp
     if (isOpen) {
       const without = leads.filter(l => !l.phone);
       setLeadsWithoutPhone(without);
-      api.getTemplates('whatsapp').then(setTemplates).catch(() => setTemplates([]));
+      api.getTemplates('whatsapp').then((result: any) => setTemplates(result)).catch(() => setTemplates([]));
       setSent(false);
       setCustomMessage('');
     }

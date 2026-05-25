@@ -28,7 +28,7 @@ export function EmailSendModal({ leads, isOpen, onClose, onSuccess }: EmailSendM
 
   useEffect(() => {
     if (isOpen) {
-      api.getTemplates('email').then(setTemplates).catch(() => setTemplates([]));
+      api.getTemplates('email').then((result: any) => setTemplates(result)).catch(() => setTemplates([]));
       setSent(false);
       setProgress(0);
       setCustomSubject('');
