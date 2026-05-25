@@ -38,11 +38,11 @@ export function WhatsAppSendModal({ leads, isOpen, onClose, onSuccess }: WhatsAp
 
   const handleTemplateSelect = async (template: any) => {
     setSelectedTemplate(template);
-    const rendered = await api.renderTemplate({
+    const rendered = (await api.renderTemplate({
       template_id: template.id,
       lead_id: leads[0]?.id,
-    }).catch(() => template);
-    setCustomMessage(rendered.body || template.body);
+    }).catch(() => template)) as any;
+    setCustomMessage(rendered?.body || template.body);
   };
 
   const validLeads = leads.filter(l => l.phone);
