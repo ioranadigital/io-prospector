@@ -1,20 +1,41 @@
+# Stage 1: Build
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copiar package.json
+COPY backend/package*.json ./backend/
+COPY frontend/package*.json ./frontend/
+
+# Copiar código
+COPY backend/ ./backend/
+COPY frontend/ ./frontend/
+
+# Instalar TODAS las dependencias (incluyendo dev para el build)
+RUN cd backend && npm ci && cd ..
+RUN cd frontend && npm ci && npm run build && cd ..
+
+# Stage 2: Production
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Copiar package.json primero
+# Copiar package.json
 COPY backend/package*.json ./backend/
 COPY frontend/package*.json ./frontend/
 
-# Copiar código ANTES de instalar/build
-COPY backend/ ./backend/
-COPY frontend/ ./frontend/
-
-# Instalar dependencias backend
+# Instalar solo dependencias de producción del backend
 RUN cd backend && npm ci --omit=dev && cd ..
 
-# Instalar dependencias frontend y build
-RUN cd frontend && npm ci --omit=dev && npm run build && cd ..
+# Instalar solo dependencias de producción del frontend
+RUN cd frontend && npm ci --omit=dev && cd ..
+
+# Copiar código compilado del builder
+COPY --from=builder /app/backend/ ./backend/
+COPY --from=builder /app/frontend/.next ./frontend/.next
+COPY --from=builder /app/frontend/public ./frontend/public
+COPY frontend/app ./frontend/app
+COPY frontend/next.config.js ./frontend/
 
 EXPOSE 3000 4000
 
