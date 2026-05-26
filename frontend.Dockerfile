@@ -2,6 +2,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# IMPORTANTE: Usar development para BUILD aunque Coolify pase production
+# DevDependencies (typescript, webpack, etc.) son REQUERIDAS para compilar Next.js
+ENV NODE_ENV=development
+
 # Copiar package.json
 COPY frontend/package*.json ./
 
