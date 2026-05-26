@@ -26,6 +26,7 @@ services:
       context: .
       dockerfile: frontend.Dockerfile
       args:
+        - NODE_ENV=development
         - NEXT_PUBLIC_SUPABASE_URL=https://zvehtloitnuglyjtxwye.supabase.co
         - NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_B0gQyDyf-p2vDg2UhytfDg_H54mWXbB
         - NEXT_PUBLIC_API_URL=https://pros.iorana.dev/api
