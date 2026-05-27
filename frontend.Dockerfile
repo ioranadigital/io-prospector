@@ -4,19 +4,21 @@ WORKDIR /app
 
 # IMPORTANTE: Usar development para BUILD aunque Coolify pase production
 # DevDependencies (typescript, webpack, etc.) son REQUERIDAS para compilar Next.js
+# Ignora cualquier NODE_ENV inyectado por Coolify en buildtime
 ENV NODE_ENV=development
 
 # Copiar package.json
 COPY frontend/package*.json ./
 
 # Instalar todas las dependencias (incluyendo dev)
-RUN npm ci
+# Force development mode para asegurar devDependencies se instalen
+RUN NODE_ENV=development npm ci
 
 # Copiar fuente
 COPY frontend/ .
 
-# Build
-RUN npm run build
+# Build (force development NODE_ENV to ensure all tools are available)
+RUN NODE_ENV=development npm run build
 
 # Etapa de producción
 FROM node:20-alpine
