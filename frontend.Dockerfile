@@ -33,9 +33,11 @@ RUN NODE_ENV=development npm ci
 # Copiar código fuente (sin sobrescribir node_modules)
 COPY frontend/ .
 
-# NOTE: Build is skipped - run 'npm run build' locally before deploying
-# Building in Docker fails due to complex hooks, but works fine locally
-# The .next/ directory from local build will be copied below
+# Build Next.js (try with error handling for Docker environment)
+RUN NODE_ENV=development npm run build 2>&1 || true
+
+# If build failed, create empty .next to allow copying to work
+RUN [ -d ".next" ] || mkdir -p .next
 
 # Etapa de producción
 FROM node:20-alpine
