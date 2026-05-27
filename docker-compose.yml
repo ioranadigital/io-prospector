@@ -32,8 +32,6 @@ services:
         - NEXT_PUBLIC_API_URL=https://pros.iorana.dev/api
     ports:
       - "3000:3000"
-    environment:
-      - NODE_ENV=production
     depends_on:
       - backend
     restart: unless-stopped
