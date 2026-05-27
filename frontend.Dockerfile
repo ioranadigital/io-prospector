@@ -10,7 +10,8 @@ ENV NODE_ENV=development
 COPY frontend/package.json frontend/package-lock.json ./
 
 # Instalar todas las dependencias (incluyendo dev)
-RUN npm ci
+# Force development mode to ensure devDependencies are installed
+RUN NODE_ENV=development npm ci
 
 # Copiar código fuente (sin sobrescribir node_modules)
 COPY frontend/ .
