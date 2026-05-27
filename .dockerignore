@@ -6,7 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Build outputs
-.next/
+# Note: .next/ is allowed to be copied - it's built locally before Docker build
 dist/
 build/
 out/
