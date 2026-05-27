@@ -1,10 +1,27 @@
 FROM node:20-alpine AS builder
 
+# Declare all ARGs that Coolify might inject
+ARG NODE_ENV=development
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+ARG NEXT_PUBLIC_API_URL
+ARG COOLIFY_URL
+ARG COOLIFY_FQDN
+ARG FRONTEND_URL
+ARG SUPABASE_KEY
+ARG SUPABASE_URL
+ARG PORT
+ARG COOLIFY_BUILD_SECRETS_HASH
+
 WORKDIR /app
 
 # IMPORTANTE: Usar development para BUILD aunque Coolify pase production
 # DevDependencies (typescript, webpack, etc.) son REQUERIDAS para compilar Next.js
 ENV NODE_ENV=development
+# Pass NEXT_PUBLIC_* args as ENV for build
+ENV NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 # Copiar SOLO package.json y package-lock.json
 COPY frontend/package.json frontend/package-lock.json ./
