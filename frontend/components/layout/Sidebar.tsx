@@ -32,7 +32,7 @@ const NAV_SECTIONS = [
 ];
 
 export function Sidebar() {
-  const path = usePathname();
+  const path = usePathname() || '';
   return (
     <aside className="fixed top-0 left-0 h-screen w-60 bg-zinc-900 border-r border-zinc-800 flex flex-col z-40">
       <div className="px-5 py-5 border-b border-zinc-800">
