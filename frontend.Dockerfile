@@ -13,11 +13,14 @@ COPY frontend/package.json frontend/package-lock.json ./
 # Force development mode to ensure devDependencies are installed
 RUN NODE_ENV=development npm ci
 
+# Verify dependencies are installed
+RUN ls -la node_modules | grep -E "tailwindcss|typescript|postcss" || (echo "ERROR: Missing dev dependencies!" && exit 1)
+
 # Copiar código fuente (sin sobrescribir node_modules)
 COPY frontend/ .
 
 # Build (force development NODE_ENV to ensure all tools are available)
-RUN npm run build
+RUN NODE_ENV=development npm run build
 
 # Etapa de producción
 FROM node:20-alpine
