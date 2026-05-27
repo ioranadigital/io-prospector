@@ -37,7 +37,8 @@ RUN ls -la node_modules | grep -E "tailwindcss|typescript|postcss" || (echo "ERR
 COPY frontend/ .
 
 # Build (force development NODE_ENV to ensure all tools are available)
-RUN NODE_ENV=development npm run build
+# Use sh -c to ensure proper error handling and output capture
+RUN sh -c "NODE_ENV=development npm run build" || (echo "Build failed!" && npm list && exit 1)
 
 # Etapa de producción
 FROM node:20-alpine
