@@ -3,6 +3,10 @@ import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
+// Force dynamic rendering to skip static prerendering of all pages including _global-error
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata = {
   title: 'IO Prospector',
   description: 'Platform de prospección SEO',
