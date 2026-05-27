@@ -4,6 +4,9 @@ import { RootLayoutClient } from '@/components/layout/RootLayoutClient';
 
 const inter = Inter({ subsets: ['latin'] });
 
+// Skip static prerendering since this layout contains dynamic client components
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'IO Prospector',
   description: 'Platform de prospección SEO',
