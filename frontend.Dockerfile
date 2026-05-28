@@ -48,8 +48,8 @@ COPY --from=builder /tmp/build_status /build_status
 
 EXPOSE 3000
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+# Accept 2xx and 3xx - root redirects to /prospector (307)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
+  CMD node -e "require('http').get('http://localhost:3000', (r) => {if (r.statusCode >= 400) throw new Error(r.statusCode)})"
 
-# Show build log on startup so it appears in Coolify Logs tab
-CMD ["sh", "-c", "echo '=== NEXT.JS BUILD LOG ===' && cat /build.log && echo '=== BUILD STATUS ===' && cat /build_status && npm start"]
+CMD ["npm", "start"]
