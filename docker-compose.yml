@@ -10,7 +10,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=4000
-      - FRONTEND_URL=https://pros.iorana.dev
+      - FRONTEND_URL=http://localhost:3002,http://10.0.7.3:3002,https://pros.iorana.dev
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
     restart: unless-stopped
