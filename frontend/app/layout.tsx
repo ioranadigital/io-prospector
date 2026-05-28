@@ -1,9 +1,5 @@
-import { Inter } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
-
-// Force dynamic rendering to skip static prerendering of all pages including _global-error
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
@@ -15,7 +11,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
-      <body className={`${inter.className} bg-zinc-950 text-zinc-100 min-h-screen flex`} suppressHydrationWarning>
+      <body className="font-sans bg-zinc-950 text-zinc-100 min-h-screen flex" suppressHydrationWarning>
         {children}
       </body>
     </html>

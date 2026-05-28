@@ -34,8 +34,9 @@ RUN NODE_ENV=development npm ci
 COPY frontend/ .
 
 # Build Next.js - NODE_OPTIONS limits memory to avoid OOM on small VPS
-ENV NODE_OPTIONS="--max-old-space-size=3072"
-RUN NODE_ENV=development npm run build 2>&1
+ENV NODE_OPTIONS="--max-old-space-size=2048"
+RUN NODE_ENV=development npm run build > /tmp/build.log 2>&1 \
+    || (echo "=== BUILD FAILED - ERROR LOG ===" && cat /tmp/build.log && exit 1)
 
 # Etapa de producción
 FROM node:20-slim
