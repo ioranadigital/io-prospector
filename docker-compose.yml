@@ -31,7 +31,7 @@ services:
         - NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_B0gQyDyf-p2vDg2UhytfDg_H54mWXbB
         - NEXT_PUBLIC_API_URL=https://pros.iorana.dev/api
     ports:
-      - "3000:3000"
+      - "3002:3000"
     depends_on:
       - backend
     restart: unless-stopped

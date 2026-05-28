@@ -33,11 +33,8 @@ RUN NODE_ENV=development npm ci
 # Copiar código fuente (sin sobrescribir node_modules)
 COPY frontend/ .
 
-# Build Next.js (try with error handling for Docker environment)
-RUN NODE_ENV=development npm run build 2>&1 || true
-
-# If build failed, create empty .next to allow copying to work
-RUN [ -d ".next" ] || mkdir -p .next
+# Build Next.js
+RUN NODE_ENV=development npm run build
 
 # Etapa de producción
 FROM node:20-alpine
