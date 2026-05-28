@@ -1,5 +1,7 @@
 'use client';
 
+// Global error boundary is handled at app/global-error.tsx (root level)
+// This file intentionally left minimal to avoid layout inheritance issues
 export default function GlobalError({
   error,
   reset,
@@ -8,14 +10,9 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <html>
-      <body>
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
-          <h1>Error Critical</h1>
-          <p>Algo salió muy mal</p>
-          <button onClick={() => reset()}>Reintentar</button>
-        </div>
-      </body>
-    </html>
+    <div style={{ textAlign: 'center', padding: '2rem' }}>
+      <h2>Error</h2>
+      <button onClick={() => reset()}>Reintentar</button>
+    </div>
   );
 }

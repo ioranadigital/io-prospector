@@ -28,7 +28,7 @@ RUN NODE_ENV=development npm ci
 COPY frontend/ .
 
 # Capture build output to file, always exit 0 so we can inspect the log via container logs
-RUN NODE_ENV=development npm run build > /tmp/build.log 2>&1 \
+RUN NODE_ENV=production npm run build > /tmp/build.log 2>&1 \
     && echo "BUILD_OK" > /tmp/build_status \
     || (echo "BUILD_FAILED" > /tmp/build_status && mkdir -p .next)
 
