@@ -1,6 +1,5 @@
 FROM node:20-slim AS builder
 
-# Declare all ARGs that Coolify might inject
 ARG NODE_ENV=development
 ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -15,48 +14,42 @@ ARG COOLIFY_BUILD_SECRETS_HASH
 
 WORKDIR /app
 
-# IMPORTANTE: Usar development para BUILD aunque Coolify pase production
-# DevDependencies (typescript, webpack, etc.) son REQUERIDAS para compilar Next.js
 ENV NODE_ENV=development
-# Pass NEXT_PUBLIC_* args as ENV for build
 ENV NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NODE_OPTIONS="--max-old-space-size=2048"
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# Copiar SOLO package.json y package-lock.json
 COPY frontend/package.json frontend/package-lock.json ./
 
-# Instalar todas las dependencias (incluyendo dev)
-# Force development mode to ensure devDependencies are installed
 RUN NODE_ENV=development npm ci
 
-# Copiar código fuente (sin sobrescribir node_modules)
 COPY frontend/ .
 
-# Build Next.js - NODE_OPTIONS limits memory to avoid OOM on small VPS
-ENV NODE_OPTIONS="--max-old-space-size=2048"
+# Capture build output to file, always exit 0 so we can inspect the log via container logs
 RUN NODE_ENV=development npm run build > /tmp/build.log 2>&1 \
-    || (echo "=== BUILD FAILED - ERROR LOG ===" && cat /tmp/build.log && exit 1)
+    && echo "BUILD_OK" > /tmp/build_status \
+    || (echo "BUILD_FAILED" > /tmp/build_status && mkdir -p .next)
 
 # Etapa de producción
 FROM node:20-slim
 
 WORKDIR /app
 
-# Copiar package.json para producción
 COPY frontend/package*.json ./
-
-# Instalar solo dependencias de producción
 RUN npm ci --omit=dev
 
-# Copiar los built files de la etapa anterior
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /tmp/build.log /build.log
+COPY --from=builder /tmp/build_status /build_status
 
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3000', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
 
-CMD ["npm", "start"]
+# Show build log on startup so it appears in Coolify Logs tab
+CMD ["sh", "-c", "echo '=== NEXT.JS BUILD LOG ===' && cat /build.log && echo '=== BUILD STATUS ===' && cat /build_status && npm start"]
