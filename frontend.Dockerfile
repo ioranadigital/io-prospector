@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 
 # Declare all ARGs that Coolify might inject
 ARG NODE_ENV=development
@@ -38,7 +38,7 @@ ENV NODE_OPTIONS="--max-old-space-size=3072"
 RUN NODE_ENV=development npm run build 2>&1
 
 # Etapa de producción
-FROM node:20-alpine
+FROM node:20-slim
 
 WORKDIR /app
 
