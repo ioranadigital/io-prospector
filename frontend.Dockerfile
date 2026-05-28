@@ -34,7 +34,7 @@ RUN NODE_ENV=development npm ci
 COPY frontend/ .
 
 # Build Next.js
-RUN NODE_ENV=development npm run build
+RUN NODE_ENV=development npm run build 2>&1
 
 # Etapa de producción
 FROM node:20-alpine

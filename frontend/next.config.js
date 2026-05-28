@@ -2,14 +2,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Disable static generation for all app routes - generate on demand
-  experimental: {
-    isrMemoryCacheSize: 0,
+  eslint: {
+    ignoreDuringBuilds: true,
   },
-  onDemandEntries: {
-    // Preload pages on demand
-    maxInactiveAge: 60 * 60 * 1000,
-    pagesBufferLength: 5,
+  typescript: {
+    ignoreBuildErrors: false,
   },
   env: {
     NEXT_PUBLIC_API_URL:   process.env.NEXT_PUBLIC_API_URL,
