@@ -1,8 +1,10 @@
 // Cliente HTTP centralizado — todas las llamadas al backend pasan por aquí
 
-const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+console.log('API BASE URL:', BASE);
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  console.log('Fetching:', `${BASE}${path}`);
   const res = await fetch(`${BASE}${path}`, {
     headers: { 'Content-Type': 'application/json', ...init?.headers },
     ...init,
