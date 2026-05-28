@@ -15,7 +15,11 @@
       "Bash(npm run *)",
       "Bash(xargs grep -l \"template\\\\|message\\\\|email\\\\|whatsapp\")",
       "Bash(git add *)",
-      "Bash(git commit -m 'feat: rename database tables from io_prosp_ to io_pro_ and configure environment variables *)"
+      "Bash(git commit -m 'feat: rename database tables from io_prosp_ to io_pro_ and configure environment variables *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git commit -m 'Fix supabase.ts: use placeholder URL/key at build-time to prevent createClient crash *)",
+      "Bash(git commit -m 'Capture build log to file, container shows it on startup for diagnosis *)"
     ]
   }
 }

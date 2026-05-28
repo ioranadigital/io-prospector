@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import ws from 'ws';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const hasValidCreds =
@@ -16,5 +17,8 @@ if (!hasValidCreds) {
 export const supabase = createClient(
   process.env.SUPABASE_URL || 'https://placeholder.supabase.co',
   process.env.SUPABASE_KEY || 'placeholder-key',
-  { auth: { persistSession: false } }
+  {
+    auth: { persistSession: false },
+    realtime: { transport: ws }
+  }
 );

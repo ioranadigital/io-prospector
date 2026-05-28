@@ -75,6 +75,7 @@ export const logger = createLogger({
 
 // backend/config/supabase.js
 import { createClient } from '@supabase/supabase-js';
+import ws from 'ws';
 
 if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
   throw new Error('Faltan variables SUPABASE_URL y SUPABASE_KEY en .env');
@@ -83,5 +84,8 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
 export const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY,
-  { auth: { persistSession: false } }
+  {
+    auth: { persistSession: false },
+    realtime: { transport: ws }
+  }
 );
