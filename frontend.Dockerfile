@@ -33,7 +33,8 @@ RUN NODE_ENV=development npm ci
 # Copiar código fuente (sin sobrescribir node_modules)
 COPY frontend/ .
 
-# Build Next.js
+# Build Next.js - NODE_OPTIONS limits memory to avoid OOM on small VPS
+ENV NODE_OPTIONS="--max-old-space-size=3072"
 RUN NODE_ENV=development npm run build 2>&1
 
 # Etapa de producción
