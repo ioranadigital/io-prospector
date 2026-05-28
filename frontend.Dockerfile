@@ -46,10 +46,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /tmp/build.log /build.log
 COPY --from=builder /tmp/build_status /build_status
 
-EXPOSE 3000
-
-# Accept 2xx and 3xx - root redirects to /prospector (307)
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
-  CMD node -e "require('http').get('http://localhost:3000', (r) => {if (r.statusCode >= 400) throw new Error(r.statusCode)})"
+ENV PORT=3002
+EXPOSE 3002
 
 CMD ["npm", "start"]
