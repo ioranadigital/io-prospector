@@ -2,6 +2,11 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Skip browser downloads from playwright and whatsapp-web.js (puppeteer)
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+
 # Copiar solo package.json primero
 COPY backend/package*.json ./
 
