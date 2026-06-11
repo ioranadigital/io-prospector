@@ -126,7 +126,8 @@
       "Bash(Test-Path E:\\\\master.env)",
       "Bash(Test-Path E:\\\\git\\\\master.env)",
       "Bash(Test-Path E:\\\\git\\\\app\\\\tools\\\\io-prospector\\\\master.env)",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(git commit *)"
     ]
   }
 }

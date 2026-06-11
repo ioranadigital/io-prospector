@@ -27,7 +27,7 @@ export default function SchemaAnalyzerPage() {
     setResult(null);
 
     try {
-      const response = await fetch('/api/schema-analyzer/analyze', {
+      const response = await fetch('/api/schema-analyzer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: url.trim() }),
@@ -35,13 +35,14 @@ export default function SchemaAnalyzerPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al analizar');
+        throw new Error(errorData.error || `Error ${response.status}: No se pudo analizar`);
       }
 
       const data = await response.json();
       setResult(data);
       toast.success('✅ Análisis completado');
     } catch (err: any) {
+      console.error('Analysis error:', err);
       setError(err.message);
       toast.error(err.message);
     } finally {
