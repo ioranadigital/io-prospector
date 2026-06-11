@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Search, BarChart3, Settings, Database, Zap,
-  ClipboardList, Activity, Users, BookOpen, SlidersHorizontal
+  ClipboardList, Activity, Users, BookOpen, SlidersHorizontal, Code
 } from 'lucide-react';
 
 const NAV_SECTIONS = [
@@ -19,6 +19,7 @@ const NAV_SECTIONS = [
     title: 'Audit SEO',
     items: [
       { href: '/auditoria',         icon: Activity,           label: 'Auditoría',         desc: 'Analizar cualquier URL' },
+      { href: '/schema-analyzer',   icon: Code,               label: 'Schema.org',        desc: 'Validar datos estructurados' },
       { href: '/audit-resultados',  icon: ClipboardList,      label: 'Resultados',        desc: 'Revisar & guardar como lead' },
       { href: '/audit-historico',   icon: BarChart3,          label: 'Histórico',         desc: 'Resultados por cliente' },
       { href: '/audit-config',      icon: SlidersHorizontal,  label: 'Configuración',     desc: 'Checks, pesos, umbrales' },

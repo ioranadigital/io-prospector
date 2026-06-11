@@ -8,6 +8,7 @@ import * as links       from './checks/links.check.js';
 import * as technical   from './checks/technical.check.js';
 import * as performance from './checks/performance.check.js';
 import * as content     from './checks/content.check.js';
+import * as schema      from './checks/schema.check.js';
 
 // ─── Supabase Client ───────────────────────────────────────────────────────
 const supabase = createClient(
@@ -17,7 +18,7 @@ const supabase = createClient(
 );
 
 // ─── Registro de checks (añadir aquí nuevos módulos) ───────────────────────
-const CHECKS = [meta, headings, images, links, technical, performance, content];
+const CHECKS = [meta, headings, images, links, technical, performance, content, schema];
 
 // ─── Cache de reglas (5 minutos) ──────────────────────────────────────────
 let cachedRules = null;
