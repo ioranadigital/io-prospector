@@ -134,16 +134,16 @@ export default function SchemaAnalyzerProPage() {
                 </div>
                 <div
                   className={`text-6xl font-bold ${
-                    result.scores.average >= 80
+                    (result.scores?.average || 0) >= 80
                       ? 'text-green-400'
-                      : result.scores.average >= 60
+                      : (result.scores?.average || 0) >= 60
                       ? 'text-yellow-400'
-                      : result.scores.average >= 40
+                      : (result.scores?.average || 0) >= 40
                       ? 'text-orange-400'
                       : 'text-red-400'
                   }`}
                 >
-                  {result.scores.average}
+                  {result.scores?.average || 0}
                 </div>
               </div>
 
@@ -179,31 +179,31 @@ export default function SchemaAnalyzerProPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
                   <div className="text-3xl font-bold text-blue-400">
-                    {result.summary.totalSchemas}
+                    {result.summary?.totalSchemas || 0}
                   </div>
                   <div className="text-xs text-gray-400 mt-1">Schemas totales</div>
                 </div>
                 <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
                   <div className="text-3xl font-bold text-green-400">
-                    {result.summary.validSchemas}
+                    {result.summary?.validSchemas || 0}
                   </div>
                   <div className="text-xs text-gray-400 mt-1">Válidos</div>
                 </div>
                 <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
                   <div className="text-3xl font-bold text-purple-400">
-                    {result.summary.primaryType}
+                    {result.summary?.primaryType || 'Unknown'}
                   </div>
                   <div className="text-xs text-gray-400 mt-1">Tipo principal</div>
                 </div>
                 <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
                   <div
                     className={`text-3xl font-bold ${
-                      result.alertsSummary.critical > 0
+                      (result.alertsSummary?.critical || 0) > 0
                         ? 'text-red-400'
                         : 'text-green-400'
                     }`}
                   >
-                    {result.alertsSummary.critical}
+                    {result.alertsSummary?.critical || 0}
                   </div>
                   <div className="text-xs text-gray-400 mt-1">Alertas críticas</div>
                 </div>
@@ -211,11 +211,11 @@ export default function SchemaAnalyzerProPage() {
             )}
 
             {/* Schemas por Categoría */}
-            {result.byCategory && Object.keys(result.byCategory).length > 0 && (
+            {result.byCategory && result.byCategory && Object.keys(result.byCategory || {}).length > 0 && (
               <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-6">
                 <h3 className="text-white font-semibold mb-4">Esquemas por Categoría</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                  {Object.entries(result.byCategory).map(([category, schemas]: any) => (
+                  {Object.entries(result.byCategory || {}).map(([category, schemas]: any) => (
                     <div
                       key={category}
                       className="bg-zinc-700/30 rounded-lg p-4 border border-zinc-600"
@@ -224,21 +224,21 @@ export default function SchemaAnalyzerProPage() {
                         {category}
                       </div>
                       <div className="space-y-1">
-                        {schemas.map((schema: any, idx: number) => (
+                        {Array.isArray(schemas) && schemas.map((schema: any, idx: number) => (
                           <div key={idx} className="text-xs">
-                            <div className="text-gray-300">{schema.type}</div>
+                            <div className="text-gray-300">{schema?.type || 'Unknown'}</div>
                             <div className="text-gray-500">
                               Score:{' '}
                               <span
                                 className={
-                                  schema.score >= 80
+                                  (schema?.score || 0) >= 80
                                     ? 'text-green-300'
-                                    : schema.score >= 60
+                                    : (schema?.score || 0) >= 60
                                     ? 'text-yellow-300'
                                     : 'text-red-300'
                                 }
                               >
-                                {schema.score}%
+                                {schema?.score || 0}%
                               </span>
                             </div>
                           </div>
@@ -254,7 +254,7 @@ export default function SchemaAnalyzerProPage() {
             {result.alerts && result.alerts.length > 0 && (
               <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-6">
                 <h3 className="text-white font-semibold mb-4">
-                  Alertas ({result.alertsSummary.total})
+                  Alertas ({result.alertsSummary?.total || result.alerts.length})
                 </h3>
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {result.alerts.map((alert: any, idx: number) => {
