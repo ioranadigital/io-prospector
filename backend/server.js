@@ -9,15 +9,16 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import { logger } from './utils/logger.js';
 
-import scrapingRoutes     from './routes/scraping.routes.js';
-import leadsRoutes        from './routes/leads.routes.js';
-import contactRoutes      from './routes/contact.routes.js';
-import crmRoutes          from './routes/crm.routes.js';
-import demoRoutes         from './routes/demo.routes.js';
-import configRoutes       from './routes/config.routes.js';
-import analyticsRoutes    from './routes/analytics.routes.js';
-import auditRoutes        from './routes/audit.routes.js';
-import schemaAnalyzerRoutes from './routes/schema-analyzer.routes.js';
+import scrapingRoutes         from './routes/scraping.routes.js';
+import leadsRoutes            from './routes/leads.routes.js';
+import contactRoutes          from './routes/contact.routes.js';
+import crmRoutes              from './routes/crm.routes.js';
+import demoRoutes             from './routes/demo.routes.js';
+import configRoutes           from './routes/config.routes.js';
+import analyticsRoutes        from './routes/analytics.routes.js';
+import auditRoutes            from './routes/audit.routes.js';
+import schemaAnalyzerRoutes   from './routes/schema-analyzer.routes.js';
+import schemaAnalyzerProRoutes from './routes/schema-analyzer-pro.routes.js';
 
 const app  = express();
 // io-prospector: lee IO_PROSPECTOR_BACKEND_PORT (definido en backend/.env / master.env), ignora PORT global
@@ -49,15 +50,16 @@ app.use((req, res, next) => {
 app.use('/api', rateLimit({ windowMs: 60_000, max: 100, standardHeaders: true }));
 
 // ── Rutas ─────────────────────────────────────────────────
-app.use('/api/scraping',        scrapingRoutes);
-app.use('/api/leads',           leadsRoutes);
-app.use('/api/contact',         contactRoutes);
-app.use('/api/crm',             crmRoutes);
-app.use('/api/demo',            demoRoutes);
-app.use('/api/config',          configRoutes);
-app.use('/api/analytics',       analyticsRoutes);
-app.use('/api/audit',           auditRoutes);
-app.use('/api/schema-analyzer', schemaAnalyzerRoutes);
+app.use('/api/scraping',           scrapingRoutes);
+app.use('/api/leads',              leadsRoutes);
+app.use('/api/contact',            contactRoutes);
+app.use('/api/crm',                crmRoutes);
+app.use('/api/demo',               demoRoutes);
+app.use('/api/config',             configRoutes);
+app.use('/api/analytics',          analyticsRoutes);
+app.use('/api/audit',              auditRoutes);
+app.use('/api/schema-analyzer',    schemaAnalyzerRoutes);
+app.use('/api/schema-analyzer-pro', schemaAnalyzerProRoutes);
 
 // Demo pública (sin prefijo /api)
 app.use('/demo', demoRoutes);
