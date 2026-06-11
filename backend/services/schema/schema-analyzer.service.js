@@ -261,11 +261,12 @@ export class SchemaAnalyzerService {
    * Formatear output de schema individual
    */
   _formatSchemaOutput(schema) {
+    const validation = schema.validation?.validation || {};
     return {
       type: schema.type,
       category: schema.category,
-      isValid: schema.validation.isValid,
-      score: schema.score,
+      isValid: schema.validation?.isValid || false,
+      score: schema.score || 0,
       definition: schema.definition
         ? {
             description: schema.definition.description,
@@ -274,14 +275,14 @@ export class SchemaAnalyzerService {
             seoImpact: schema.definition.seoImpact,
           }
         : null,
-      extractedData: schema.extractedData.properties,
+      extractedData: schema.extractedData?.properties || {},
       validation: {
-        present: schema.validation.validation.present,
-        missing: schema.validation.validation.missing,
-        recommendedPresent: schema.validation.validation.recommended.present,
-        recommendedMissing: schema.validation.validation.recommended.missing,
+        present: validation.present || [],
+        missing: validation.missing || [],
+        recommendedPresent: validation.recommended?.present || [],
+        recommendedMissing: validation.recommended?.missing || [],
       },
-      alerts: schema.validation.alerts,
+      alerts: schema.validation?.alerts || [],
     };
   }
 
