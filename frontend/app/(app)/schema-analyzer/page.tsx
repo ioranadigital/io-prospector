@@ -225,6 +225,69 @@ export default function SchemaAnalyzerPage() {
               </div>
             )}
 
+            {/* SEO Local Checks */}
+            {result.analysis?.seoLocalChecks && result.analysis.seoLocalChecks.length > 0 && (
+              <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-6">
+                <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                  <span className="text-xl">📍</span>
+                  SEO Local
+                </h3>
+                <p className="text-gray-400 text-sm mb-4">Consistencia NAP (Nombre, Dirección, Teléfono), Google Business Profile</p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                  {result.analysis.seoLocalChecks.map((check: any, idx: number) => {
+                    const statusColor =
+                      check.status === 'pass'
+                        ? 'bg-green-900/20 border-green-700'
+                        : check.status === 'warn'
+                        ? 'bg-yellow-900/20 border-yellow-700'
+                        : 'bg-red-900/20 border-red-700';
+
+                    const iconColor =
+                      check.status === 'pass'
+                        ? 'text-green-400'
+                        : check.status === 'warn'
+                        ? 'text-yellow-400'
+                        : 'text-red-400';
+
+                    return (
+                      <div
+                        key={idx}
+                        className={`rounded-lg p-4 border ${statusColor} flex flex-col h-full`}
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <span className={`text-2xl font-bold ${iconColor}`}>{check.icon}</span>
+                          <span className="text-xs bg-zinc-700 text-zinc-200 px-2 py-1 rounded">
+                            {check.status === 'pass' ? 'OK' : check.status === 'warn' ? 'AVG' : 'FALTA'}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-white font-semibold text-sm mb-1">{check.label}</h4>
+                          <p className="text-gray-300 text-xs mb-2">{check.description}</p>
+                          {check.detail && (
+                            <div className="text-xs text-gray-400 bg-zinc-900/50 rounded p-2">
+                              {check.detail}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Summary */}
+                <div className="mt-4 pt-4 border-t border-zinc-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400 text-sm">Reglas de SEO Local:</span>
+                    <span className="text-white font-semibold">
+                      {result.analysis.seoLocalChecks.filter((c: any) => c.status === 'pass').length}/
+                      {result.analysis.seoLocalChecks.length}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Oportunidades */}
             {result.opportunities && result.opportunities.length > 0 && (
               <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-6">

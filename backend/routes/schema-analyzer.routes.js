@@ -259,6 +259,7 @@ function generateAnalysis(schemas, opportunities) {
   const hasLocalBusiness = schemas.some(s => s.type === 'LocalBusiness');
   const hasProduct = schemas.some(s => s.type === 'Product');
   const hasFAQ = schemas.some(s => s.type === 'FAQPage');
+  const localBusiness = schemas.find(s => s.type === 'LocalBusiness');
 
   analysis.summary = [];
 
@@ -286,7 +287,115 @@ function generateAnalysis(schemas, opportunities) {
     analysis.summary.push(`💡 ${analysis.totalOpportunities} mejora(s) disponible(s)`);
   }
 
+  // Checks de SEO Local
+  analysis.seoLocalChecks = generateSEOLocalChecks(schemas);
+
   return analysis;
+}
+
+function generateSEOLocalChecks(schemas) {
+  const localBusiness = schemas.find(s => s.type === 'LocalBusiness');
+  const checks = [];
+
+  // Check 1: Schema LocalBusiness
+  checks.push({
+    id: 'local.schema.business',
+    label: 'Schema LocalBusiness',
+    description: 'Marcado de negocio local con datos estructurados',
+    status: localBusiness ? 'pass' : 'fail',
+    icon: localBusiness ? '✓' : '✗',
+  });
+
+  if (localBusiness) {
+    // Check 2: NAP Consistency
+    const hasName = !!localBusiness.name;
+    const hasAddress = !!localBusiness.address;
+    const hasPhone = !!localBusiness.telephone;
+    const napComplete = hasName && hasAddress && hasPhone;
+
+    checks.push({
+      id: 'local.nap.consistency',
+      label: 'Consistencia NAP',
+      description: 'Nombre, Dirección y Teléfono completos',
+      status: napComplete ? 'pass' : hasName && hasAddress ? 'warn' : 'fail',
+      icon: napComplete ? '✓' : hasName && hasAddress ? '⚠' : '✗',
+      detail: `${hasName ? '✓ Nombre' : '✗ Nombre'} | ${hasAddress ? '✓ Dirección' : '✗ Dirección'} | ${hasPhone ? '✓ Teléfono' : '✗ Teléfono'}`,
+    });
+
+    // Check 3: Google Business Profile
+    const sameAsArray = localBusiness.sameAs || [];
+    const hasGoogleBusiness = sameAsArray.some(url =>
+      typeof url === 'string' && (url.includes('google.com/maps') || url.includes('business.google.com'))
+    );
+
+    checks.push({
+      id: 'local.google.mybusiness',
+      label: 'Google Business Profile',
+      description: 'Vinculación con Google My Business',
+      status: hasGoogleBusiness ? 'pass' : 'warn',
+      icon: hasGoogleBusiness ? '✓' : '⚠',
+      detail: hasGoogleBusiness ? 'Vinculado a Google Business' : 'No encontrado (Agrega en sameAs)',
+    });
+
+    // Check 4: Location Pages
+    const hasGeo = !!localBusiness.geo;
+    checks.push({
+      id: 'local.location.pages',
+      label: 'Datos de Ubicación',
+      description: 'Coordenadas geográficas y zona de servicio',
+      status: hasGeo ? 'pass' : 'warn',
+      icon: hasGeo ? '✓' : '⚠',
+      detail: hasGeo ? 'Coordenadas geográficas presentes' : 'Sin coordenadas (Mejora búsquedas locales)',
+    });
+
+    // Check 5: Phone Visibility
+    checks.push({
+      id: 'local.phone.visible',
+      label: 'Teléfono Visible',
+      description: 'Número de contacto fácilmente accesible',
+      status: hasPhone ? 'pass' : 'fail',
+      icon: hasPhone ? '✓' : '✗',
+      detail: hasPhone ? `${localBusiness.telephone}` : 'Teléfono no especificado',
+    });
+  } else {
+    // Si no hay LocalBusiness, todos los checks fallan
+    checks.push(
+      {
+        id: 'local.nap.consistency',
+        label: 'Consistencia NAP',
+        description: 'Nombre, Dirección y Teléfono completos',
+        status: 'fail',
+        icon: '✗',
+        detail: 'Schema LocalBusiness no detectado',
+      },
+      {
+        id: 'local.google.mybusiness',
+        label: 'Google Business Profile',
+        description: 'Vinculación con Google My Business',
+        status: 'fail',
+        icon: '✗',
+        detail: 'Schema LocalBusiness no detectado',
+      },
+      {
+        id: 'local.location.pages',
+        label: 'Datos de Ubicación',
+        description: 'Coordenadas geográficas y zona de servicio',
+        status: 'fail',
+        icon: '✗',
+        detail: 'Schema LocalBusiness no detectado',
+      },
+      {
+        id: 'local.phone.visible',
+        label: 'Teléfono Visible',
+        description: 'Número de contacto fácilmente accesible',
+        status: 'fail',
+        icon: '✗',
+        detail: 'Schema LocalBusiness no detectado',
+      }
+    );
+  }
+
+  return checks;
 }
 
 export default router;
