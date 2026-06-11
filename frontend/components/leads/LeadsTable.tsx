@@ -3,9 +3,12 @@
 import { useEffect, useState } from 'react';
 import { supabase, type Lead } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { Mail, MessageCircle, CheckCircle2, Circle, Trash2, Eye } from 'lucide-react';
+import { BarChart3, CheckCircle2, Circle, Trash2, Eye } from 'lucide-react';
 import { SendModal } from './SendModal';
 import { LeadDetailModal } from './LeadDetailModal';
+import { TierSummaryModal } from './TierSummaryModal';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { fixMojibake } from '@/lib/text';
 
 type SendModalState = {
   isOpen: boolean;
@@ -24,7 +27,7 @@ type LeadActivity = {
   };
 };
 
-export function LeadsTable({ refreshTrigger, filterCategory }: { refreshTrigger: number; filterCategory: string | null }) {
+export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, source = 'all' }: { refreshTrigger: number; filterCategory: string | null; onSelectLead?: (lead: Lead) => void; source?: 'all' | 'prospector' | 'audit' }) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [allLeads, setAllLeads] = useState<Lead[]>([]);
   const [activities, setActivities] = useState<LeadActivity[]>([]);
@@ -34,22 +37,24 @@ export function LeadsTable({ refreshTrigger, filterCategory }: { refreshTrigger:
   const [editValue, setEditValue] = useState('');
   const [sendModal, setSendModal] = useState<SendModalState>({ isOpen: false, leadId: null, type: 'email' });
   const [detailLead, setDetailLead] = useState<Lead | null>(null);
+  const [tierLead, setTierLead] = useState<Lead | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [tooltipLead, setTooltipLead] = useState<string | null>(null);
+  const [confirmDelOpen, setConfirmDelOpen] = useState(false);
 
   useEffect(() => {
     loadLeads();
   }, [refreshTrigger]);
 
   useEffect(() => {
-    // Filtrar leads por categoría
-    if (filterCategory === null) {
-      setLeads(allLeads);
-    } else {
-      setLeads(allLeads.filter(lead => lead.category === filterCategory));
-    }
+    // Filtrar por origen usando la columna 'source' (prospector | audit). Auditoría = todo lo que no es prospector.
+    let list = allLeads;
+    if (source === 'prospector') list = list.filter(l => (l as any).source === 'prospector');
+    else if (source === 'audit') list = list.filter(l => (l as any).source !== 'prospector');
+    if (filterCategory !== null) list = list.filter(lead => lead.category === filterCategory);
+    setLeads(list);
     setSelected(new Set()); // Limpiar selección
-  }, [filterCategory, allLeads]);
+  }, [filterCategory, allLeads, source]);
 
   const loadLeads = async () => {
     try {
@@ -57,6 +62,8 @@ export function LeadsTable({ refreshTrigger, filterCategory }: { refreshTrigger:
         supabase
           .from('io_pro_leads')
           .select('*')
+          // Excluir candidatos del scraping (solo se ven tras promoverse a Leads)
+          .or('status.is.null,status.neq.candidate')
           .order('created_at', { ascending: false }),
         supabase
           .from('io_pro_lead_activities')
@@ -183,13 +190,12 @@ export function LeadsTable({ refreshTrigger, filterCategory }: { refreshTrigger:
     }
   };
 
-  const handleDeleteSelected = async () => {
+  const handleDeleteSelected = () => {
     if (selected.size === 0) return;
+    setConfirmDelOpen(true);
+  };
 
-    if (!confirm(`¿Eliminar ${selected.size} lead(s)? Esta acción no se puede deshacer.`)) {
-      return;
-    }
-
+  const handleConfirmDeleteSelected = async () => {
     setDeleting(true);
     try {
       const idsToDelete = Array.from(selected);
@@ -201,8 +207,9 @@ export function LeadsTable({ refreshTrigger, filterCategory }: { refreshTrigger:
       if (error) throw error;
 
       setLeads(leads.filter(l => !selected.has(l.id)));
+      toast.success(`✅ ${idsToDelete.length} lead(s) eliminado(s)`);
       setSelected(new Set());
-      toast.success(`✅ ${selected.size} lead(s) eliminado(s)`);
+      setConfirmDelOpen(false);
     } catch (err) {
       console.error(err);
       toast.error('Error al eliminar leads');
@@ -256,6 +263,7 @@ export function LeadsTable({ refreshTrigger, filterCategory }: { refreshTrigger:
               <th className="px-3 py-3 text-left font-semibold">📱 Teléfono</th>
               <th className="px-3 py-3 text-left font-semibold">🔍 Rating SEO</th>
               <th className="px-3 py-3 text-left font-semibold">📍 Rating GMB</th>
+              <th className="px-3 py-3 text-left font-semibold">🔴 TIER 1</th>
               <th className="px-3 py-3 text-left font-semibold">📨 Estado</th>
               <th className="px-3 py-3 text-left font-semibold">🎯 Acciones</th>
             </tr>
@@ -266,7 +274,11 @@ export function LeadsTable({ refreshTrigger, filterCategory }: { refreshTrigger:
               const status = getActivityStatus(lastActivity);
 
               return (
-                <tr key={lead.id} className="border-b border-zinc-800 hover:bg-zinc-800/50 transition">
+                <tr
+                  key={lead.id}
+                  className="border-b border-zinc-800 hover:bg-zinc-800/50 transition cursor-pointer"
+                  onClick={() => onSelectLead?.(lead)}
+                >
                   <td className="px-3 py-3">
                     <button
                       onClick={() => toggleSelect(lead.id)}
@@ -280,7 +292,7 @@ export function LeadsTable({ refreshTrigger, filterCategory }: { refreshTrigger:
                     </button>
                   </td>
                   <td className="px-3 py-3 font-semibold text-white max-w-sm">
-                    <div className="truncate">{lead.business_name || 'Sin nombre'}</div>
+                    <div className="truncate">{fixMojibake(lead.business_name) || 'Sin nombre'}</div>
                     {lead.website && (
                       <a href={lead.website} target="_blank" rel="noopener" className="text-xs text-blue-400 hover:underline truncate block">
                         {lead.website}
@@ -335,6 +347,15 @@ export function LeadsTable({ refreshTrigger, filterCategory }: { refreshTrigger:
                       </span>
                     )}
                   </td>
+                  <td className="px-3 py-3 text-xs">
+                    <div className="flex gap-1">
+                      {!lead.email && <span className="px-1 py-0.5 bg-red-900/40 text-red-300 rounded text-xs">📧</span>}
+                      {!lead.phone && <span className="px-1 py-0.5 bg-red-900/40 text-red-300 rounded text-xs">📞</span>}
+                      {lead.email && lead.phone ? (
+                        <span className="px-1 py-0.5 bg-green-900/40 text-green-300 rounded text-xs">✅</span>
+                      ) : null}
+                    </div>
+                  </td>
                   <td className="px-3 py-3 text-xs relative">
                     <div
                       className={`${status.color} space-y-1 cursor-help`}
@@ -358,27 +379,26 @@ export function LeadsTable({ refreshTrigger, filterCategory }: { refreshTrigger:
                       </div>
                     </div>
                   </td>
-                  <td className="px-3 py-3 flex gap-1">
+                  <td className="px-3 py-3 flex gap-2">
                     <button
-                      onClick={() => setDetailLead(lead)}
-                      className="px-2 py-1 bg-purple-600/20 hover:bg-purple-600/40 text-purple-400 rounded text-xs font-medium transition"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDetailLead(lead);
+                      }}
+                      className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium transition"
                       title="Ver ficha completa"
                     >
-                      <Eye size={14} />
+                      📋 Ficha
                     </button>
                     <button
-                      onClick={() => setSendModal({ isOpen: true, leadId: lead.id, type: 'email' })}
-                      className="px-2 py-1 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 rounded text-xs font-medium transition"
-                      title="Enviar Email"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setTierLead(lead);
+                      }}
+                      className="p-1.5 hover:bg-purple-900/30 rounded-lg transition-colors"
+                      title="Ver TIER"
                     >
-                      📧
-                    </button>
-                    <button
-                      onClick={() => setSendModal({ isOpen: true, leadId: lead.id, type: 'whatsapp' })}
-                      className="px-2 py-1 bg-green-600/20 hover:bg-green-600/40 text-green-400 rounded text-xs font-medium transition"
-                      title="Enviar WhatsApp"
-                    >
-                      💬
+                      <BarChart3 size={16} className="text-purple-400" />
                     </button>
                   </td>
                 </tr>
@@ -400,6 +420,14 @@ export function LeadsTable({ refreshTrigger, filterCategory }: { refreshTrigger:
             setSendModal({ isOpen: true, leadId: detailLead.id, type: 'whatsapp' });
           }}
           onUpdate={loadLeads}
+        />
+      )}
+
+      {tierLead && (
+        <TierSummaryModal
+          lead={tierLead}
+          isOpen={!!tierLead}
+          onClose={() => setTierLead(null)}
         />
       )}
 
@@ -425,6 +453,15 @@ export function LeadsTable({ refreshTrigger, filterCategory }: { refreshTrigger:
           onSent={() => loadLeads()}
         />
       )}
+
+      <ConfirmDialog
+        open={confirmDelOpen}
+        loading={deleting}
+        title="Eliminar leads"
+        message={`Se eliminarán ${selected.size} lead(s). Esta acción no se puede deshacer.`}
+        onConfirm={handleConfirmDeleteSelected}
+        onCancel={() => { if (!deleting) setConfirmDelOpen(false); }}
+      />
     </div>
   );
 }

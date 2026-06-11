@@ -1,0 +1,165 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e8]:
+        - paragraph [ref=e9]: IO Prospector
+        - paragraph [ref=e10]: Iorana Digital
+    - navigation [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Prospección
+        - generic [ref=e14]:
+          - link "Prospector Buscar & scrapear" [ref=e15] [cursor=pointer]:
+            - /url: /prospector
+            - img [ref=e16]
+            - generic [ref=e19]:
+              - paragraph [ref=e20]: Prospector
+              - paragraph [ref=e21]: Buscar & scrapear
+          - link "Resultados Revisar & validar" [ref=e22] [cursor=pointer]:
+            - /url: /resultados
+            - img [ref=e23]
+            - generic [ref=e26]:
+              - paragraph [ref=e27]: Resultados
+              - paragraph [ref=e28]: Revisar & validar
+          - link "Configuración Sectores, exclusiones, API" [ref=e29] [cursor=pointer]:
+            - /url: /config
+            - img [ref=e30]
+            - generic [ref=e31]:
+              - paragraph [ref=e32]: Configuración
+              - paragraph [ref=e33]: Sectores, exclusiones, API
+      - generic [ref=e35]:
+        - paragraph [ref=e36]: Audit SEO
+        - generic [ref=e37]:
+          - link "Auditoría Analizar cualquier URL" [ref=e38] [cursor=pointer]:
+            - /url: /auditoria
+            - img [ref=e39]
+            - generic [ref=e41]:
+              - paragraph [ref=e42]: Auditoría
+              - paragraph [ref=e43]: Analizar cualquier URL
+          - link "Resultados Revisar & guardar como lead" [ref=e44] [cursor=pointer]:
+            - /url: /audit-resultados
+            - img [ref=e45]
+            - generic [ref=e48]:
+              - paragraph [ref=e49]: Resultados
+              - paragraph [ref=e50]: Revisar & guardar como lead
+          - link "Histórico Resultados por cliente" [ref=e51] [cursor=pointer]:
+            - /url: /audit-historico
+            - img [ref=e52]
+            - generic [ref=e54]:
+              - paragraph [ref=e55]: Histórico
+              - paragraph [ref=e56]: Resultados por cliente
+          - link "Configuración Checks, pesos, umbrales" [ref=e57] [cursor=pointer]:
+            - /url: /audit-config
+            - img [ref=e58]
+            - generic [ref=e59]:
+              - paragraph [ref=e60]: Configuración
+              - paragraph [ref=e61]: Checks, pesos, umbrales
+      - generic [ref=e63]:
+        - paragraph [ref=e64]: CRM
+        - generic [ref=e65]:
+          - link "Dashboard Métricas y análisis" [ref=e66] [cursor=pointer]:
+            - /url: /dashboard
+            - img [ref=e67]
+            - generic [ref=e69]:
+              - paragraph [ref=e70]: Dashboard
+              - paragraph [ref=e71]: Métricas y análisis
+          - link "Leads Leads de prospección y auditoría" [ref=e72] [cursor=pointer]:
+            - /url: /leads
+            - img [ref=e73]
+            - generic [ref=e77]:
+              - paragraph [ref=e78]: Leads
+              - paragraph [ref=e79]: Leads de prospección y auditoría
+          - link "Plantillas Email y WhatsApp" [ref=e80] [cursor=pointer]:
+            - /url: /crm/plantillas
+            - img [ref=e81]
+            - generic [ref=e84]:
+              - paragraph [ref=e85]: Plantillas
+              - paragraph [ref=e86]: Email y WhatsApp
+      - generic [ref=e88]:
+        - paragraph [ref=e89]: Admin
+        - generic [ref=e90]:
+          - link "Usuarios Gestión de accesos" [ref=e91] [cursor=pointer]:
+            - /url: /admin
+            - img [ref=e92]
+            - generic [ref=e97]:
+              - paragraph [ref=e98]: Usuarios
+              - paragraph [ref=e99]: Gestión de accesos
+          - link "Configuración Sistema global" [ref=e100] [cursor=pointer]:
+            - /url: /admin
+            - img [ref=e101]
+            - generic [ref=e104]:
+              - paragraph [ref=e105]: Configuración
+              - paragraph [ref=e106]: Sistema global
+      - generic [ref=e108]:
+        - paragraph [ref=e109]: Ayuda
+        - link "Guía Instrucciones de uso" [ref=e111] [cursor=pointer]:
+          - /url: /guide
+          - img [ref=e112]
+          - generic [ref=e115]:
+            - paragraph [ref=e116]: Guía
+            - paragraph [ref=e117]: Instrucciones de uso
+    - paragraph [ref=e119]: v1.0.0 · Local
+  - main [ref=e120]:
+    - generic [ref=e121]:
+      - generic [ref=e131]:
+        - generic [ref=e132]:
+          - heading "📊 Histórico de Auditorías" [level=1] [ref=e133]
+          - paragraph [ref=e134]: Resultados guardados, agrupados por cliente
+        - generic [ref=e135]:
+          - button "Todas" [ref=e136] [cursor=pointer]
+          - button "Últimos 7 días" [ref=e137] [cursor=pointer]
+          - button "Últimos 30 días" [ref=e138] [cursor=pointer]
+      - generic [ref=e139]:
+        - generic [ref=e140]:
+          - generic [ref=e141]:
+            - generic [ref=e142]:
+              - img [ref=e143]
+              - generic [ref=e146]:
+                - generic [ref=e147]: "80"
+                - generic [ref=e148]: /100
+            - generic [ref=e149]: Excelente
+          - paragraph [ref=e150]: Score promedio global
+          - paragraph [ref=e151]: 2 auditorías · 1 cliente
+        - generic [ref=e152]:
+          - paragraph [ref=e153]: Checks acumulados
+          - generic [ref=e154]:
+            - generic [ref=e155]:
+              - img [ref=e156]
+              - generic [ref=e159]: "70"
+              - generic [ref=e160]: Correctos
+            - generic [ref=e161]:
+              - img [ref=e162]
+              - generic [ref=e164]: "7"
+              - generic [ref=e165]: Avisos
+            - generic [ref=e166]:
+              - img [ref=e167]
+              - generic [ref=e171]: "15"
+              - generic [ref=e172]: Errores
+      - generic [ref=e173]:
+        - heading "Clientes auditados" [level=2] [ref=e174]
+        - generic [ref=e177] [cursor=pointer]:
+          - generic [ref=e178]:
+            - generic [ref=e180]:
+              - img [ref=e181]
+              - generic [ref=e185]: "80"
+            - generic [ref=e186]:
+              - generic [ref=e187]:
+                - heading "iorana.digital" [level=3] [ref=e188]
+                - generic "Cambio respecto a la auditoría anterior" [ref=e189]:
+                  - img [ref=e190]
+                  - text: "+1"
+              - paragraph [ref=e193]: 2 auditorías
+              - generic [ref=e194]:
+                - generic [ref=e195]: ✓ 70
+                - generic [ref=e196]: ⚠ 7
+                - generic [ref=e197]: ✗ 15
+          - generic [ref=e198]:
+            - button "Ver evolución" [ref=e199]:
+              - img [ref=e200]
+              - text: Ver evolución
+            - button "Eliminar cliente" [ref=e203]:
+              - img [ref=e204]
+            - img [ref=e207]
+  - button "Open Next.js Dev Tools" [ref=e127] [cursor=pointer]:
+    - img [ref=e128]
+  - alert [ref=e209]

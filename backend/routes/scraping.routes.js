@@ -3,26 +3,31 @@
 
 import { Router } from 'express';
 import { z } from 'zod';
-import { createHash, randomBytes } from 'crypto';
+import { createHash, randomBytes, randomUUID } from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { marked } from 'marked';
 import { startProspectionV2 } from '../services/prospector-v2.service.js';
 import { prospectionStateService } from '../services/prospection-state.service.js';
 import { orchestrateProspection } from '../services/scraping-orchestrator.js';
+import { supabase } from '../config/supabase.js';
 
 const router = Router();
 
 // Esquema de validación
+// Nota: el frontend envía '' para campos opcionales vacíos; .optional() solo acepta
+// undefined, por eso normalizamos '' / null -> undefined antes de validar.
+const emptyToUndef = (schema) => z.preprocess(v => (v === '' || v === null ? undefined : v), schema);
+
 const ProspectionSchema = z.object({
   query: z.string().min(2).max(100),
   city: z.string().min(2).max(80),
-  ccaa: z.string().min(1).max(50).optional(),
-  provincia: z.string().min(1).max(50).optional(),
-  municipio: z.string().min(1).max(80).optional(),
-  category: z.string().min(2).max(80).optional(),
-  pagesFrom: z.number().int().min(2).max(10).default(2),
-  pagesTo: z.number().int().min(2).max(15).default(4),
+  ccaa: emptyToUndef(z.string().min(1).max(50).optional()),
+  provincia: emptyToUndef(z.string().min(1).max(50).optional()),
+  municipio: emptyToUndef(z.string().min(1).max(80).optional()),
+  category: emptyToUndef(z.string().min(2).max(80).optional()),
+  pagesFrom: z.coerce.number().int().min(2).max(10).default(2),
+  pagesTo: z.coerce.number().int().min(2).max(15).default(4),
 });
 
 // POST /api/scraping/start — Inicia prospección completa (scraping + dashboard + emails)
@@ -35,7 +40,7 @@ router.post('/start', async (req, res, next) => {
     prospectionStateService.create(prospectionId, params);
 
     res.json({
-      id: prospectionId,
+      sessionId: prospectionId,
       status: 'starting',
       message: 'Prospección iniciada',
       params,
@@ -249,10 +254,26 @@ router.get('/debug/:id', (req, res) => {
 
 // Funciones auxiliares
 function generateId() {
-  return randomBytes(6).toString('hex');
+  return randomUUID();
 }
 
 async function executeProspectionAsync(prospectionId, params) {
+  // 0. Crear la sesión en BD (necesaria para la FK de io_pro_leads y para histórico/analytics).
+  //    upsert para ser idempotente frente al guardado manual del frontend.
+  const { error: sessionErr } = await supabase.from('io_pro_search_sessions').upsert({
+    id: prospectionId,
+    query: params.query,
+    city: params.city,
+    category: params.category || null,
+    ccaa: params.ccaa || null,
+    provincia: params.provincia || null,
+    municipio: params.municipio || null,
+    pages_from: params.pagesFrom,
+    pages_to: params.pagesTo,
+    status: 'running',
+  }, { onConflict: 'id' });
+  if (sessionErr) console.warn(`⚠️ No se pudo crear la sesión en BD: ${sessionErr.message}`);
+
   try {
     // 1. Scraping
     prospectionStateService.updateProgress(prospectionId, 10);
@@ -262,7 +283,7 @@ async function executeProspectionAsync(prospectionId, params) {
       throw new Error('Scraping failed');
     }
 
-    // 2. Orquestar (procesar CSV + generar dashboard + emails)
+    // 2. Orquestar (procesar CSV + generar dashboard + emails + guardar leads en BD)
     prospectionStateService.updateProgress(prospectionId, 50);
     const orchestrateResult = await orchestrateProspection(scrapingResult.csvPath, prospectionId);
 
@@ -273,10 +294,20 @@ async function executeProspectionAsync(prospectionId, params) {
       emailsCsvPath: orchestrateResult.emailsCsvPath,
       leadsCount: scrapingResult.leadsFound,
     });
+    await supabase.from('io_pro_search_sessions').update({
+      status: 'completed',
+      total_found: scrapingResult.leadsFound || orchestrateResult.analyzedLeadsCount || 0,
+      finished_at: new Date().toISOString(),
+    }).eq('id', prospectionId);
 
     console.log(`✅ Prospección completada: ${prospectionId}`);
   } catch (error) {
     prospectionStateService.error(prospectionId, error.message);
+    await supabase.from('io_pro_search_sessions').update({
+      status: 'error',
+      error_message: error.message,
+      finished_at: new Date().toISOString(),
+    }).eq('id', prospectionId);
     console.error(`❌ Prospección error: ${prospectionId} - ${error.message}`);
   }
 }

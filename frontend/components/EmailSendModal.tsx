@@ -26,6 +26,8 @@ export function EmailSendModal({ leads, isOpen, onClose, onSuccess }: EmailSendM
   const [sent, setSent] = useState(false);
   const [progress, setProgress] = useState(0);
 
+  const leadsArray = Array.isArray(leads) ? leads : [];
+
   useEffect(() => {
     if (isOpen) {
       api.getTemplates('email').then((result: any) => setTemplates(result)).catch(() => setTemplates([]));
@@ -40,7 +42,7 @@ export function EmailSendModal({ leads, isOpen, onClose, onSuccess }: EmailSendM
     setSelectedTemplate(template);
     const rendered = (await api.renderTemplate({
       template_id: template.id,
-      lead_id: leads[0]?.id,
+      lead_id: leadsArray[0]?.id,
     }).catch(() => template)) as any;
     setCustomSubject(rendered?.subject || template.subject);
     setCustomBody(rendered?.body || template.body);
@@ -58,7 +60,7 @@ export function EmailSendModal({ leads, isOpen, onClose, onSuccess }: EmailSendM
     try {
       // API para envío masivo
       const response = (await api.sendBulkEmails({
-        lead_ids: leads.map(l => l.id),
+        lead_ids: leadsArray.map(l => l.id),
         subject: customSubject,
         body: customBody,
         template_id: selectedTemplate?.id,
@@ -97,7 +99,7 @@ export function EmailSendModal({ leads, isOpen, onClose, onSuccess }: EmailSendM
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-zinc-800 sticky top-0 bg-zinc-900">
           <h2 className="text-xl font-bold text-white">📧 Enviar Email Masivo</h2>
@@ -115,10 +117,10 @@ export function EmailSendModal({ leads, isOpen, onClose, onSuccess }: EmailSendM
             {/* Información de destinatarios */}
             <div className="bg-blue-900/20 border border-blue-800 rounded-xl p-4">
               <p className="text-sm text-blue-300">
-                <strong>{leads.length}</strong> lead{leads.length > 1 ? 's' : ''} seleccionado{leads.length > 1 ? 's' : ''}
+                <strong>{leadsArray.length}</strong> lead{leadsArray.length > 1 ? 's' : ''} seleccionado{leadsArray.length > 1 ? 's' : ''}
               </p>
               <div className="mt-2 space-y-1 text-xs text-blue-300/80">
-                {leads.map(lead => (
+                {leadsArray.map(lead => (
                   <div key={lead.id}>→ {lead.business_name} ({lead.email})</div>
                 ))}
               </div>
@@ -208,7 +210,7 @@ export function EmailSendModal({ leads, isOpen, onClose, onSuccess }: EmailSendM
             </div>
             <h3 className="text-2xl font-bold text-white">¡Hecho!</h3>
             <p className="text-zinc-400">
-              Se enviaron {leads.length} emails correctamente. Los prospectos han sido marcados como contactados.
+              Se enviaron {leadsArray.length} emails correctamente. Los prospectos han sido marcados como contactados.
             </p>
           </div>
         )}

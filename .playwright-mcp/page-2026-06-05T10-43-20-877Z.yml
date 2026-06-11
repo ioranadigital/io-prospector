@@ -1,0 +1,225 @@
+- generic [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e8]:
+        - paragraph [ref=e9]: IO Prospector
+        - paragraph [ref=e10]: Iorana Digital
+    - navigation [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Prospección
+        - generic [ref=e14]:
+          - link "Prospector Buscar & scrapear" [ref=e15] [cursor=pointer]:
+            - /url: /prospector
+            - img [ref=e16]
+            - generic [ref=e19]:
+              - paragraph [ref=e20]: Prospector
+              - paragraph [ref=e21]: Buscar & scrapear
+          - link "Resultados Revisar & validar" [ref=e22] [cursor=pointer]:
+            - /url: /resultados
+            - img [ref=e23]
+            - generic [ref=e26]:
+              - paragraph [ref=e27]: Resultados
+              - paragraph [ref=e28]: Revisar & validar
+          - link "Configuración Sectores, exclusiones, API" [ref=e29] [cursor=pointer]:
+            - /url: /config
+            - img [ref=e30]
+            - generic [ref=e31]:
+              - paragraph [ref=e32]: Configuración
+              - paragraph [ref=e33]: Sectores, exclusiones, API
+      - generic [ref=e35]:
+        - paragraph [ref=e36]: Audit SEO
+        - generic [ref=e37]:
+          - link "Auditoría Analizar cualquier URL" [ref=e38] [cursor=pointer]:
+            - /url: /auditoria
+            - img [ref=e39]
+            - generic [ref=e41]:
+              - paragraph [ref=e42]: Auditoría
+              - paragraph [ref=e43]: Analizar cualquier URL
+          - link "Resultados Revisar & guardar como lead" [ref=e44] [cursor=pointer]:
+            - /url: /audit-resultados
+            - img [ref=e45]
+            - generic [ref=e48]:
+              - paragraph [ref=e49]: Resultados
+              - paragraph [ref=e50]: Revisar & guardar como lead
+          - link "Histórico Resultados por cliente" [ref=e51] [cursor=pointer]:
+            - /url: /audit-historico
+            - img [ref=e52]
+            - generic [ref=e54]:
+              - paragraph [ref=e55]: Histórico
+              - paragraph [ref=e56]: Resultados por cliente
+          - link "Histórico (lista) Tendencias y reportes" [ref=e57] [cursor=pointer]:
+            - /url: /audit-history
+            - img [ref=e58]
+            - generic [ref=e61]:
+              - paragraph [ref=e62]: Histórico (lista)
+              - paragraph [ref=e63]: Tendencias y reportes
+          - link "Configuración Checks, pesos, umbrales" [ref=e64] [cursor=pointer]:
+            - /url: /audit-config
+            - img [ref=e65]
+            - generic [ref=e66]:
+              - paragraph [ref=e67]: Configuración
+              - paragraph [ref=e68]: Checks, pesos, umbrales
+      - generic [ref=e70]:
+        - paragraph [ref=e71]: CRM
+        - generic [ref=e72]:
+          - link "Dashboard Métricas y análisis" [ref=e73] [cursor=pointer]:
+            - /url: /dashboard
+            - img [ref=e74]
+            - generic [ref=e76]:
+              - paragraph [ref=e77]: Dashboard
+              - paragraph [ref=e78]: Métricas y análisis
+          - link "Leads Leads de prospección y auditoría" [ref=e79] [cursor=pointer]:
+            - /url: /leads
+            - img [ref=e80]
+            - generic [ref=e84]:
+              - paragraph [ref=e85]: Leads
+              - paragraph [ref=e86]: Leads de prospección y auditoría
+          - link "Plantillas Email y WhatsApp" [ref=e87] [cursor=pointer]:
+            - /url: /crm/plantillas
+            - img [ref=e88]
+            - generic [ref=e91]:
+              - paragraph [ref=e92]: Plantillas
+              - paragraph [ref=e93]: Email y WhatsApp
+      - generic [ref=e95]:
+        - paragraph [ref=e96]: Admin
+        - generic [ref=e97]:
+          - link "Usuarios Gestión de accesos" [ref=e98] [cursor=pointer]:
+            - /url: /admin
+            - img [ref=e99]
+            - generic [ref=e104]:
+              - paragraph [ref=e105]: Usuarios
+              - paragraph [ref=e106]: Gestión de accesos
+          - link "Configuración Sistema global" [ref=e107] [cursor=pointer]:
+            - /url: /admin
+            - img [ref=e108]
+            - generic [ref=e111]:
+              - paragraph [ref=e112]: Configuración
+              - paragraph [ref=e113]: Sistema global
+      - generic [ref=e115]:
+        - paragraph [ref=e116]: Ayuda
+        - link "Guía Instrucciones de uso" [ref=e118] [cursor=pointer]:
+          - /url: /guide
+          - img [ref=e119]
+          - generic [ref=e122]:
+            - paragraph [ref=e123]: Guía
+            - paragraph [ref=e124]: Instrucciones de uso
+    - paragraph [ref=e126]: v1.0.0 · Local
+  - main [ref=e127]:
+    - generic [ref=e128]:
+      - generic [ref=e143]:
+        - generic [ref=e144]:
+          - heading "📊 Dashboard de Análisis" [level=1] [ref=e145]
+          - paragraph [ref=e146]: Control analítico de SEO, prospecting y leads
+        - button "Actualizar" [ref=e147] [cursor=pointer]:
+          - img [ref=e148]
+          - text: Actualizar
+      - generic [ref=e153]:
+        - button "Resumen" [ref=e154] [cursor=pointer]:
+          - img [ref=e155]
+          - text: Resumen
+        - button "Análisis SEO" [ref=e157] [cursor=pointer]:
+          - img [ref=e158]
+          - text: Análisis SEO
+        - button "Prospecting" [ref=e161] [cursor=pointer]:
+          - img [ref=e162]
+          - text: Prospecting
+        - button "Leads / CRM" [active] [ref=e165] [cursor=pointer]:
+          - img [ref=e166]
+          - text: Leads / CRM
+      - generic [ref=e360]:
+        - generic [ref=e361]:
+          - generic [ref=e362]:
+            - generic [ref=e363]:
+              - img [ref=e364]
+              - text: Total Leads
+            - paragraph [ref=e369]: "3"
+            - paragraph [ref=e370]: En el CRM
+          - generic [ref=e371]:
+            - generic [ref=e372]:
+              - img [ref=e373]
+              - text: Con email
+            - paragraph [ref=e376]: 100%
+            - paragraph [ref=e377]: 3 leads
+          - generic [ref=e378]:
+            - generic [ref=e379]:
+              - img [ref=e380]
+              - text: Con teléfono
+            - paragraph [ref=e382]: 100%
+            - paragraph [ref=e383]: 3 leads
+          - generic [ref=e384]:
+            - generic [ref=e385]:
+              - img [ref=e386]
+              - text: Con sitio web
+            - paragraph [ref=e389]: 100%
+            - paragraph [ref=e390]: 3 leads
+        - generic [ref=e391]:
+          - generic [ref=e392]:
+            - heading "📈 Funnel CRM" [level=2] [ref=e393]
+            - generic [ref=e394]:
+              - generic [ref=e395]:
+                - generic [ref=e396]: Nuevo
+                - generic [ref=e399]:
+                  - text: "3"
+                  - generic [ref=e400]: (100%)
+              - generic [ref=e401]:
+                - generic [ref=e402]: Contactado
+                - generic [ref=e404]:
+                  - text: "0"
+                  - generic [ref=e405]: (0%)
+              - generic [ref=e406]:
+                - generic [ref=e407]: Interesado
+                - generic [ref=e409]:
+                  - text: "0"
+                  - generic [ref=e410]: (0%)
+              - generic [ref=e411]:
+                - generic [ref=e412]: Reservado
+                - generic [ref=e414]:
+                  - text: "0"
+                  - generic [ref=e415]: (0%)
+              - generic [ref=e416]:
+                - generic [ref=e417]: Vendido
+                - generic [ref=e419]:
+                  - text: "0"
+                  - generic [ref=e420]: (0%)
+              - generic [ref=e421]:
+                - generic [ref=e422]: Upselling
+                - generic [ref=e424]:
+                  - text: "0"
+                  - generic [ref=e425]: (0%)
+              - generic [ref=e426]:
+                - generic [ref=e427]: Perdido
+                - generic [ref=e429]:
+                  - text: "0"
+                  - generic [ref=e430]: (0%)
+          - generic [ref=e431]:
+            - heading "⚡ Reparto por Prioridad" [level=2] [ref=e432]
+            - generic [ref=e434]:
+              - generic [ref=e435]: Media
+              - generic [ref=e438]: "3"
+        - generic [ref=e439]:
+          - heading "✉️ Actividad de Contacto" [level=2] [ref=e440]
+          - generic [ref=e441]:
+            - generic [ref=e442]:
+              - generic [ref=e443]:
+                - img [ref=e444]
+                - text: Emails enviados
+              - paragraph [ref=e447]: "0"
+            - generic [ref=e448]:
+              - generic [ref=e449]:
+                - img [ref=e450]
+                - text: WhatsApps enviados
+              - paragraph [ref=e452]: "0"
+            - generic [ref=e453]:
+              - generic [ref=e454]:
+                - img [ref=e455]
+                - text: Llamadas
+              - paragraph [ref=e457]: "0"
+            - generic [ref=e458]:
+              - generic [ref=e459]:
+                - img [ref=e460]
+                - text: Últimos 7 días
+              - paragraph [ref=e462]: "0"
+  - button "Open Next.js Dev Tools" [ref=e139] [cursor=pointer]:
+    - img [ref=e140]
+  - alert [ref=e268]

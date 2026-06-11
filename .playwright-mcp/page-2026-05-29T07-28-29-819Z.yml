@@ -1,0 +1,147 @@
+- generic [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e8]:
+        - paragraph [ref=e9]: Prospector
+        - paragraph [ref=e10]: Iorana Digital
+    - navigation [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Prospección
+        - generic [ref=e14]:
+          - link "🔍 Prospector Buscar & scrapear" [ref=e15] [cursor=pointer]:
+            - /url: /prospector
+            - img [ref=e16]
+            - generic [ref=e19]:
+              - paragraph [ref=e20]: 🔍 Prospector
+              - paragraph [ref=e21]: Buscar & scrapear
+          - link "📊 Leads Ver resultados" [ref=e22] [cursor=pointer]:
+            - /url: /leads
+            - img [ref=e23]
+            - generic [ref=e27]:
+              - paragraph [ref=e28]: 📊 Leads
+              - paragraph [ref=e29]: Ver resultados
+      - generic [ref=e31]:
+        - paragraph [ref=e32]: Análisis
+        - link "📈 Dashboard Histórico de prospecciones" [ref=e34] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e35]
+          - generic [ref=e37]:
+            - paragraph [ref=e38]: 📈 Dashboard
+            - paragraph [ref=e39]: Histórico de prospecciones
+      - generic [ref=e41]:
+        - paragraph [ref=e42]: Administración
+        - link "⚙️ Admin Configuración" [ref=e44] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e45]
+          - generic [ref=e48]:
+            - paragraph [ref=e49]: ⚙️ Admin
+            - paragraph [ref=e50]: Configuración
+      - generic [ref=e52]:
+        - paragraph [ref=e53]: Ayuda
+        - link "📖 Guía Instrucciones de uso" [ref=e55] [cursor=pointer]:
+          - /url: /guide
+          - img [ref=e56]
+          - generic [ref=e58]:
+            - paragraph [ref=e59]: 📖 Guía
+            - paragraph [ref=e60]: Instrucciones de uso
+    - paragraph [ref=e62]: v1.0.0 · Local
+  - main [ref=e63]:
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - heading "⚙️ Administración" [level=1] [ref=e66]
+        - paragraph [ref=e67]: Gestiona plantillas de Email y WhatsApp personalizadas
+      - paragraph [ref=e69]:
+        - text: 💡
+        - strong [ref=e70]: "Tip:"
+        - text: Las prospecciones guardadas se gestionan en 📋 Histórico. Aquí solo configuras las plantillas.
+      - generic [ref=e72]:
+        - generic [ref=e116]:
+          - heading "Nueva Plantilla" [level=3] [ref=e117]
+          - generic [ref=e118]:
+            - generic [ref=e119]:
+              - generic [ref=e120]: Nombre
+              - 'textbox "ej: Análisis SEO" [ref=e121]': Plantilla Test
+            - generic [ref=e122]:
+              - generic [ref=e123]: Tipo
+              - combobox [ref=e124]:
+                - option "📧 Email" [selected]
+                - option "💬 WhatsApp"
+            - generic [ref=e125]:
+              - generic [ref=e126]: Categoría
+              - combobox [ref=e127]:
+                - option "ANALISIS INICIAL"
+                - option "PROSPECCIÓN"
+                - option "SEGUIMIENTO"
+                - option "GENERAL" [selected]
+          - generic [ref=e128]:
+            - generic [ref=e129]: Asunto Email
+            - 'textbox "ej: {{business_name}} - Mejora tu SEO" [ref=e130]'
+          - generic [ref=e131]:
+            - generic [ref=e132]:
+              - generic [ref=e133]: Cuerpo del Mensaje
+              - generic [ref=e134]: "Click en variables para insertar (hover para ver descripción):"
+            - generic [ref=e135]:
+              - 'button "{{business_name}}" [ref=e137] [cursor=pointer]'
+              - 'button "{{company_name}}" [ref=e139] [cursor=pointer]'
+              - 'button "{{website}}" [ref=e141] [cursor=pointer]'
+              - 'button "{{main_competitor}}" [ref=e143] [cursor=pointer]'
+              - 'button "{{missing_service}}" [ref=e145] [cursor=pointer]'
+              - 'button "{{seo_gap}}" [ref=e147] [cursor=pointer]'
+              - 'button "{{audit_score}}" [ref=e149] [cursor=pointer]'
+              - 'button "{{issue_count}}" [ref=e151] [cursor=pointer]'
+              - 'button "{{top_issue}}" [ref=e153] [cursor=pointer]'
+              - 'button "{{gmb_rating}}" [ref=e155] [cursor=pointer]'
+              - 'button "{{review_count}}" [ref=e157] [cursor=pointer]'
+              - 'button "{{gmb_claimed}}" [ref=e159] [cursor=pointer]'
+              - 'button "{{photo_count}}" [ref=e161] [cursor=pointer]'
+              - 'button "{{gmb_status}}" [ref=e163] [cursor=pointer]'
+            - 'textbox "Hola {{business_name}}, Hemos detectado {{issue_count}} problemas SEO... Problema principal: {{top_issue}}" [ref=e164]':
+              - /placeholder: "Hola {{business_name}},\n\nHemos detectado {{issue_count}} problemas SEO...\n\nProblema principal: {{top_issue}}"
+              - text: "Hola {{business_name}}, te contacto para ayudarte con tu SEO."
+          - generic [ref=e166]:
+            - checkbox "Activa" [checked] [ref=e167]
+            - generic [ref=e168]: Activa
+          - generic [ref=e169]:
+            - button "Preview" [ref=e170] [cursor=pointer]:
+              - img [ref=e171]
+              - text: Preview
+            - button "Guardar" [active] [ref=e174] [cursor=pointer]
+            - button "Cancelar" [ref=e175] [cursor=pointer]
+        - generic [ref=e77]:
+          - heading "Plantillas (2 activas)" [level=3] [ref=e78]
+          - generic [ref=e79]:
+            - button "📧 Todas2" [ref=e80] [cursor=pointer]
+            - button "📧 Email1" [ref=e81] [cursor=pointer]
+            - button "💬 WhatsApp1" [ref=e82] [cursor=pointer]
+          - generic [ref=e83]:
+            - generic [ref=e84]:
+              - heading "📁 ANALISIS INICIAL" [level=4] [ref=e85]
+              - generic [ref=e87]:
+                - generic [ref=e88]:
+                  - heading "SEO Análisis Inicial" [level=5] [ref=e90]
+                  - generic [ref=e92]: 📧 Email
+                - generic [ref=e93]:
+                  - generic [ref=e94]:
+                    - text: "Asunto:"
+                    - paragraph [ref=e95]: "{{business_name}} — Análisis SEO Gratuito 📊"
+                  - generic [ref=e96]:
+                    - text: "Cuerpo:"
+                    - paragraph [ref=e97]: "Hola {{business_name}}, Hicimos un análisis técnico de {{website}} y encontramos: ⚠️ PROBLEMAS DETECTADOS: {{seo_gap}} 📈 DATOS ACTUALES: - Score SEO: {{audit_score}}/100 - Problemas encontrados: {{issue_count}} 💡 OPORTUNIDAD: {{main_competitor}} está mejor posicionado. Mejorando estos puntos, podrías superarle. ¿Quieres una propuesta sin compromiso? Saludos, Equipo Iorana"
+                - generic [ref=e98]:
+                  - button "✏️ Editar" [ref=e99] [cursor=pointer]
+                  - button "🗑️" [ref=e100] [cursor=pointer]
+            - generic [ref=e101]:
+              - heading "📁 PROSPECCIÓN" [level=4] [ref=e102]
+              - generic [ref=e104]:
+                - generic [ref=e105]:
+                  - heading "GMB Urgencia" [level=5] [ref=e107]
+                  - generic [ref=e109]: 💬 WhatsApp
+                - generic [ref=e111]:
+                  - text: "Cuerpo:"
+                  - paragraph [ref=e112]: "Hola {{business_name}} 👋 Tu Google Maps: {{gmb_status}} {{main_competitor}}: mejor calificación La diferencia = pierdes clientes. ¿15 min? Te muestro cómo mejorar 📍"
+                - generic [ref=e113]:
+                  - button "✏️ Editar" [ref=e114] [cursor=pointer]
+                  - button "🗑️" [ref=e115] [cursor=pointer]
+  - status [ref=e187]: Asunto es requerido para emails
+  - alert [ref=e73]

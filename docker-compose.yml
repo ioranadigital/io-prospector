@@ -23,7 +23,7 @@ services:
         - NODE_ENV=production
         - NEXT_PUBLIC_SUPABASE_URL=https://zvehtloitnuglyjtxwye.supabase.co
         - NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_B0gQyDyf-p2vDg2UhytfDg_H54mWXbB
-        - NEXT_PUBLIC_API_URL=http://backend:4000/api
+        - NEXT_PUBLIC_API_URL=http://localhost:4000/api
     ports:
       - "3002:3002"
     environment:

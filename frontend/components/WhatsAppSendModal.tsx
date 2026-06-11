@@ -26,9 +26,11 @@ export function WhatsAppSendModal({ leads, isOpen, onClose, onSuccess }: WhatsAp
   const [intensity, setIntensity] = useState<'soft' | 'medium' | 'hard'>('medium');
   const [leadsWithoutPhone, setLeadsWithoutPhone] = useState<Lead[]>([]);
 
+  const leadsArray = Array.isArray(leads) ? leads : [];
+
   useEffect(() => {
     if (isOpen) {
-      const without = leads.filter(l => !l.phone);
+      const without = leadsArray.filter(l => !l.phone);
       setLeadsWithoutPhone(without);
       api.getTemplates('whatsapp').then((result: any) => setTemplates(result)).catch(() => setTemplates([]));
       setSent(false);
@@ -40,12 +42,12 @@ export function WhatsAppSendModal({ leads, isOpen, onClose, onSuccess }: WhatsAp
     setSelectedTemplate(template);
     const rendered = (await api.renderTemplate({
       template_id: template.id,
-      lead_id: leads[0]?.id,
+      lead_id: leadsArray[0]?.id,
     }).catch(() => template)) as any;
     setCustomMessage(rendered?.body || template.body);
   };
 
-  const validLeads = leads.filter(l => l.phone);
+  const validLeads = leadsArray.filter(l => l.phone);
 
   const handleSend = async () => {
     if (!customMessage) {
@@ -89,7 +91,7 @@ export function WhatsAppSendModal({ leads, isOpen, onClose, onSuccess }: WhatsAp
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-zinc-800 sticky top-0 bg-zinc-900">
           <h2 className="text-xl font-bold text-white">💬 Enviar WhatsApp Masivo</h2>

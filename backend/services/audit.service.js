@@ -16,8 +16,18 @@ async function getRules() {
 
 // Para añadir una nueva regla: 1) INSERT en Supabase, 2) añadir evaluador aquí
 const EVALUATORS = {
+  // TIER 1: Críticos
+  no_phone:         (s) => !s.hasPhone,
+  no_email:         (s) => !s.hasEmail,
+  no_contact_form:  (s) => !s.hasContactForm,
+  no_gmb:           (s) => !s.hasGMB,
+  no_address:       (s) => !s.hasAddress,
+  no_ssl:           (s) => !s.isHTTPS,
+  no_privacy_policy:(s) => !s.hasPrivacyPolicy,
+  no_trust_badges:  (s) => !s.hasTrustBadges,
+
+  // TIER 2: Conversión
   no_h1:            (s) => !s.hasH1,
-  no_https:         (s) => !s.isHTTPS,
   no_cta:           (s) => !s.hasCTAs || s.ctaCount < 2,
   no_meta_desc:     (s) => !s.hasMetaDesc || s.metaDescLength < 50,
   low_content:      (s) => s.wordCount < 300,
@@ -26,8 +36,25 @@ const EVALUATORS = {
   no_schema_markup: (s) => !s.hasSchema,
   no_analytics:     (s) => !s.hasAnalytics,
   no_favicon:       (s) => !s.hasFavicon,
-  broken_links:     (_) => false,  // Requiere check adicional
-  slow_lcp:         (_) => false,  // Requiere Lighthouse
+
+  // TIER 3: Credibilidad & Presencia
+  no_gallery:       (s) => !s.hasGallery,
+  no_social_links:  (s) => !s.hasSocialLinks,
+  no_blog:          (s) => !s.hasBlog,
+  no_certifications:(s) => !s.hasCertifications,
+
+  // TIER 4: Rendimiento & Técnico
+  no_map:           (s) => !s.hasMapIntegrated,
+  no_image_optimization: (s) => !s.hasCompressedImages,
+
+  // TIER 5: Engagement & Social
+  no_share_buttons: (s) => !s.hasShareButtons,
+  no_newsletter:    (s) => !s.hasNewsletter,
+  no_whatsapp:      (s) => !s.hasWhatsApp,
+  no_multiple_forms:(s) => !s.hasMultipleForms,
+
+  broken_links:     (_) => false,
+  slow_lcp:         (_) => false,
 };
 
 export const auditService = {

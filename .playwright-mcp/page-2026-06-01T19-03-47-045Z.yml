@@ -1,0 +1,287 @@
+- generic [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e8]:
+        - paragraph [ref=e9]: Prospector
+        - paragraph [ref=e10]: Iorana Digital
+    - navigation [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Prospección
+        - generic [ref=e14]:
+          - link "🔍 Prospector Buscar & scrapear" [ref=e15] [cursor=pointer]:
+            - /url: /prospector
+            - img [ref=e16]
+            - generic [ref=e19]:
+              - paragraph [ref=e20]: 🔍 Prospector
+              - paragraph [ref=e21]: Buscar & scrapear
+          - link "📊 Leads Ver resultados" [ref=e22] [cursor=pointer]:
+            - /url: /leads
+            - img [ref=e23]
+            - generic [ref=e27]:
+              - paragraph [ref=e28]: 📊 Leads
+              - paragraph [ref=e29]: Ver resultados
+      - generic [ref=e31]:
+        - paragraph [ref=e32]: Análisis
+        - link "📈 Dashboard Histórico de prospecciones" [ref=e34] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e35]
+          - generic [ref=e37]:
+            - paragraph [ref=e38]: 📈 Dashboard
+            - paragraph [ref=e39]: Histórico de prospecciones
+      - generic [ref=e41]:
+        - paragraph [ref=e42]: Administración
+        - link "⚙️ Admin Configuración" [ref=e44] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e45]
+          - generic [ref=e48]:
+            - paragraph [ref=e49]: ⚙️ Admin
+            - paragraph [ref=e50]: Configuración
+      - generic [ref=e52]:
+        - paragraph [ref=e53]: Ayuda
+        - link "📖 Guía Instrucciones de uso" [ref=e55] [cursor=pointer]:
+          - /url: /guide
+          - img [ref=e56]
+          - generic [ref=e58]:
+            - paragraph [ref=e59]: 📖 Guía
+            - paragraph [ref=e60]: Instrucciones de uso
+    - paragraph [ref=e62]: v1.0.0 · Local
+  - main [ref=e63]:
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - heading "🔍 Prospector" [level=1] [ref=e66]
+        - paragraph [ref=e67]: Busca negocios en Google e identifica sus debilidades SEO automáticamente. Genera dashboards y campañas de email personalizadas.
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - generic [ref=e70]:
+            - generic [ref=e71]: Categoría Principal
+            - combobox [active] [ref=e72]:
+              - option "Seleccionar categoría..."
+              - option "🏠 Servicios para el Hogar" [selected]
+              - option "🏥 Profesionales & Salud"
+              - option "⚖️ Abogados"
+              - option "🏢 Negocios, Construcción & Retail"
+              - option "💄 Estética & Belleza"
+              - option "📚 Educación & Formación"
+              - option "🌊 Turismo & Deportes Acuáticos"
+              - option "🍽️ Hostelería & Restauración"
+              - option "🚗 Motor, Transporte & Logística"
+              - option "🏭 Industria, Production & B2B"
+          - generic [ref=e73]:
+            - generic [ref=e74]: Subcategoría / Sector
+            - combobox [ref=e75]:
+              - option "Seleccionar sector..." [selected]
+              - option "Carpintería"
+              - option "Pintura"
+              - option "Limpieza"
+              - option "Fontanería"
+              - option "Electricidad"
+              - option "Jardinería"
+              - option "Electrodomésticos"
+              - option "Tapicería"
+              - option "Cristalería"
+              - option "Cerrajería"
+        - generic [ref=e77]:
+          - generic [ref=e78]: 📝 Términos de Búsqueda
+          - generic [ref=e79]:
+            - paragraph [ref=e80]: "Incluir en búsqueda:"
+            - generic [ref=e81]:
+              - generic [ref=e223]:
+                - generic [ref=e224]: carpintero
+                - button "×" [ref=e225] [cursor=pointer]
+              - generic [ref=e226]:
+                - generic [ref=e227]: muebles a medida
+                - button "×" [ref=e228] [cursor=pointer]
+              - generic [ref=e229]:
+                - generic [ref=e230]: pintor
+                - button "×" [ref=e231] [cursor=pointer]
+              - generic [ref=e232]:
+                - generic [ref=e233]: decoración
+                - button "×" [ref=e234] [cursor=pointer]
+              - generic [ref=e235]:
+                - generic [ref=e236]: limpieza
+                - button "×" [ref=e237] [cursor=pointer]
+              - generic [ref=e238]:
+                - generic [ref=e239]: limpieza profunda
+                - button "×" [ref=e240] [cursor=pointer]
+              - generic [ref=e241]:
+                - generic [ref=e242]: fontanero
+                - button "×" [ref=e243] [cursor=pointer]
+              - generic [ref=e244]:
+                - generic [ref=e245]: tuberías
+                - button "×" [ref=e246] [cursor=pointer]
+              - generic [ref=e247]:
+                - generic [ref=e248]: electricista
+                - button "×" [ref=e249] [cursor=pointer]
+              - generic [ref=e250]:
+                - generic [ref=e251]: instalaciones eléctricas
+                - button "×" [ref=e252] [cursor=pointer]
+              - generic [ref=e253]:
+                - generic [ref=e254]: jardinero
+                - button "×" [ref=e255] [cursor=pointer]
+              - generic [ref=e256]:
+                - generic [ref=e257]: paisajismo
+                - button "×" [ref=e258] [cursor=pointer]
+              - generic [ref=e259]:
+                - generic [ref=e260]: reparación electrodomésticos
+                - button "×" [ref=e261] [cursor=pointer]
+              - generic [ref=e262]:
+                - generic [ref=e263]: tapicero
+                - button "×" [ref=e264] [cursor=pointer]
+              - generic [ref=e265]:
+                - generic [ref=e266]: cristalero
+                - button "×" [ref=e267] [cursor=pointer]
+              - generic [ref=e268]:
+                - generic [ref=e269]: cerrajero
+                - button "×" [ref=e270] [cursor=pointer]
+              - textbox "Escribir y presionar Enter..." [ref=e82]
+          - generic [ref=e83]:
+            - paragraph [ref=e84]: "Excluir de búsqueda:"
+            - generic [ref=e85]:
+              - generic [ref=e271]:
+                - generic [ref=e272]: "-pajaro carpintero"
+                - button "×" [ref=e273] [cursor=pointer]
+              - textbox "Escribir y presionar Enter..." [ref=e86]
+          - generic [ref=e87]:
+            - paragraph [ref=e88]: "🔍 Query final:"
+            - paragraph [ref=e274]: carpintero muebles a medida pintor decoración limpieza limpieza profunda fontanero tuberías electricista instalaciones eléctricas jardinero paisajismo reparación electrodomésticos tapicero cristalero cerrajero -pajaro carpintero
+        - generic [ref=e114]:
+          - paragraph [ref=e115]: 🌍 Exclusiones Globales (Aplicadas a todas las búsquedas)
+          - generic [ref=e116]:
+            - generic [ref=e117]: "-paginas amarillas"
+            - generic [ref=e118]: "-ayuntamiento"
+            - generic [ref=e119]: "-leroy merlin, bricodepot, obramat"
+          - paragraph [ref=e120]: ✓ 3 término(s) excluido(s) globalmente
+        - generic [ref=e89]:
+          - generic [ref=e90]:
+            - generic [ref=e91]: Comunidad Autónoma
+            - combobox [ref=e92]:
+              - option "Seleccionar CCAA..." [selected]
+              - option "Andalucía"
+              - option "Aragón"
+              - option "Asturias"
+              - option "Baleares"
+              - option "Canarias"
+              - option "Cantabria"
+              - option "Castilla y León"
+              - option "Castilla-La Mancha"
+              - option "Cataluña"
+              - option "Comunidad Valenciana"
+              - option "Extremadura"
+              - option "Galicia"
+              - option "La Rioja"
+              - option "Madrid"
+              - option "Murcia"
+              - option "Navarra"
+              - option "País Vasco"
+          - generic [ref=e93]:
+            - generic [ref=e94]: Provincia
+            - combobox [disabled] [ref=e95]:
+              - option "Seleccionar provincia..." [selected]
+          - generic [ref=e96]:
+            - generic [ref=e97]: Municipio
+            - combobox [disabled] [ref=e98]:
+              - option "Seleccionar municipio..." [selected]
+        - generic [ref=e99]:
+          - generic [ref=e100]: "Páginas de Google: 2 → 3(siempre salta la pág. 1)"
+          - generic [ref=e101]:
+            - generic [ref=e102]:
+              - paragraph [ref=e103]: Desde página
+              - slider [ref=e104]: "2"
+              - paragraph [ref=e105]: Página 2
+            - generic [ref=e106]:
+              - paragraph [ref=e107]: Hasta página
+              - slider [ref=e108]: "3"
+              - paragraph [ref=e109]: Página 3
+          - paragraph [ref=e110]: ~20 resultados a analizar (⏱️ ~4-3 minutos)
+        - button "Iniciar prospección" [ref=e111] [cursor=pointer]:
+          - img [ref=e112]
+          - text: Iniciar prospección
+      - generic [ref=e121]:
+        - heading "📥 Resultados sin importar a Leads" [level=2] [ref=e122]
+        - generic [ref=e123]:
+          - generic [ref=e124]:
+            - generic [ref=e126]:
+              - checkbox [ref=e127] [cursor=pointer]
+              - generic [ref=e128]:
+                - heading "Abogado García & Asociados" [level=3] [ref=e130]
+                - paragraph [ref=e131]:
+                  - link "https://abogadogarcia.es" [ref=e132] [cursor=pointer]:
+                    - /url: https://abogadogarcia.es
+                - generic [ref=e133]:
+                  - paragraph [ref=e134]: 🔴 TIER 1 - Crítico (Pierden clientes)
+                  - generic [ref=e135]:
+                    - generic [ref=e136]: 📞 Sin teléfono visible
+                    - generic [ref=e137]: ✉️ Sin email visible
+                    - generic [ref=e138]: 📋 Sin formulario contacto
+                    - generic [ref=e139]: 📍 Sin GMB reclamado
+                    - generic [ref=e140]: 🏢 Sin dirección visible
+                    - generic [ref=e141]: ⚖️ Sin política privacidad
+                    - generic [ref=e142]: ✔️ Sin trust badges
+                - generic [ref=e143]:
+                  - generic [ref=e144]: 📱 No responsive
+                  - generic [ref=e145]: 🔗 Sin Schema/JSON-LD
+                - generic [ref=e146]:
+                  - generic [ref=e147]: contacto@abogadogarcia.es
+                  - generic [ref=e148]: +34 91 234 5678
+                  - generic [ref=e149]: "SEO: 75/100"
+            - generic [ref=e151]:
+              - checkbox [ref=e152] [cursor=pointer]
+              - generic [ref=e153]:
+                - heading "Despacho Jurídico López" [level=3] [ref=e155]
+                - paragraph [ref=e156]:
+                  - link "https://lopezlaw.com" [ref=e157] [cursor=pointer]:
+                    - /url: https://lopezlaw.com
+                - paragraph [ref=e159]: 🔴 TIER 1 - Crítico (Pierden clientes)
+                - generic [ref=e160]:
+                  - generic [ref=e161]: info@lopezlaw.com
+                  - generic [ref=e162]: +34 93 456 7890
+                  - generic [ref=e163]: "SEO: 82/100"
+            - generic [ref=e165]:
+              - checkbox [ref=e166] [cursor=pointer]
+              - generic [ref=e167]:
+                - heading "Asesoría Legal Martínez" [level=3] [ref=e169]
+                - paragraph [ref=e170]:
+                  - link "https://martinezlaw.es" [ref=e171] [cursor=pointer]:
+                    - /url: https://martinezlaw.es
+                - generic [ref=e172]:
+                  - paragraph [ref=e173]: 🔴 TIER 1 - Crítico (Pierden clientes)
+                  - generic [ref=e174]:
+                    - generic [ref=e175]: 📋 Sin formulario contacto
+                    - generic [ref=e176]: 📍 Sin GMB reclamado
+                    - generic [ref=e177]: ⚖️ Sin política privacidad
+                    - generic [ref=e178]: ✔️ Sin trust badges
+                - generic [ref=e180]: 🔗 Sin Schema/JSON-LD
+                - generic [ref=e181]:
+                  - generic [ref=e182]: legal@martinezlaw.es
+                  - generic [ref=e183]: +34 95 567 8901
+                  - generic [ref=e184]: "SEO: 68/100"
+            - generic [ref=e186]:
+              - checkbox [ref=e187] [cursor=pointer]
+              - generic [ref=e188]:
+                - heading "Consultoría Empresarial Silva" [level=3] [ref=e190]
+                - paragraph [ref=e191]:
+                  - link "https://consultoriasilva.net" [ref=e192] [cursor=pointer]:
+                    - /url: https://consultoriasilva.net
+                - generic [ref=e193]:
+                  - paragraph [ref=e194]: 🔴 TIER 1 - Crítico (Pierden clientes)
+                  - generic [ref=e195]:
+                    - generic [ref=e196]: 📞 Sin teléfono visible
+                    - generic [ref=e197]: ✉️ Sin email visible
+                    - generic [ref=e198]: 📋 Sin formulario contacto
+                    - generic [ref=e199]: 📍 Sin GMB reclamado
+                    - generic [ref=e200]: 🏢 Sin dirección visible
+                    - generic [ref=e201]: 🔒 Sin HTTPS
+                    - generic [ref=e202]: ⚖️ Sin política privacidad
+                    - generic [ref=e203]: ✔️ Sin trust badges
+                - generic [ref=e204]:
+                  - generic [ref=e205]: 📱 No responsive
+                  - generic [ref=e206]: 🔗 Sin Schema/JSON-LD
+          - generic [ref=e207]:
+            - paragraph [ref=e208]: 0 de 4 seleccionados
+            - button "Mover a Leads" [disabled] [ref=e209]:
+              - img [ref=e210]
+              - text: Mover a Leads
+  - button "Open Next.js Dev Tools" [ref=e218] [cursor=pointer]:
+    - img [ref=e219]
+  - alert [ref=e222]

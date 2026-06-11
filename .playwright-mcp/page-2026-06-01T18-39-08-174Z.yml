@@ -1,0 +1,196 @@
+- generic [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e8]:
+        - paragraph [ref=e9]: Prospector
+        - paragraph [ref=e10]: Iorana Digital
+    - navigation [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Prospección
+        - generic [ref=e14]:
+          - link "🔍 Prospector Buscar & scrapear" [ref=e15] [cursor=pointer]:
+            - /url: /prospector
+            - img [ref=e16]
+            - generic [ref=e19]:
+              - paragraph [ref=e20]: 🔍 Prospector
+              - paragraph [ref=e21]: Buscar & scrapear
+          - link "📊 Leads Ver resultados" [ref=e22] [cursor=pointer]:
+            - /url: /leads
+            - img [ref=e23]
+            - generic [ref=e27]:
+              - paragraph [ref=e28]: 📊 Leads
+              - paragraph [ref=e29]: Ver resultados
+      - generic [ref=e31]:
+        - paragraph [ref=e32]: Análisis
+        - link "📈 Dashboard Histórico de prospecciones" [ref=e34] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e35]
+          - generic [ref=e37]:
+            - paragraph [ref=e38]: 📈 Dashboard
+            - paragraph [ref=e39]: Histórico de prospecciones
+      - generic [ref=e41]:
+        - paragraph [ref=e42]: Administración
+        - link "⚙️ Admin Configuración" [ref=e44] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e45]
+          - generic [ref=e48]:
+            - paragraph [ref=e49]: ⚙️ Admin
+            - paragraph [ref=e50]: Configuración
+      - generic [ref=e52]:
+        - paragraph [ref=e53]: Ayuda
+        - link "📖 Guía Instrucciones de uso" [ref=e55] [cursor=pointer]:
+          - /url: /guide
+          - img [ref=e56]
+          - generic [ref=e58]:
+            - paragraph [ref=e59]: 📖 Guía
+            - paragraph [ref=e60]: Instrucciones de uso
+    - paragraph [ref=e62]: v1.0.0 · Local
+  - main [ref=e63]:
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - heading "Prospector CRM 🎯" [level=1] [ref=e66]:
+          - text: Prospector
+          - text: CRM 🎯
+        - paragraph [ref=e67]: Análisis de clientes | Gestión de campañas
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - button "📊 Leads (0)" [ref=e70] [cursor=pointer]
+          - button "📈 Historial" [ref=e71] [cursor=pointer]
+        - button "Importar CSV" [ref=e74] [cursor=pointer]:
+          - img [ref=e75]
+          - text: Importar CSV
+      - generic [ref=e78]:
+        - button "📋 Todos" [ref=e80] [cursor=pointer]
+        - generic [ref=e81]:
+          - generic [ref=e82]:
+            - heading "Análisis de Clientes" [level=2] [ref=e83]
+            - paragraph [ref=e84]: Haz clic en un cliente para ver análisis detallado (Fortalezas & Debilidades)
+          - generic [ref=e86]:
+            - generic [ref=e97]: 📊 2 leads únicos | 0 seleccionados
+            - table [ref=e99]:
+              - rowgroup [ref=e100]:
+                - row "📊 Negocio 📧 Email 📱 Teléfono 🔍 Rating SEO 📍 Rating GMB 🔴 TIER 1 📨 Estado 🎯 Acciones" [ref=e101]:
+                  - columnheader [ref=e102]:
+                    - button [ref=e103] [cursor=pointer]:
+                      - img [ref=e104]
+                  - columnheader "📊 Negocio" [ref=e106]
+                  - columnheader "📧 Email" [ref=e107]
+                  - columnheader "📱 Teléfono" [ref=e108]
+                  - columnheader "🔍 Rating SEO" [ref=e109]
+                  - columnheader "📍 Rating GMB" [ref=e110]
+                  - columnheader "🔴 TIER 1" [ref=e111]
+                  - columnheader "📨 Estado" [ref=e112]
+                  - columnheader "🎯 Acciones" [ref=e113]
+              - rowgroup [ref=e114]:
+                - 'row "Abogado García & Asociados https://abogadogarcia.es contacto@abogadogarcia.es 📋 +34 91 234 5678 📋 /100 - ✅ ⭕No se ha establecido contacto Plantilla: undefined Hace undefined 📧 💬" [ref=e115] [cursor=pointer]':
+                  - cell [ref=e116]:
+                    - button [ref=e117]:
+                      - img [ref=e118]
+                  - cell "Abogado García & Asociados https://abogadogarcia.es" [ref=e120]:
+                    - generic [ref=e121]: Abogado García & Asociados
+                    - link "https://abogadogarcia.es" [ref=e122]:
+                      - /url: https://abogadogarcia.es
+                  - cell "contacto@abogadogarcia.es 📋" [ref=e123]:
+                    - generic [ref=e124]:
+                      - generic [ref=e125]: contacto@abogadogarcia.es
+                      - button "📋" [ref=e126]
+                  - cell "+34 91 234 5678 📋" [ref=e127]:
+                    - generic [ref=e128]:
+                      - generic [ref=e129]: +34 91 234 5678
+                      - button "📋" [active] [ref=e130]
+                  - cell "/100" [ref=e131]
+                  - cell "-" [ref=e132]
+                  - cell "✅" [ref=e133]:
+                    - generic [ref=e135]: ✅
+                  - 'cell "⭕No se ha establecido contacto Plantilla: undefined Hace undefined" [ref=e136]':
+                    - generic [ref=e137]:
+                      - generic [ref=e138]:
+                        - text: ⭕
+                        - generic "No se ha establecido contacto"
+                      - 'generic "Plantilla: undefined"'
+                      - generic "Hace undefined"
+                  - cell "📧 💬" [ref=e139]:
+                    - button "Ver ficha completa" [ref=e140]:
+                      - img [ref=e141]
+                    - button "📧" [ref=e144]
+                    - button "💬" [ref=e145]
+                - 'row "Despacho Jurídico López https://lopezlaw.com info@lopezlaw.com 📋 +34 93 456 7890 📋 /100 - ✅ ⭕No se ha establecido contacto Plantilla: undefined Hace undefined 📧 💬" [ref=e146] [cursor=pointer]':
+                  - cell [ref=e147]:
+                    - button [ref=e148]:
+                      - img [ref=e149]
+                  - cell "Despacho Jurídico López https://lopezlaw.com" [ref=e151]:
+                    - generic [ref=e152]: Despacho Jurídico López
+                    - link "https://lopezlaw.com" [ref=e153]:
+                      - /url: https://lopezlaw.com
+                  - cell "info@lopezlaw.com 📋" [ref=e154]:
+                    - generic [ref=e155]:
+                      - generic [ref=e156]: info@lopezlaw.com
+                      - button "📋" [ref=e157]
+                  - cell "+34 93 456 7890 📋" [ref=e158]:
+                    - generic [ref=e159]:
+                      - generic [ref=e160]: +34 93 456 7890
+                      - button "📋" [ref=e161]
+                  - cell "/100" [ref=e162]
+                  - cell "-" [ref=e163]
+                  - cell "✅" [ref=e164]:
+                    - generic [ref=e166]: ✅
+                  - 'cell "⭕No se ha establecido contacto Plantilla: undefined Hace undefined" [ref=e167]':
+                    - generic [ref=e168]:
+                      - generic [ref=e169]:
+                        - text: ⭕
+                        - generic "No se ha establecido contacto"
+                      - 'generic "Plantilla: undefined"'
+                      - generic "Hace undefined"
+                  - cell "📧 💬" [ref=e170]:
+                    - button "Ver ficha completa" [ref=e171]:
+                      - img [ref=e172]
+                    - button "📧" [ref=e175]
+                    - button "💬" [ref=e176]
+      - generic [ref=e179]:
+        - generic [ref=e180]:
+          - generic [ref=e181]:
+            - heading "Abogado García & Asociados" [level=2] [ref=e182]
+            - link "https://abogadogarcia.es" [ref=e183] [cursor=pointer]:
+              - /url: https://abogadogarcia.es
+          - button [ref=e184] [cursor=pointer]:
+            - img [ref=e185]
+        - generic [ref=e188]:
+          - generic [ref=e189]:
+            - generic [ref=e190]:
+              - paragraph [ref=e191]: 📊 Puntuación General
+              - generic [ref=e192]: 40%
+            - paragraph [ref=e195]: ❌ Alto riesgo, necesita mejoras significativas
+          - generic [ref=e196]:
+            - generic [ref=e197]:
+              - paragraph [ref=e198]: Email
+              - paragraph [ref=e199]: contacto@abogadogarcia.es
+            - generic [ref=e200]:
+              - paragraph [ref=e201]: Teléfono
+              - paragraph [ref=e202]: +34 91 234 5678
+            - generic [ref=e203]:
+              - paragraph [ref=e204]: Estado CRM
+              - paragraph [ref=e205]: Nuevo
+            - generic [ref=e206]:
+              - paragraph [ref=e207]: Prioridad
+              - paragraph [ref=e208]: medium
+          - generic [ref=e209]:
+            - paragraph [ref=e210]: ✅ Fortalezas
+            - list [ref=e211]:
+              - listitem [ref=e212]: 📧 Email visible
+              - listitem [ref=e213]: 📞 Teléfono visible
+          - generic [ref=e214]:
+            - paragraph [ref=e215]: ❌ Debilidades (Oportunidades)
+            - list [ref=e216]:
+              - listitem [ref=e217]: 🔍 Sin auditoría SEO
+              - listitem [ref=e218]: 📍 Sin Google My Business reclamado
+              - listitem [ref=e219]: 🔒 Sin SSL/HTTPS
+              - listitem [ref=e220]: 📱 No responsive (Mobile)
+              - listitem [ref=e221]: 🔗 Sin Schema/JSON-LD
+              - listitem [ref=e222]: ⚠️ GMB no reclamado
+          - generic [ref=e223]:
+            - paragraph [ref=e224]: 💡 Recomendación
+            - paragraph [ref=e225]: "🔴 ESPERAR: Primero necesita mejorar contacto y SEO. Recontactar en 3 meses."
+  - button "Open Next.js Dev Tools" [ref=e92] [cursor=pointer]:
+    - img [ref=e93]
+  - alert [ref=e177]

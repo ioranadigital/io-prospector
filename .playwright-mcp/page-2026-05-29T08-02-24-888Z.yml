@@ -1,0 +1,153 @@
+- generic [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e8]:
+        - paragraph [ref=e9]: Prospector
+        - paragraph [ref=e10]: Iorana Digital
+    - navigation [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Prospección
+        - generic [ref=e14]:
+          - link "🔍 Prospector Buscar & scrapear" [ref=e15] [cursor=pointer]:
+            - /url: /prospector
+            - img [ref=e16]
+            - generic [ref=e19]:
+              - paragraph [ref=e20]: 🔍 Prospector
+              - paragraph [ref=e21]: Buscar & scrapear
+          - link "📊 Leads Ver resultados" [ref=e22] [cursor=pointer]:
+            - /url: /leads
+            - img [ref=e23]
+            - generic [ref=e27]:
+              - paragraph [ref=e28]: 📊 Leads
+              - paragraph [ref=e29]: Ver resultados
+      - generic [ref=e31]:
+        - paragraph [ref=e32]: Análisis
+        - link "📈 Dashboard Histórico de prospecciones" [ref=e34] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e35]
+          - generic [ref=e37]:
+            - paragraph [ref=e38]: 📈 Dashboard
+            - paragraph [ref=e39]: Histórico de prospecciones
+      - generic [ref=e41]:
+        - paragraph [ref=e42]: Administración
+        - link "⚙️ Admin Configuración" [ref=e44] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e45]
+          - generic [ref=e48]:
+            - paragraph [ref=e49]: ⚙️ Admin
+            - paragraph [ref=e50]: Configuración
+      - generic [ref=e52]:
+        - paragraph [ref=e53]: Ayuda
+        - link "📖 Guía Instrucciones de uso" [ref=e55] [cursor=pointer]:
+          - /url: /guide
+          - img [ref=e56]
+          - generic [ref=e58]:
+            - paragraph [ref=e59]: 📖 Guía
+            - paragraph [ref=e60]: Instrucciones de uso
+    - paragraph [ref=e62]: v1.0.0 · Local
+  - main [ref=e63]:
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - heading "🔍 Prospector" [level=1] [ref=e66]
+        - paragraph [ref=e67]: Busca negocios en Google e identifica sus debilidades SEO automáticamente. Genera dashboards y campañas de email personalizadas.
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - generic [ref=e70]:
+            - generic [ref=e71]: Categoría Principal
+            - combobox [ref=e72]:
+              - option "Seleccionar categoría..."
+              - option "🏠 Servicios para el Hogar" [selected]
+              - option "🏥 Profesionales & Salud"
+              - option "🏢 Negocios, Construcción & Retail"
+              - option "🌊 Turismo & Deportes Acuáticos"
+              - option "🍴 Referencia"
+          - generic [ref=e73]:
+            - generic [ref=e74]: Subcategoría / Sector
+            - combobox [ref=e75]:
+              - option "Seleccionar sector..." [selected]
+              - option "Carpintería"
+              - option "Pintura"
+              - option "Limpieza"
+              - option "Fontanería"
+              - option "Electricidad"
+              - option "Jardinería"
+              - option "Electrodomésticos"
+              - option "Tapicería"
+              - option "Cristalería"
+              - option "Cerrajería"
+        - generic [ref=e76]:
+          - generic [ref=e77]: Query personalizada (opcional)
+          - 'textbox "Ej: fontaneros urgente, reparación grifo, etc." [ref=e78]': fontaneros urgentes Madrid
+        - generic [ref=e79]:
+          - generic [ref=e80]:
+            - generic [ref=e81]: Comunidad Autónoma
+            - combobox [ref=e82]:
+              - option "Seleccionar CCAA..."
+              - option "Andalucía"
+              - option "Aragón"
+              - option "Asturias"
+              - option "Baleares"
+              - option "Canarias"
+              - option "Cantabria"
+              - option "Castilla y León"
+              - option "Castilla-La Mancha"
+              - option "Cataluña"
+              - option "Comunidad Valenciana"
+              - option "Extremadura"
+              - option "Galicia"
+              - option "La Rioja"
+              - option "Madrid" [selected]
+              - option "Murcia"
+              - option "Navarra"
+              - option "País Vasco"
+          - generic [ref=e83]:
+            - generic [ref=e84]: Provincia
+            - combobox [ref=e85]:
+              - option "Seleccionar provincia..." [selected]
+              - option "Madrid"
+          - generic [ref=e86]:
+            - generic [ref=e87]: Municipio
+            - combobox [disabled] [ref=e88]:
+              - option "Seleccionar municipio..." [selected]
+        - generic [ref=e89]:
+          - generic [ref=e90]: "Páginas de Google: 2 → 3(siempre salta la pág. 1)"
+          - generic [ref=e91]:
+            - generic [ref=e92]:
+              - paragraph [ref=e93]: Desde página
+              - slider [ref=e94]: "2"
+              - paragraph [ref=e95]: Página 2
+            - generic [ref=e96]:
+              - paragraph [ref=e97]: Hasta página
+              - slider [ref=e98]: "3"
+              - paragraph [ref=e99]: Página 3
+          - paragraph [ref=e100]: ~20 resultados a analizar (⏱️ ~4-3 minutos)
+        - button "Iniciar prospección" [active] [ref=e101] [cursor=pointer]:
+          - img [ref=e102]
+          - text: Iniciar prospección
+      - generic [ref=e105]:
+        - heading "📋 Historial Reciente" [level=2] [ref=e106]
+        - generic [ref=e108]:
+          - img [ref=e110]
+          - generic [ref=e113]:
+            - paragraph [ref=e114]: Fisioterapia - Avilés
+            - paragraph [ref=e115]: Pág. 2–2
+          - generic [ref=e116]:
+            - paragraph [ref=e117]: 10 leads
+            - paragraph [ref=e118]: 29/5/2026
+          - generic [ref=e119]:
+            - button "Guardar en Histórico" [ref=e120] [cursor=pointer]:
+              - img [ref=e121]
+            - link "Descargar CSV" [ref=e125] [cursor=pointer]:
+              - /url: http://localhost:4000/api/scraping/download/b10d7f4bc97c/csv
+              - img [ref=e126]
+            - link "Ver Dashboard" [ref=e129] [cursor=pointer]:
+              - /url: http://localhost:4001/api/scraping/view/b10d7f4bc97c/dashboard
+              - img [ref=e130]
+            - link "Descargar Emails" [ref=e133] [cursor=pointer]:
+              - /url: http://localhost:4000/api/scraping/download/b10d7f4bc97c/emails
+              - img [ref=e134]
+            - button "Eliminar" [ref=e137] [cursor=pointer]:
+              - img [ref=e138]
+  - status [ref=e152]: Selecciona una comunidad, provincia y municipio
+  - alert [ref=e104]

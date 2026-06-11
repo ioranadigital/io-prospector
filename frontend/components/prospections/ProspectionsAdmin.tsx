@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import { Trash2, RefreshCw } from 'lucide-react';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 type SearchSession = {
   id: string;
@@ -23,6 +24,7 @@ export function ProspectionsAdmin() {
   const [sessions, setSessions] = useState<SearchSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmDel, setConfirmDel] = useState<{ id: string; query: string } | null>(null);
 
   useEffect(() => {
     loadSessions();
@@ -61,11 +63,9 @@ export function ProspectionsAdmin() {
     }
   };
 
-  const handleDelete = async (sessionId: string, sessionQuery: string) => {
-    if (!confirm(`¿Eliminar la prospección "${sessionQuery}"? Se borrarán también todos sus leads. Esta acción NO se puede deshacer.`)) {
-      return;
-    }
-
+  const handleConfirmDelete = async () => {
+    if (!confirmDel) return;
+    const sessionId = confirmDel.id;
     setDeleting(sessionId);
     try {
       // Primero eliminar todos los leads asociados
@@ -85,6 +85,7 @@ export function ProspectionsAdmin() {
       if (sessionError) throw sessionError;
 
       toast.success('✅ Prospección eliminada completamente');
+      setConfirmDel(null);
       loadSessions();
     } catch (error) {
       console.error(error);
@@ -186,7 +187,7 @@ export function ProspectionsAdmin() {
 
               {/* Botón Eliminar */}
               <button
-                onClick={() => handleDelete(session.id, session.query)}
+                onClick={() => setConfirmDel({ id: session.id, query: session.query })}
                 disabled={deleting === session.id}
                 className="ml-4 p-2 bg-red-600/20 hover:bg-red-600/40 disabled:opacity-50 text-red-400 rounded transition"
                 title="Eliminar prospección (se borran también todos sus leads)"
@@ -208,6 +209,15 @@ export function ProspectionsAdmin() {
           💡 <strong>Nota:</strong> Al eliminar una prospección se borran automáticamente todos los leads asociados. Esta acción no se puede deshacer.
         </p>
       </div>
+
+      <ConfirmDialog
+        open={confirmDel !== null}
+        loading={deleting !== null}
+        title="Eliminar prospección"
+        message={`Se eliminará la prospección "${confirmDel?.query}" y todos sus leads. Esta acción no se puede deshacer.`}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => { if (deleting === null) setConfirmDel(null); }}
+      />
     </div>
   );
 }

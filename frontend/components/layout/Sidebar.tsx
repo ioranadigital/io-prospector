@@ -1,63 +1,83 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, BarChart3, Settings, Database, Zap, ClipboardList } from 'lucide-react';
+import {
+  Search, BarChart3, Settings, Database, Zap,
+  ClipboardList, Activity, Users, BookOpen, SlidersHorizontal
+} from 'lucide-react';
 
 const NAV_SECTIONS = [
   {
     title: 'Prospección',
     items: [
-      { href: '/prospector', icon: Search, label: '🔍 Prospector', desc: 'Buscar & scrapear' },
-      { href: '/leads', icon: Database, label: '📊 Leads', desc: 'Ver resultados' },
+      { href: '/prospector',              icon: Search,             label: 'Prospector',   desc: 'Buscar & scrapear' },
+      { href: '/prospecciones-historico', icon: BarChart3,          label: 'Histórico',    desc: 'Sectores ya scrapeados' },
+      { href: '/config',                  icon: SlidersHorizontal,  label: 'Configuración',desc: 'Sectores, exclusiones, API' },
     ]
   },
   {
-    title: 'Análisis',
+    title: 'Audit SEO',
     items: [
-      { href: '/dashboard', icon: BarChart3, label: '📈 Dashboard', desc: 'Histórico de prospecciones' },
+      { href: '/auditoria',         icon: Activity,           label: 'Auditoría',         desc: 'Analizar cualquier URL' },
+      { href: '/audit-resultados',  icon: ClipboardList,      label: 'Resultados',        desc: 'Revisar & guardar como lead' },
+      { href: '/audit-historico',   icon: BarChart3,          label: 'Histórico',         desc: 'Resultados por cliente' },
+      { href: '/audit-config',      icon: SlidersHorizontal,  label: 'Configuración',     desc: 'Checks, pesos, umbrales' },
     ]
   },
   {
-    title: 'Administración',
+    title: 'CRM',
     items: [
-      { href: '/admin', icon: Settings, label: '⚙️ Admin', desc: 'Configuración' },
+      { href: '/dashboard',       icon: BarChart3,         label: 'Dashboard',  desc: 'Métricas y análisis' },
+      { href: '/leads',           icon: Database,          label: 'Leads',      desc: 'Leads de prospección y auditoría' },
+      { href: '/crm/plantillas',  icon: ClipboardList,     label: 'Plantillas', desc: 'Email y WhatsApp' },
+    ]
+  },
+  {
+    title: 'Admin',
+    items: [
+      { href: '/admin',   icon: Users,    label: 'Usuarios',     desc: 'Gestión de accesos' },
+      { href: '/admin',   icon: Settings, label: 'Configuración',desc: 'Sistema global' },
     ]
   },
   {
     title: 'Ayuda',
     items: [
-      { href: '/guide', icon: Zap, label: '📖 Guía', desc: 'Instrucciones de uso' },
+      { href: '/guide', icon: BookOpen, label: 'Guía', desc: 'Instrucciones de uso' },
     ]
-  }
+  },
 ];
 
 export function Sidebar() {
   const path = usePathname() || '';
+
   return (
     <aside className="fixed top-0 left-0 h-screen w-60 bg-zinc-900 border-r border-zinc-800 flex flex-col z-40">
+      {/* Logo */}
       <div className="px-5 py-5 border-b border-zinc-800">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
             <Zap size={14} className="text-white" />
           </div>
           <div>
-            <p className="text-sm font-bold text-white leading-none">Prospector</p>
+            <p className="text-sm font-bold text-white leading-none">IO Prospector</p>
             <p className="text-[10px] text-zinc-500 mt-0.5">Iorana Digital</p>
           </div>
         </div>
       </div>
-      <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
+
+      {/* Nav */}
+      <nav className="flex-1 px-3 py-4 overflow-y-auto">
         {NAV_SECTIONS.map((section, idx) => (
-          <div key={section.title}>
-            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider px-2 mb-2">
+          <div key={section.title} className={idx > 0 ? 'mt-4' : ''}>
+            <p className="text-[11px] font-semibold text-zinc-500 uppercase tracking-widest px-2 mb-1.5">
               {section.title}
             </p>
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {section.items.map(({ href, icon: Icon, label, desc }) => {
-                const active = path.startsWith(href);
+                const active = path === href || (href !== '/admin' && path.startsWith(href + '/'));
                 return (
                   <Link
-                    key={href}
+                    key={`${href}-${label}`}
                     href={href}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
                       active
@@ -65,21 +85,23 @@ export function Sidebar() {
                         : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200'
                     }`}
                   >
-                    <Icon size={16} strokeWidth={active ? 2 : 1.5} />
-                    <div className="flex-1">
-                      <p className="font-medium">{label}</p>
-                      <p className="text-xs text-zinc-500">{desc}</p>
+                    <Icon size={15} strokeWidth={active ? 2 : 1.5} className="flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">{label}</p>
+                      <p className="text-[11px] text-zinc-500 truncate">{desc}</p>
                     </div>
                   </Link>
                 );
               })}
             </div>
             {idx < NAV_SECTIONS.length - 1 && (
-              <div className="my-3 border-t border-zinc-800" />
+              <div className="mt-4 border-t border-zinc-800/60" />
             )}
           </div>
         ))}
       </nav>
+
+      {/* Footer */}
       <div className="px-5 py-4 border-t border-zinc-800">
         <p className="text-[11px] text-zinc-600">v1.0.0 · Local</p>
       </div>

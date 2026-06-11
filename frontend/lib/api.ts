@@ -13,23 +13,26 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     let errMsg = `HTTP ${res.status}`;
     try {
       const err = await res.json();
-      errMsg = err.error || err.message || errMsg;
+      // Normaliza errores de validación (Zod devuelve un array de issues)
+      const toText = (e: any): string => {
+        if (Array.isArray(e)) return e.map(i => i?.message || JSON.stringify(i)).join(' · ');
+        if (typeof e === 'string') return e;
+        return e?.message || JSON.stringify(e);
+      };
+      if (err?.error !== undefined) errMsg = toText(err.error);
+      else if (err?.message) errMsg = err.message;
+      else if (Array.isArray(err)) errMsg = toText(err);
     } catch {
       errMsg = res.statusText || errMsg;
     }
-    console.error(`[API Error] ${path}:`, errMsg);
+    // warn (no error) para no disparar el overlay de error de Next dev; el caller maneja el throw
+    console.warn(`[API] ${path}:`, errMsg);
     throw new Error(errMsg);
   }
   return res.json();
 }
 
 export const api = {
-  // Search
-  startSearch: (body: object)              => request('/search/start', { method: 'POST', body: JSON.stringify(body) }),
-  getSessions: ()                          => request('/search/sessions'),
-  getSession:  (id: string)               => request(`/search/sessions/${id}`),
-  getCategories: ()                        => request('/search/categories'),
-
   // Leads
   getLeads:    (params?: Record<string, string>) => request(`/leads?${new URLSearchParams(params)}`),
   getLead:     (id: string)               => request(`/leads/${id}`),
@@ -54,6 +57,9 @@ export const api = {
   updateStatus:(id: string, status: string) => request(`/crm/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
   getCrmStats: ()                         => request('/crm/stats'),
 
+  // Analytics
+  getAnalyticsSummary: ()                 => request('/analytics/summary'),
+
   // Demo
   generateDemo:(lead_id: string)          => request('/demo/generate', { method: 'POST', body: JSON.stringify({ lead_id }) }),
 
@@ -65,4 +71,10 @@ export const api = {
     const baseUrl = BASE.replace('/api', '');
     return `${baseUrl}/api/scraping/download/${id}/${type}`;
   },
+
+  // Leads - Import from scraping
+  importFromScraping: (body: object)      => request('/leads/import-from-scraping', { method: 'POST', body: JSON.stringify(body) }),
+
+  // Auditoría onsite
+  auditUrl: (url: string)                 => request('/audit/url', { method: 'POST', body: JSON.stringify({ url }) }),
 };

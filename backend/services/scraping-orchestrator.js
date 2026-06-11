@@ -48,6 +48,8 @@ export async function orchestrateProspection(csvPath, prospectionId = null) {
         audit_data: lead.issues ? Object.fromEntries(Object.entries(lead.issues).map(([k, v]) => [k, !!v])) : {},
         priority: lead.priority || 'normal',
         crm_status: 'new',
+        status: 'candidate', // candidato: no aparece en Leads hasta que se promueve manualmente
+        source: 'prospector',
         main_competitor: lead.main_competitor || null,
         missing_service: lead.missing_service || null,
         icebreaker: lead.icebreaker || null,

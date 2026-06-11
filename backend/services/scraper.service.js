@@ -21,11 +21,44 @@ export const scraperService = {
         const mailtoLinks = [...document.querySelectorAll('a[href^="mailto:"]')]
           .map(a => a.href.replace('mailto:', '').split('?')[0]);
 
+        const email = mailtoLinks[0] || (bodyText.match(emailRx) || [])[0] || null;
+        const phone = ((bodyText.match(phoneRx) || [])[0] || '').trim() || null;
+
+        // TIER 1: Contact & Trust
+        const hasEmail = !!email || bodyText.includes('@') && bodyText.includes('.');
+        const hasPhone = !!phone || /(\d{3}[\s\-.]?\d{3}[\s\-.]?\d{3,4})/g.test(bodyText);
+        const hasContactForm = !!(document.querySelector('form') && (
+          document.querySelector('input[type="email"]') ||
+          document.querySelector('textarea') ||
+          bodyText.toLowerCase().includes('contacto') ||
+          bodyText.toLowerCase().includes('contact')
+        ));
+        const hasGMB = bodyText.includes('Google My Business') ||
+                      bodyText.includes('Google Maps') ||
+                      !!document.querySelector('a[href*="maps.google"]');
+        const hasAddress = !!document.querySelector('[itemprop="address"]') ||
+                          /\d{1,5}\s+[a-záéíóú\w\s]+,?\s*\d{5}/i.test(bodyText);
+        const hasPrivacyPolicy = bodyText.toLowerCase().includes('privacy') ||
+                                bodyText.toLowerCase().includes('política de privacidad') ||
+                                !!document.querySelector('a[href*="privacy"]');
+        const hasTrustBadges = /SSL|TrustPilot|Secure|Certificado|Badge|Verified/i.test(bodyText);
+
         return {
-          email:   mailtoLinks[0] || (bodyText.match(emailRx) || [])[0] || null,
-          phone:   ((bodyText.match(phoneRx) || [])[0] || '').trim() || null,
+          email,
+          phone,
           address: document.querySelector('[itemprop="address"]')?.innerText?.trim() || null,
           seo: {
+            // TIER 1: Críticos
+            hasPhone,
+            hasEmail,
+            hasContactForm,
+            hasGMB,
+            hasAddress,
+            hasPrivacyPolicy,
+            hasTrustBadges,
+            isHTTPS:        location.protocol === 'https:',
+
+            // TIER 2: Conversión
             hasH1:          document.querySelectorAll('h1').length > 0,
             h1Count:        document.querySelectorAll('h1').length,
             hasMetaDesc:    !!document.querySelector('meta[name="description"]')?.content,
@@ -34,11 +67,30 @@ export const scraperService = {
             hasCTAs:        document.querySelectorAll('button, a.btn, a.button, [class*="cta"]').length > 0,
             ctaCount:       document.querySelectorAll('button, a.btn, a.button, [class*="cta"]').length,
             wordCount:      bodyText.split(/\s+/).filter(Boolean).length,
-            isHTTPS:        location.protocol === 'https:',
             hasSchema:      !!document.querySelector('script[type="application/ld+json"]'),
             hasAnalytics:   !!(window.gtag || window.ga || window._gaq || window.dataLayer),
             hasFavicon:     !!document.querySelector('link[rel*="icon"]'),
             hasOG:          !!document.querySelector('meta[property^="og:"]'),
+
+            // TIER 3: Credibilidad & Presencia
+            hasGallery:     document.querySelectorAll('img').length > 5,
+            imageCount:     document.querySelectorAll('img').length,
+            hasSocialLinks: !!(document.querySelector('a[href*="facebook.com"]') ||
+                              document.querySelector('a[href*="instagram.com"]') ||
+                              document.querySelector('a[href*="twitter.com"]') ||
+                              document.querySelector('a[href*="linkedin.com"]')),
+            hasBlog:        !!document.querySelector('a[href*="/blog"]') || !!document.querySelector('a[href*="/articulos"]'),
+            hasCertifications: /Certificado|Acreditado|ISO|Garantía|Award|Premiado/i.test(bodyText),
+
+            // TIER 4: Rendimiento & Técnico
+            hasMapIntegrated: !!document.querySelector('iframe[src*="maps"]') || !!document.querySelector('[class*="map"]'),
+            hasCompressedImages: document.querySelectorAll('img[loading="lazy"]').length > 0,
+
+            // TIER 5: Engagement & Social
+            hasShareButtons: !!document.querySelector('[class*="share"]') || !!document.querySelector('[class*="social"]'),
+            hasNewsletter:  /newsletter|suscrib|subscribe|email marketing/i.test(bodyText),
+            hasWhatsApp:    !!document.querySelector('a[href*="whatsapp"]') || !!document.querySelector('a[href*="wa.me"]'),
+            hasMultipleForms: document.querySelectorAll('form').length > 1,
           }
         };
       });

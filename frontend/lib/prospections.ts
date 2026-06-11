@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
 export async function saveProspectionToSupabase(prospection: {
   id: string;
@@ -13,29 +13,28 @@ export async function saveProspectionToSupabase(prospection: {
   try {
     console.log('Guardando prospección:', prospection);
 
-    const { data, error } = await supabase
-      .from('io_pro_search_sessions')
-      .upsert(
-        {
-          id: prospection.id,
-          query: prospection.query,
-          city: prospection.city,
-          category: prospection.category || null,
-          pages_from: prospection.pages_from,
-          pages_to: prospection.pages_to,
-          status: prospection.status,
-          total_found: prospection.total_found,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'id' }
-      );
+    const response = await fetch(`${API_BASE}/config/prospections/save`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: prospection.id,
+        query: prospection.query,
+        city: prospection.city,
+        category: prospection.category || null,
+        pages_from: prospection.pages_from,
+        pages_to: prospection.pages_to,
+        status: prospection.status,
+        total_found: prospection.total_found,
+      })
+    });
 
-    if (error) {
-      console.error('Supabase error:', error);
-      throw new Error(error.message || 'Error desconocido en Supabase');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMsg = errorData.error || errorData.message || `HTTP ${response.status}`;
+      throw new Error(errorMsg);
     }
 
+    const data = await response.json();
     console.log('Prospección guardada exitosamente:', data);
     return data;
   } catch (error: any) {

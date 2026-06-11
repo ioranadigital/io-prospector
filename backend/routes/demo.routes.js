@@ -11,7 +11,7 @@ router.post('/generate', async (req, res, next) => {
     const { lead_id } = req.body;
     if (!lead_id) return res.status(400).json({ error: 'lead_id requerido' });
 
-    const { data: lead } = await supabase.from('leads').select('*').eq('id', lead_id).single();
+    const { data: lead } = await supabase.from('io_pro_leads').select('*').eq('id', lead_id).single();
     if (!lead) return res.status(404).json({ error: 'Lead no encontrado' });
 
     const result = await demoService.generate(lead);

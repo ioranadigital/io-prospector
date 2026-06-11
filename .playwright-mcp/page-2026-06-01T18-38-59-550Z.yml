@@ -1,0 +1,71 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e8]:
+        - paragraph [ref=e9]: Prospector
+        - paragraph [ref=e10]: Iorana Digital
+    - navigation [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Prospección
+        - generic [ref=e14]:
+          - link "🔍 Prospector Buscar & scrapear" [ref=e15] [cursor=pointer]:
+            - /url: /prospector
+            - img [ref=e16]
+            - generic [ref=e19]:
+              - paragraph [ref=e20]: 🔍 Prospector
+              - paragraph [ref=e21]: Buscar & scrapear
+          - link "📊 Leads Ver resultados" [ref=e22] [cursor=pointer]:
+            - /url: /leads
+            - img [ref=e23]
+            - generic [ref=e27]:
+              - paragraph [ref=e28]: 📊 Leads
+              - paragraph [ref=e29]: Ver resultados
+      - generic [ref=e31]:
+        - paragraph [ref=e32]: Análisis
+        - link "📈 Dashboard Histórico de prospecciones" [ref=e34] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e35]
+          - generic [ref=e37]:
+            - paragraph [ref=e38]: 📈 Dashboard
+            - paragraph [ref=e39]: Histórico de prospecciones
+      - generic [ref=e41]:
+        - paragraph [ref=e42]: Administración
+        - link "⚙️ Admin Configuración" [ref=e44] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e45]
+          - generic [ref=e48]:
+            - paragraph [ref=e49]: ⚙️ Admin
+            - paragraph [ref=e50]: Configuración
+      - generic [ref=e52]:
+        - paragraph [ref=e53]: Ayuda
+        - link "📖 Guía Instrucciones de uso" [ref=e55] [cursor=pointer]:
+          - /url: /guide
+          - img [ref=e56]
+          - generic [ref=e58]:
+            - paragraph [ref=e59]: 📖 Guía
+            - paragraph [ref=e60]: Instrucciones de uso
+    - paragraph [ref=e62]: v1.0.0 · Local
+  - main [ref=e63]:
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - heading "Prospector CRM 🎯" [level=1] [ref=e66]:
+          - text: Prospector
+          - text: CRM 🎯
+        - paragraph [ref=e67]: Análisis de clientes | Gestión de campañas
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - button "📊 Leads (0)" [ref=e70] [cursor=pointer]
+          - button "📈 Historial" [ref=e71] [cursor=pointer]
+        - button "Importar CSV" [ref=e74] [cursor=pointer]:
+          - img [ref=e75]
+          - text: Importar CSV
+      - generic [ref=e78]:
+        - button "📋 Todos" [ref=e80] [cursor=pointer]
+        - generic [ref=e81]:
+          - generic [ref=e82]:
+            - heading "Análisis de Clientes" [level=2] [ref=e83]
+            - paragraph [ref=e84]: Haz clic en un cliente para ver análisis detallado (Fortalezas & Debilidades)
+          - generic [ref=e86]: Cargando leads...
+  - button "Open Next.js Dev Tools" [ref=e92] [cursor=pointer]:
+    - img [ref=e93]

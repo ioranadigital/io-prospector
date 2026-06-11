@@ -1,0 +1,148 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e8]:
+        - paragraph [ref=e9]: IO Prospector
+        - paragraph [ref=e10]: Iorana Digital
+    - navigation [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Prospección
+        - generic [ref=e14]:
+          - link "Prospector Buscar & scrapear" [ref=e15] [cursor=pointer]:
+            - /url: /prospector
+            - img [ref=e16]
+            - generic [ref=e19]:
+              - paragraph [ref=e20]: Prospector
+              - paragraph [ref=e21]: Buscar & scrapear
+          - link "Resultados Revisar & validar" [ref=e22] [cursor=pointer]:
+            - /url: /resultados
+            - img [ref=e23]
+            - generic [ref=e26]:
+              - paragraph [ref=e27]: Resultados
+              - paragraph [ref=e28]: Revisar & validar
+          - link "Dashboard Histórico de prospecciones" [ref=e29] [cursor=pointer]:
+            - /url: /dashboard
+            - img [ref=e30]
+            - generic [ref=e32]:
+              - paragraph [ref=e33]: Dashboard
+              - paragraph [ref=e34]: Histórico de prospecciones
+          - link "Configuración Sectores, exclusiones, API" [ref=e35] [cursor=pointer]:
+            - /url: /config
+            - img [ref=e36]
+            - generic [ref=e37]:
+              - paragraph [ref=e38]: Configuración
+              - paragraph [ref=e39]: Sectores, exclusiones, API
+      - generic [ref=e41]:
+        - paragraph [ref=e42]: Audit SEO
+        - generic [ref=e43]:
+          - link "Auditoría Analizar cualquier URL" [ref=e44] [cursor=pointer]:
+            - /url: /auditoria
+            - img [ref=e45]
+            - generic [ref=e47]:
+              - paragraph [ref=e48]: Auditoría
+              - paragraph [ref=e49]: Analizar cualquier URL
+          - link "Resultados Revisar & guardar como lead" [ref=e50] [cursor=pointer]:
+            - /url: /audit-resultados
+            - img [ref=e51]
+            - generic [ref=e54]:
+              - paragraph [ref=e55]: Resultados
+              - paragraph [ref=e56]: Revisar & guardar como lead
+          - link "Histórico Resultados por cliente" [ref=e57] [cursor=pointer]:
+            - /url: /audit-historico
+            - img [ref=e58]
+            - generic [ref=e60]:
+              - paragraph [ref=e61]: Histórico
+              - paragraph [ref=e62]: Resultados por cliente
+          - link "Histórico (lista) Tendencias y reportes" [ref=e63] [cursor=pointer]:
+            - /url: /audit-history
+            - img [ref=e64]
+            - generic [ref=e67]:
+              - paragraph [ref=e68]: Histórico (lista)
+              - paragraph [ref=e69]: Tendencias y reportes
+          - link "Configuración Checks, pesos, umbrales" [ref=e70] [cursor=pointer]:
+            - /url: /audit-config
+            - img [ref=e71]
+            - generic [ref=e72]:
+              - paragraph [ref=e73]: Configuración
+              - paragraph [ref=e74]: Checks, pesos, umbrales
+      - generic [ref=e76]:
+        - paragraph [ref=e77]: CRM
+        - generic [ref=e78]:
+          - link "Leads Leads de prospección y auditoría" [ref=e79] [cursor=pointer]:
+            - /url: /leads
+            - img [ref=e80]
+            - generic [ref=e84]:
+              - paragraph [ref=e85]: Leads
+              - paragraph [ref=e86]: Leads de prospección y auditoría
+          - link "Plantillas Email y WhatsApp" [ref=e87] [cursor=pointer]:
+            - /url: /crm/plantillas
+            - img [ref=e88]
+            - generic [ref=e91]:
+              - paragraph [ref=e92]: Plantillas
+              - paragraph [ref=e93]: Email y WhatsApp
+      - generic [ref=e95]:
+        - paragraph [ref=e96]: Admin
+        - generic [ref=e97]:
+          - link "Usuarios Gestión de accesos" [ref=e98] [cursor=pointer]:
+            - /url: /admin
+            - img [ref=e99]
+            - generic [ref=e104]:
+              - paragraph [ref=e105]: Usuarios
+              - paragraph [ref=e106]: Gestión de accesos
+          - link "Configuración Sistema global" [ref=e107] [cursor=pointer]:
+            - /url: /admin
+            - img [ref=e108]
+            - generic [ref=e111]:
+              - paragraph [ref=e112]: Configuración
+              - paragraph [ref=e113]: Sistema global
+      - generic [ref=e115]:
+        - paragraph [ref=e116]: Ayuda
+        - link "Guía Instrucciones de uso" [ref=e118] [cursor=pointer]:
+          - /url: /guide
+          - img [ref=e119]
+          - generic [ref=e122]:
+            - paragraph [ref=e123]: Guía
+            - paragraph [ref=e124]: Instrucciones de uso
+    - paragraph [ref=e126]: v1.0.0 · Local
+  - main [ref=e127]:
+    - generic [ref=e128]:
+      - generic [ref=e139]:
+        - heading "📊 Histórico de Auditorías" [level=1] [ref=e140]
+        - paragraph [ref=e141]: Tendencias y análisis de auditorías realizadas
+      - generic [ref=e142]:
+        - button "Todas" [ref=e143] [cursor=pointer]
+        - button "Últimos 7 días" [ref=e144] [cursor=pointer]
+        - button "Últimos 30 días" [ref=e145] [cursor=pointer]
+      - generic [ref=e146]:
+        - generic [ref=e147]:
+          - paragraph [ref=e148]: Total Auditorías
+          - paragraph [ref=e149]: "0"
+        - generic [ref=e150]:
+          - paragraph [ref=e151]: Score Promedio
+          - paragraph [ref=e152]: "0"
+        - generic [ref=e153]:
+          - paragraph [ref=e154]: Checks Pasados
+          - paragraph [ref=e155]: "0"
+        - generic [ref=e156]:
+          - paragraph [ref=e157]: Clientes únicos
+          - paragraph [ref=e158]: "0"
+      - generic [ref=e159]:
+        - heading "Histórico por Cliente" [level=2] [ref=e161]:
+          - img [ref=e162]
+          - text: Histórico por Cliente
+        - paragraph [ref=e166]: Sin auditorías en este período
+      - generic [ref=e167]:
+        - generic [ref=e168]:
+          - heading "URLs Más Auditadas" [level=2] [ref=e169]:
+            - img [ref=e170]
+            - text: URLs Más Auditadas
+          - paragraph [ref=e174]: Sin datos
+        - generic [ref=e175]:
+          - heading "Score Promedio por Cliente" [level=2] [ref=e176]:
+            - img [ref=e177]
+            - text: Score Promedio por Cliente
+          - paragraph [ref=e181]: Sin datos
+  - button "Open Next.js Dev Tools" [ref=e134] [cursor=pointer]:
+    - img [ref=e135]
+  - alert [ref=e138]

@@ -1,24 +1,30 @@
 // backend/server.js
-import 'dotenv/config';
+import dotenv from 'dotenv';
+// override:true → backend/.env manda sobre variables filtradas del entorno global
+// (p.ej. FRONTEND_URL/PORT/NODE_ENV definidas en el registro de Windows).
+dotenv.config({ override: true });
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import { logger } from './utils/logger.js';
 
-import searchRoutes   from './routes/search.routes.js';
-import scrapingRoutes from './routes/scraping.routes.js';
-import leadsRoutes    from './routes/leads.routes.js';
-import contactRoutes  from './routes/contact.routes.js';
-import crmRoutes      from './routes/crm.routes.js';
-import demoRoutes     from './routes/demo.routes.js';
-import configRoutes   from './routes/config.routes.js';
+import scrapingRoutes  from './routes/scraping.routes.js';
+import leadsRoutes     from './routes/leads.routes.js';
+import contactRoutes   from './routes/contact.routes.js';
+import crmRoutes       from './routes/crm.routes.js';
+import demoRoutes      from './routes/demo.routes.js';
+import configRoutes    from './routes/config.routes.js';
+import analyticsRoutes from './routes/analytics.routes.js';
+import auditRoutes     from './routes/audit.routes.js';
 
 const app  = express();
-const PORT = process.env.PORT || 4000;
+// io-prospector: lee IO_PROSPECTOR_BACKEND_PORT (definido en backend/.env / master.env), ignora PORT global
+const PORT = process.env.IO_PROSPECTOR_BACKEND_PORT || process.env.PORT || 4006;
+console.log('📍 PORT configurado:', PORT);
 
 // ── Middleware global ──────────────────────────────────────
-const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:3002').split(',').map(url => url.trim());
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:3004').split(',').map(url => url.trim());
 console.log('Allowed CORS origins:', allowedOrigins);
 app.use(cors({
   origin: (origin, callback) => {
@@ -42,13 +48,14 @@ app.use((req, res, next) => {
 app.use('/api', rateLimit({ windowMs: 60_000, max: 100, standardHeaders: true }));
 
 // ── Rutas ─────────────────────────────────────────────────
-app.use('/api/search',   searchRoutes);
-app.use('/api/scraping', scrapingRoutes);
-app.use('/api/leads',    leadsRoutes);
-app.use('/api/contact',  contactRoutes);
-app.use('/api/crm',      crmRoutes);
-app.use('/api/demo',     demoRoutes);
-app.use('/api/config',   configRoutes);
+app.use('/api/scraping',   scrapingRoutes);
+app.use('/api/leads',      leadsRoutes);
+app.use('/api/contact',    contactRoutes);
+app.use('/api/crm',        crmRoutes);
+app.use('/api/demo',       demoRoutes);
+app.use('/api/config',     configRoutes);
+app.use('/api/analytics',  analyticsRoutes);
+app.use('/api/audit',      auditRoutes);
 
 // Demo pública (sin prefijo /api)
 app.use('/demo', demoRoutes);

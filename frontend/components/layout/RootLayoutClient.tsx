@@ -6,7 +6,7 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Sidebar />
-      <main className="ml-60 p-8 overflow-auto min-h-screen">
+      <main className="ml-60 flex-1 min-w-0 p-8 overflow-y-auto overflow-x-hidden min-h-screen">
         {children}
       </main>
       <Toaster

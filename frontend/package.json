@@ -4,12 +4,13 @@
   "description": "Dashboard de prospección local SEO",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3002",
+    "dev": "cross-env NODE_ENV=development next dev -p 3004",
     "build": "next build",
-    "start": "next start -p ${PORT:-3000}",
+    "start": "next start -p 3004",
     "lint": "next lint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.1",
     "@dnd-kit/core": "^6.1.0",
     "@dnd-kit/sortable": "^8.0.0",
     "@supabase/supabase-js": "^2.39.0",
@@ -23,6 +24,7 @@
     "@types/node": "20.19.41",
     "@types/react": "18.3.29",
     "autoprefixer": "^10.5.0",
+    "cross-env": "^10.1.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.0",
     "postcss": "^8.5.15",

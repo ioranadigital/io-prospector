@@ -13,7 +13,7 @@ router.get('/', async (req, res, next) => {
     console.log(`📖 GET /leads - Filtros:`, { session_id, status, city, page });
 
     let query = supabase
-      .from('leads')
+      .from('io_pro_leads')
       .select('*', { count: 'exact' })
       .order('audit_score', { ascending: false })
       .range((page - 1) * limit, page * limit - 1);
@@ -50,8 +50,8 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const [{ data: lead }, { data: activities }] = await Promise.all([
-      supabase.from('leads').select('*').eq('id', req.params.id).single(),
-      supabase.from('lead_activities').select('*').eq('lead_id', req.params.id).order('created_at', { ascending: false }),
+      supabase.from('io_pro_leads').select('*').eq('id', req.params.id).single(),
+      supabase.from('io_pro_lead_activities').select('*').eq('lead_id', req.params.id).order('created_at', { ascending: false }),
     ]);
     res.json({ lead, activities });
   } catch (err) { next(err); }
@@ -65,7 +65,7 @@ router.patch('/:id', async (req, res, next) => {
       Object.entries(req.body).filter(([k]) => allowed.includes(k))
     );
     const { data, error } = await supabase
-      .from('leads').update(updates).eq('id', req.params.id).select().single();
+      .from('io_pro_leads').update(updates).eq('id', req.params.id).select().single();
     if (error) throw error;
     res.json(data);
   } catch (err) { next(err); }
@@ -74,7 +74,7 @@ router.patch('/:id', async (req, res, next) => {
 // DELETE /api/leads/:id — Eliminar lead
 router.delete('/:id', async (req, res, next) => {
   try {
-    const { error } = await supabase.from('leads').delete().eq('id', req.params.id);
+    const { error } = await supabase.from('io_pro_leads').delete().eq('id', req.params.id);
     if (error) throw error;
     res.json({ deleted: true });
   } catch (err) { next(err); }
@@ -83,10 +83,67 @@ router.delete('/:id', async (req, res, next) => {
 // DELETE /api/leads/session/:sessionId — Limpiar sesión completa
 router.delete('/session/:sessionId', async (req, res, next) => {
   try {
-    const { error } = await supabase.from('leads').delete().eq('session_id', req.params.sessionId);
+    const { error } = await supabase.from('io_pro_leads').delete().eq('session_id', req.params.sessionId);
     if (error) throw error;
     res.json({ deleted: true });
   } catch (err) { next(err); }
+});
+
+// POST /api/leads/import-from-scraping — Mover leads del scraping a Leads activos
+router.post('/import-from-scraping', async (req, res, next) => {
+  try {
+    const { scraping_raw_ids } = req.body;
+    if (!scraping_raw_ids || !Array.isArray(scraping_raw_ids) || scraping_raw_ids.length === 0) {
+      return res.status(400).json({ error: 'Invalid scraping_raw_ids' });
+    }
+
+    // Obtener leads del scraping
+    const { data: scrapingLeads, error: fetchError } = await supabase
+      .from('io_pro_scraping_raw')
+      .select('*')
+      .in('id', scraping_raw_ids);
+
+    if (fetchError) throw fetchError;
+
+    // Obtener websites que ya existen en io_pro_leads para deduplicar
+    const websites = scrapingLeads.map(l => l.website).filter(Boolean);
+    const { data: existingLeads } = await supabase
+      .from('io_pro_leads')
+      .select('website')
+      .in('website', websites);
+
+    const existingWebsites = new Set(existingLeads?.map(l => l.website) || []);
+
+    // Filtrar leads duplicados
+    const newLeads = scrapingLeads.filter(l => !existingWebsites.has(l.website));
+
+    if (newLeads.length === 0) {
+      return res.json({ imported: 0, skipped: scrapingLeads.length, message: 'No new leads to import' });
+    }
+
+    // Insertar en io_pro_leads
+    const { data: inserted, error: insertError } = await supabase
+      .from('io_pro_leads')
+      .insert(newLeads)
+      .select();
+
+    if (insertError) throw insertError;
+
+    // Actualizar estado en scraping_raw a 'imported'
+    await supabase
+      .from('io_pro_scraping_raw')
+      .update({ status: 'imported' })
+      .in('id', newLeads.map(l => l.id));
+
+    res.json({
+      imported: inserted?.length || 0,
+      skipped: scrapingLeads.length - (inserted?.length || 0),
+      message: `${inserted?.length || 0} leads importados, ${scrapingLeads.length - (inserted?.length || 0)} duplicados`
+    });
+  } catch (err) {
+    console.error('Import error:', err);
+    next(err);
+  }
 });
 
 // POST /api/leads/:id/activity — Registrar actividad manual
@@ -102,13 +159,13 @@ router.post('/:id/activity', async (req, res, next) => {
     });
     const payload = schema.parse(req.body);
     const { data, error } = await supabase
-      .from('lead_activities')
+      .from('io_pro_lead_activities')
       .insert({ lead_id: req.params.id, ...payload })
       .select().single();
     if (error) throw error;
 
     // Actualizar last_contact_at en el lead
-    await supabase.from('leads')
+    await supabase.from('io_pro_leads')
       .update({ last_contact_at: new Date() })
       .eq('id', req.params.id);
 

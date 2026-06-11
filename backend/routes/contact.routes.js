@@ -22,11 +22,11 @@ router.post('/email', async (req, res, next) => {
     await contactService.sendEmail(mailData);
 
     // Registrar actividad
-    await supabase.from('lead_activities').insert({
+    await supabase.from('io_pro_lead_activities').insert({
       lead_id, type: 'email', direction: 'outbound',
       subject: mailData.subject, body: mailData.body, outcome: 'sent',
     });
-    await supabase.from('leads').update({ last_contact_at: new Date(), crm_status: 'contacted' }).eq('id', lead_id);
+    await supabase.from('io_pro_leads').update({ last_contact_at: new Date(), crm_status: 'contacted' }).eq('id', lead_id);
 
     res.json({ sent: true });
   } catch (err) { next(err); }
@@ -45,10 +45,10 @@ router.post('/whatsapp', async (req, res, next) => {
 
     await contactService.sendWhatsApp({ phone, message });
 
-    await supabase.from('lead_activities').insert({
+    await supabase.from('io_pro_lead_activities').insert({
       lead_id, type: 'whatsapp', direction: 'outbound', body: message, outcome: 'sent',
     });
-    await supabase.from('leads').update({ last_contact_at: new Date(), crm_status: 'contacted' }).eq('id', lead_id);
+    await supabase.from('io_pro_leads').update({ last_contact_at: new Date(), crm_status: 'contacted' }).eq('id', lead_id);
 
     res.json({ sent: true });
   } catch (err) { next(err); }
@@ -58,7 +58,7 @@ router.post('/whatsapp', async (req, res, next) => {
 router.get('/templates', async (req, res, next) => {
   try {
     const { type } = req.query;
-    let q = supabase.from('message_templates').select('*').eq('is_active', true);
+    let q = supabase.from('io_pro_message_templates').select('*').eq('is_active', true);
     if (type) q = q.eq('type', type);
     const { data, error } = await q;
     if (error) throw error;
@@ -71,8 +71,8 @@ router.post('/templates/render', async (req, res, next) => {
   try {
     const { template_id, lead_id } = req.body;
     const [{ data: tpl }, { data: lead }, { data: config }] = await Promise.all([
-      supabase.from('message_templates').select('*').eq('id', template_id).single(),
-      supabase.from('leads').select('*').eq('id', lead_id).single(),
+      supabase.from('io_pro_message_templates').select('*').eq('id', template_id).single(),
+      supabase.from('io_pro_leads').select('*').eq('id', lead_id).single(),
       supabase.from('app_config').select('*'),
     ]);
     const cfg = Object.fromEntries(config.map(c => [c.key, c.value]));

@@ -11,7 +11,7 @@ ENV PUPPETEER_SKIP_DOWNLOAD=true
 COPY backend/package*.json ./
 
 # Instalar dependencias de producción
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # Copiar resto del backend
 COPY backend/ .

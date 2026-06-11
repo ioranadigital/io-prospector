@@ -5,6 +5,8 @@
 import { contactExtractorService } from './contact-extractor.service.js';
 import { gmbScraperService } from './gmb-scraper.service.js';
 import { csvExportService } from './csv-export.service.js';
+import { performanceAuditService } from './seo-technical/performance-audit.service.js';
+import { techDetectionService } from './tech-stack/tech-detection.service.js';
 import { logger } from '../utils/logger.js';
 
 const SKIP_DOMAINS = [
@@ -156,6 +158,29 @@ async function processResultV2({ result, city, category }) {
   lead.gmb_description = gmb.description;
   lead.gmb_has_hours = gmb.has_hours;
   lead.gmb_hours_updated = gmb.hours_updated_recently;
+
+  // Auditorías en background (sin bloquear flujo principal)
+  performanceAuditService.auditPerformanceAndCanonical(result.url)
+    .then(auditResult => {
+      lead.ttfb_ms = auditResult.ttfb_ms;
+      lead.lcp_ms = auditResult.largest_contentful_paint_ms;
+      lead.cls = auditResult.cumulative_layout_shift;
+      lead.canonical_url = auditResult.canonical_url;
+      lead.h1_count = auditResult.h1_count;
+      lead.top_issue = auditResult.top_issue;
+      lead.top_issue_severity = auditResult.top_issue_severity;
+    })
+    .catch(err => logger.warn(`Performance audit error for ${result.url}: ${err.message}`));
+
+  techDetectionService.detectTechStack(result.url, contacted.html || '')
+    .then(techResult => {
+      lead.tech_cms = techResult.cms?.join(',') || null;
+      lead.tech_ecommerce = techResult.ecommerce;
+      lead.tech_analytics = techResult.analytics?.join(',') || null;
+      lead.tech_server = techResult.server;
+      lead.tech_risks = techResult.risks?.join(',') || null;
+    })
+    .catch(err => logger.warn(`Tech detection error for ${result.url}: ${err.message}`));
 
   return lead;
 }

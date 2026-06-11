@@ -115,6 +115,11 @@ export function LeadDetailModal({
               <div>
                 <span className="text-zinc-400">Categoría:</span> <span className="text-white">{lead.category || '-'}</span>
               </div>
+              <div>
+                <span className="text-zinc-400">Agregado:</span> <span className="text-white">
+                  {lead.created_at ? new Date(lead.created_at).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
+                </span>
+              </div>
             </div>
           </section>
 

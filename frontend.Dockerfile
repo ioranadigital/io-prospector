@@ -1,4 +1,4 @@
-FROM node:20-slim AS builder
+FROM node:20-slim
 
 ARG NODE_ENV=development
 ARG NEXT_PUBLIC_SUPABASE_URL
@@ -20,33 +20,14 @@ ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NODE_OPTIONS="--max-old-space-size=2048"
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3002
 
 COPY frontend/package.json frontend/package-lock.json ./
 
-RUN NODE_ENV=development npm ci
+RUN npm ci
 
 COPY frontend/ .
 
-# Capture build output to file, always exit 0 so we can inspect the log via container logs
-RUN NODE_ENV=production npm run build > /tmp/build.log 2>&1 \
-    && echo "BUILD_OK" > /tmp/build_status \
-    || (echo "BUILD_FAILED" > /tmp/build_status && mkdir -p .next)
-
-# Etapa de producción
-FROM node:20-slim
-
-WORKDIR /app
-
-COPY frontend/package*.json ./
-RUN npm ci --omit=dev
-
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /tmp/build.log /build.log
-COPY --from=builder /tmp/build_status /build_status
-
-ENV PORT=3002
 EXPOSE 3002
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]

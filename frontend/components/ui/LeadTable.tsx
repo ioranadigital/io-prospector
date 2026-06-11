@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Trash2, Eye, Globe, Phone, Mail, MessageCircle, ChevronUp, ChevronDown } from 'lucide-react';
 import { AuditPopup } from './AuditPopup';
+import { ConfirmDialog } from './ConfirmDialog';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 
@@ -40,6 +41,8 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
   const [auditLead, setAuditLead]   = useState<Lead | null>(null);
   const [sortField, setSortField]   = useState<keyof Lead>('audit_score');
   const [sortAsc,   setSortAsc]     = useState(true);
+  const [confirmDel, setConfirmDel] = useState<{ id: string; name: string } | null>(null);
+  const [deleting, setDeleting]     = useState(false);
 
   const sorted = [...leads].sort((a, b) => {
     const va = a[sortField] ?? 0;
@@ -52,11 +55,19 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
     else { setSortField(field); setSortAsc(true); }
   }
 
-  async function handleDelete(id: string, name: string) {
-    if (!confirm(`¿Eliminar "${name}"?`)) return;
-    await api.deleteLead(id);
-    toast.success('Lead eliminado');
-    onRefresh();
+  async function handleConfirmDelete() {
+    if (!confirmDel) return;
+    setDeleting(true);
+    try {
+      await api.deleteLead(confirmDel.id);
+      toast.success('Lead eliminado');
+      setConfirmDel(null);
+      onRefresh();
+    } catch (e: any) {
+      toast.error(e.message || 'Error al eliminar');
+    } finally {
+      setDeleting(false);
+    }
   }
 
   async function handleGenerateDemo(lead: Lead) {
@@ -209,7 +220,7 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
                       🎨 Demo
                     </button>
                     <button
-                      onClick={() => handleDelete(lead.id, lead.business_name)}
+                      onClick={() => setConfirmDel({ id: lead.id, name: lead.business_name })}
                       className="p-1.5 rounded-md text-zinc-600 hover:text-red-400 hover:bg-red-400/10 transition-colors"
                     >
                       <Trash2 size={13} />
@@ -229,6 +240,15 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
       </div>
 
       {auditLead && <AuditPopup lead={auditLead} onClose={() => setAuditLead(null)} />}
+
+      <ConfirmDialog
+        open={confirmDel !== null}
+        loading={deleting}
+        title="Eliminar lead"
+        message={`Se eliminará "${confirmDel?.name}". Esta acción no se puede deshacer.`}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => { if (!deleting) setConfirmDel(null); }}
+      />
     </>
   );
 }

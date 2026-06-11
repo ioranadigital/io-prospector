@@ -31,7 +31,7 @@ emailQueue.process(async (job) => {
     await contactService.sendEmail({ to, subject, body });
 
     // Registrar actividad
-    await supabase.from('lead_activities').insert({
+    await supabase.from('io_pro_lead_activities').insert({
       lead_id,
       type: 'email',
       direction: 'outbound',
@@ -42,7 +42,7 @@ emailQueue.process(async (job) => {
 
     // Actualizar lead
     await supabase
-      .from('leads')
+      .from('io_pro_leads')
       .update({ last_contact_at: new Date().toISOString(), crm_status: 'contacted' })
       .eq('id', lead_id);
 
@@ -62,7 +62,7 @@ whatsappQueue.process(async (job) => {
     await contactService.sendWhatsApp({ phone, message });
 
     // Registrar actividad
-    await supabase.from('lead_activities').insert({
+    await supabase.from('io_pro_lead_activities').insert({
       lead_id,
       type: 'whatsapp',
       direction: 'outbound',
@@ -73,7 +73,7 @@ whatsappQueue.process(async (job) => {
 
     // Actualizar lead
     await supabase
-      .from('leads')
+      .from('io_pro_leads')
       .update({ last_contact_at: new Date().toISOString(), crm_status: 'contacted' })
       .eq('id', lead_id);
 
@@ -104,7 +104,7 @@ export const queueService = {
 
     // Obtener leads con email
     const { data: leads } = await supabase
-      .from('leads')
+      .from('io_pro_leads')
       .select('id, email, business_name')
       .in('id', lead_ids)
       .not('email', 'is', null);
@@ -137,7 +137,7 @@ export const queueService = {
 
     // Obtener leads con teléfono
     const { data: leads } = await supabase
-      .from('leads')
+      .from('io_pro_leads')
       .select('id, phone, business_name')
       .in('id', lead_ids)
       .not('phone', 'is', null);
