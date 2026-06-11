@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Search, BarChart3, Settings, Database, Zap,
-  ClipboardList, Activity, Users, BookOpen, SlidersHorizontal, Code
+  ClipboardList, Activity, Users, BookOpen, SlidersHorizontal, Code, Wrench, ChevronDown
 } from 'lucide-react';
 
 const NAV_SECTIONS = [
@@ -19,10 +19,18 @@ const NAV_SECTIONS = [
     title: 'Audit SEO',
     items: [
       { href: '/auditoria',         icon: Activity,           label: 'Auditoría',         desc: 'Analizar cualquier URL' },
-      { href: '/schema-analyzer',   icon: Code,               label: 'Schema.org',        desc: 'Validar datos estructurados' },
       { href: '/audit-resultados',  icon: ClipboardList,      label: 'Resultados',        desc: 'Revisar & guardar como lead' },
       { href: '/audit-historico',   icon: BarChart3,          label: 'Histórico',         desc: 'Resultados por cliente' },
       { href: '/audit-config',      icon: SlidersHorizontal,  label: 'Configuración',     desc: 'Checks, pesos, umbrales' },
+    ],
+    subsections: [
+      {
+        title: 'HERRAMIENTAS',
+        items: [
+          { href: '/schema-analyzer',       icon: Code,  label: 'Schema.org',      desc: 'Validar datos estructurados' },
+          { href: '/schema-analyzer-pro',   icon: Wrench, label: 'Schema.org PRO',  desc: 'Análisis avanzado (30+ tipos)' },
+        ]
+      }
     ]
   },
   {
@@ -74,6 +82,7 @@ export function Sidebar() {
               {section.title}
             </p>
             <div className="space-y-0.5">
+              {/* Items principales */}
               {section.items.map(({ href, icon: Icon, label, desc }) => {
                 const active = path === href || (href !== '/admin' && path.startsWith(href + '/'));
                 return (
@@ -95,6 +104,38 @@ export function Sidebar() {
                 );
               })}
             </div>
+
+            {/* Subsecciones */}
+            {section.subsections && section.subsections.map((subsection) => (
+              <div key={subsection.title} className="mt-3 ml-2">
+                <p className="text-[10px] font-semibold text-zinc-600 uppercase tracking-widest px-2 mb-1">
+                  {subsection.title}
+                </p>
+                <div className="space-y-0.5 border-l border-zinc-700/50 ml-3 pl-3">
+                  {subsection.items.map(({ href, icon: Icon, label, desc }) => {
+                    const active = path === href || (href !== '/admin' && path.startsWith(href + '/'));
+                    return (
+                      <Link
+                        key={`${href}-${label}`}
+                        href={href}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
+                          active
+                            ? 'bg-blue-600/20 text-blue-400 border border-blue-600/30'
+                            : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200'
+                        }`}
+                      >
+                        <Icon size={14} strokeWidth={active ? 2 : 1.5} className="flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate text-xs">{label}</p>
+                          <p className="text-[10px] text-zinc-600 truncate">{desc}</p>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+
             {idx < NAV_SECTIONS.length - 1 && (
               <div className="mt-4 border-t border-zinc-800/60" />
             )}
