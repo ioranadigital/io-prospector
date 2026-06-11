@@ -56,7 +56,7 @@ export default function SchemaAnalyzerProPage() {
     setResult(null);
 
     try {
-      const response = await fetch('/api/schema-analyzer-pro/analyze', {
+      const response = await fetch('/api/schema-analyzer-pro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: url.trim() }),
