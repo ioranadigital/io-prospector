@@ -128,7 +128,16 @@
       "Bash(Test-Path E:\\\\git\\\\app\\\\tools\\\\io-prospector\\\\master.env)",
       "Bash(git checkout *)",
       "Bash(git commit *)",
-      "Bash(pkill -f \"node.*server.js\")"
+      "Bash(pkill -f \"node.*server.js\")",
+      "Bash(pkill -f \"node server.js\")",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(npm list *)",
+      "Bash(Get-Process -Name node -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object Id, ProcessName, CommandLine)",
+      "Bash(Format-Table -AutoSize)",
+      "PowerShell(cd \"E:\\\\git\\\\tools\\\\io-prospector\" && npm run dev 2>&1 &)",
+      "PowerShell(cd \"E:\\\\git\\\\tools\\\\io-prospector\\\\backend\" && npm run dev 2>&1 &)",
+      "PowerShell(cd \"E:\\\\git\\\\tools\\\\io-prospector\\\\frontend\" && npm run dev 2>&1 &)"
     ]
   }
 }

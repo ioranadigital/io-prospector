@@ -17,7 +17,7 @@ import demoRoutes             from './routes/demo.routes.js';
 import configRoutes           from './routes/config.routes.js';
 import analyticsRoutes        from './routes/analytics.routes.js';
 import auditRoutes            from './routes/audit.routes.js';
-import schemaAnalyzerRoutes   from './routes/schema-analyzer.routes.js';
+// import schemaAnalyzerRoutes   from './routes/schema-analyzer.routes.js'; // Eliminado - usando solo PRO
 import schemaAnalyzerProRoutes from './routes/schema-analyzer-pro.routes.js';
 
 const app  = express();
@@ -58,7 +58,7 @@ app.use('/api/demo',               demoRoutes);
 app.use('/api/config',             configRoutes);
 app.use('/api/analytics',          analyticsRoutes);
 app.use('/api/audit',              auditRoutes);
-app.use('/api/schema-analyzer',    schemaAnalyzerRoutes);
+// app.use('/api/schema-analyzer',    schemaAnalyzerRoutes); // Eliminado - usando solo PRO
 app.use('/api/schema-analyzer-pro', schemaAnalyzerProRoutes);
 
 // Demo pública (sin prefijo /api)

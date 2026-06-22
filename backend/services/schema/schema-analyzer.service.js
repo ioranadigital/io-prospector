@@ -6,6 +6,9 @@
 import fetch from 'node-fetch';
 import { extractJsonLdScripts, flattenSchema, extractSchemaData } from './schema-extractor.js';
 import { SchemaValidator } from './schema-validators.js';
+import { SchemaRecommender } from './schema-recommender.js';
+import { SchemaFAQGenerator } from './schema-faq-generator.js';
+import { SchemaAuditEngine } from './schema-audit-engine.js';
 import { SCHEMA_DICTIONARY, getSchemaDefinition, getCategory } from './schema-dictionary.js';
 import { logger } from '../../utils/logger.js';
 
@@ -23,8 +26,15 @@ export class SchemaAnalyzerService {
   /**
    * MÉTODO PRINCIPAL: Analizar URL
    * Retorna análisis completo de Schema.org en la URL
+   *
+   * @param {string} url - URL a analizar
+   * @param {Object} options - Opciones de validación cruzada
+   * @param {string} options.expectedType - Tipo de schema esperado (legado, un solo tipo)
+   * @param {string} options.expectedCategory - Categoría del tipo esperado (legado)
+   * @param {Array} options.expectedSchemas - Array de esquemas esperados (múltiples)
+   * @param {string} options.validationMode - Modo de validación (ANALYTICAL, SINGLE_TYPE_CHECK, MULTI_SCHEMA_CHECK)
    */
-  async analyzeUrl(url) {
+  async analyzeUrl(url, options = {}) {
     const startTime = Date.now();
 
     try {
@@ -40,10 +50,20 @@ export class SchemaAnalyzerService {
       // 4. Validar cada schema
       const analyzedSchemas = this._analyzeSchemas(extractedScripts.schemas);
 
-      // 5. Compilar resultado
-      const result = this._compileResult(normalizedUrl, analyzedSchemas, extractedScripts);
+      // 5. Compilar resultado (con parámetros de validación cruzada)
+      const result = this._compileResult(normalizedUrl, analyzedSchemas, extractedScripts, html, options);
 
       result.executionTime = Date.now() - startTime;
+
+      // 6. Agregar contexto de validación cruzada al resultado
+      if (options.expectedType) {
+        result.expectedType = options.expectedType;
+        result.expectedCategory = options.expectedCategory;
+      }
+      if (options.expectedSchemas && options.expectedSchemas.length > 0) {
+        result.expectedSchemas = options.expectedSchemas;
+        result.validationMode = options.validationMode || 'MULTI_SCHEMA_CHECK';
+      }
 
       logger.info(`Schema analysis completed for ${normalizedUrl} in ${result.executionTime}ms`);
       return result;
@@ -177,8 +197,15 @@ export class SchemaAnalyzerService {
 
   /**
    * Compilar resultado final
+   * @param {string} url - URL analizada
+   * @param {Array} analyzedSchemas - Schemas analizados
+   * @param {Object} extractedScripts - Scripts extraídos
+   * @param {string} html - Contenido HTML
+   * @param {Object} options - Opciones de validación cruzada
+   * @param {string} options.expectedType - Tipo de schema esperado para validación cruzada
+   * @param {string} options.expectedCategory - Categoría del tipo esperado
    */
-  _compileResult(url, analyzedSchemas, extractedScripts) {
+  _compileResult(url, analyzedSchemas, extractedScripts, html = '', options = {}) {
     // Identificar tipo principal (el primero válido y con definición)
     const primarySchema = analyzedSchemas.find(s => s.definition) || analyzedSchemas[0];
 
@@ -207,23 +234,117 @@ export class SchemaAnalyzerService {
       );
     });
 
+    // ═══════════════════════════════════════════════════════════════
+    // VALIDACIÓN CRUZADA: Modo de múltiples esquemas (NUEVO)
+    // ═══════════════════════════════════════════════════════════════
+    let missingSchemas = [];
+    let foundSchemas = [];
+
+    if (options.expectedSchemas && options.expectedSchemas.length > 0) {
+      // Validación de múltiples esquemas
+      options.expectedSchemas.forEach((expectedSchema) => {
+        const schemaFound = analyzedSchemas.some(s => s.type === expectedSchema.type);
+
+        if (schemaFound) {
+          foundSchemas.push(expectedSchema.type);
+        } else {
+          missingSchemas.push(expectedSchema);
+
+          // Agregar alerta crítica para cada schema faltante
+          allAlerts.unshift({
+            severity: 'CRITICAL',
+            type: 'MISSING_EXPECTED_SCHEMA',
+            property: expectedSchema.type,
+            entityType: expectedSchema.type,
+            message: `Falta entidad obligatoria ${expectedSchema.type} (${expectedSchema.category}) del grafo esperado`,
+            impact: 'El grafo de datos estructurados no está completo según la configuración solicitada',
+            recommendation: `Implementar schema ${expectedSchema.type} en la página. Es fundamental para esta auditoría.`,
+          });
+        }
+      });
+    } else if (options.expectedType) {
+      // Validación legada: un solo tipo esperado
+      const expectedTypeFound = analyzedSchemas.some(s => s.type === options.expectedType);
+
+      if (!expectedTypeFound) {
+        missingSchemas.push({ type: options.expectedType, category: options.expectedCategory });
+        foundSchemas = [];
+
+        allAlerts.unshift({
+          severity: 'CRITICAL',
+          type: 'MISSING_EXPECTED_SCHEMA',
+          property: options.expectedType,
+          entityType: options.expectedType,
+          message: `Falta entidad obligatoria ${options.expectedType} para la categoría seleccionada (${options.expectedCategory})`,
+          impact: 'El sitio no está optimizado para esta categoría de búsqueda',
+          recommendation: `Implementar schema ${options.expectedType} en la página. Es fundamental para optimizar resultados en esta categoría.`,
+        });
+      } else {
+        foundSchemas.push(options.expectedType);
+      }
+    }
+
     // Alertas más críticas primero
     allAlerts.sort((a, b) => {
       const severityOrder = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
       return severityOrder[a.severity] - severityOrder[b.severity];
     });
 
-    // Calcular scores
+    // ═══════════════════════════════════════════════════════════════
+    // CALCULAR SCORES - Con penalización según esquemas faltantes
+    // ═══════════════════════════════════════════════════════════════
+    let averageScore = Math.round(
+      analyzedSchemas.reduce((sum, s) => sum + s.score, 0) / analyzedSchemas.length || 0
+    );
+
+    // Penalizar por esquemas faltantes
+    if (missingSchemas.length > 0) {
+      // Penalización: (esquemas encontrados / total esperados) * score base
+      const expectedCount = options.expectedSchemas?.length || 1;
+      const foundCount = foundSchemas.length;
+      const completionRatio = expectedCount > 0 ? foundCount / expectedCount : 0;
+
+      // Score penalizado: máximo 40% si faltan todos, proporcional si faltan algunos
+      averageScore = Math.max(0, Math.round(averageScore * completionRatio * 0.5));
+    }
+
     const scores = {
-      average: Math.round(
-        analyzedSchemas.reduce((sum, s) => sum + s.score, 0) / analyzedSchemas.length || 0
-      ),
+      average: averageScore,
       byType: Object.fromEntries(analyzedSchemas.map(s => [s.type, s.score])),
+      validationMode: options.expectedSchemas?.length ? 'MULTI_SCHEMA_CHECK' : (options.expectedType ? 'SINGLE_TYPE_CHECK' : 'ANALYTICAL'),
+      expectedSchemasSummary: options.expectedSchemas?.length ? {
+        total: options.expectedSchemas.length,
+        found: foundSchemas.length,
+        missing: missingSchemas.length,
+        foundSchemas,
+        missingSchemas: missingSchemas.map(s => s.type),
+      } : undefined,
     };
+
+    // Obtener recomendaciones de schemas faltantes (con análisis mejorado de tipología)
+    const recommendations = SchemaRecommender.recommendSchemas(url, analyzedSchemas, html);
+
+    // Generar FAQs contextuales validadas por tipología
+    const faqs = SchemaFAQGenerator.generateFAQs(recommendations.pageType, url);
+
+    // Generar auditoría técnica/semántica
+    const audit = SchemaAuditEngine.auditUrl(url, analyzedSchemas, recommendations.pageType);
 
     return {
       url,
       analyzedAt: new Date().toISOString(),
+
+      // ═══════════════════════════════════════════════════════════════
+      // CONTEXTO DE VALIDACIÓN CRUZADA
+      // ═══════════════════════════════════════════════════════════════
+      validationContext: options.expectedType ? {
+        mode: 'CROSS_CHECK',
+        expectedType: options.expectedType,
+        expectedCategory: options.expectedCategory,
+        typeFound: analyzedSchemas.some(s => s.type === options.expectedType),
+      } : {
+        mode: 'ANALYTICAL',
+      },
 
       // Resumen
       summary: {
@@ -250,6 +371,15 @@ export class SchemaAnalyzerService {
       // Scores
       scores,
       byCategory,
+
+      // Recomendaciones
+      recommendations,
+
+      // FAQs generadas (validación semántica)
+      faqs,
+
+      // Auditoría técnica/semántica (Motor de Revisión)
+      audit,
 
       // Meta
       extractionStats: extractedScripts.stats,

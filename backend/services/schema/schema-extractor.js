@@ -209,25 +209,29 @@ export function extractSchemaData(schema, definition) {
   }
 
   // Extraer propiedades requeridas
-  definition.required?.forEach(prop => {
-    const value = extractNestedValue(schema, prop);
-    if (value) {
-      extracted.properties[prop] = value;
-    }
-  });
+  if (Array.isArray(definition.required)) {
+    definition.required.forEach(prop => {
+      const value = extractNestedValue(schema, prop);
+      if (value) {
+        extracted.properties[prop] = value;
+      }
+    });
+  }
 
   // Extraer propiedades recomendadas (si existen)
-  definition.recommended?.forEach(prop => {
-    const value = extractNestedValue(schema, prop);
-    if (value) {
-      extracted.properties[prop] = value;
-    }
-  });
+  if (Array.isArray(definition.recommended)) {
+    definition.recommended.forEach(prop => {
+      const value = extractNestedValue(schema, prop);
+      if (value) {
+        extracted.properties[prop] = value;
+      }
+    });
+  }
 
   // Datos adicionales (primeros 5 campos no listados)
   const listedProps = new Set([
-    ...definition.required,
-    ...definition.recommended,
+    ...(Array.isArray(definition.required) ? definition.required : []),
+    ...(Array.isArray(definition.recommended) ? definition.recommended : []),
     '@context',
     '@type',
     'type',

@@ -27,7 +27,6 @@ const NAV_SECTIONS = [
       {
         title: 'HERRAMIENTAS',
         items: [
-          { href: '/schema-analyzer',       icon: Code,  label: 'Schema.org',      desc: 'Validar datos estructurados' },
           { href: '/schema-analyzer-pro',   icon: Wrench, label: 'Schema.org PRO',  desc: 'Análisis avanzado (30+ tipos)' },
         ]
       }

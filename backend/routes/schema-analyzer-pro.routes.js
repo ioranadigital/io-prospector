@@ -34,7 +34,7 @@ const router = Router();
  * }
  */
 router.post('/analyze', async (req, res) => {
-  const { url } = req.body;
+  const { url, expectedType, expectedCategory, expectedSchemas, validationMode } = req.body;
 
   if (!url) {
     return res.status(400).json({
@@ -45,7 +45,21 @@ router.post('/analyze', async (req, res) => {
 
   try {
     logger.info(`📊 Iniciando análisis Schema.org avanzado: ${url}`);
-    const result = await schemaAnalyzer.analyzeUrl(url);
+    if (validationMode === 'MULTI_SCHEMA_CHECK' && expectedSchemas?.length) {
+      logger.info(`   Modo: MULTI_SCHEMA_CHECK (${expectedSchemas.length} esquemas esperados)`);
+    } else if (expectedType) {
+      logger.info(`   Modo: SINGLE_TYPE_CHECK (esperado: ${expectedType})`);
+    }
+
+    // Pasar los parámetros de validación cruzada al analizador
+    const result = await schemaAnalyzer.analyzeUrl(url, {
+      // Soporte para modo legado (un solo tipo)
+      expectedType,
+      expectedCategory,
+      // Nuevo: soporte para múltiples esquemas
+      expectedSchemas: expectedSchemas || [],
+      validationMode: validationMode || 'ANALYTICAL',
+    });
 
     // Si hubo error al analizar
     if (!result.success === false) {
