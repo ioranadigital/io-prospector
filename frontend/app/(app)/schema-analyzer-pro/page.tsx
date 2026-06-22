@@ -84,14 +84,15 @@ const SCHEMA_CATEGORIES = {
   },
 };
 
-const PAGE_TYPE_CONFIG: Record<string, { label: string; badge: string; color: string; icon: string }> = {
-  sección:    { label: 'Sección',    badge: 'bg-blue-900/50 text-blue-300 border-blue-700',   color: 'border-l-blue-500',   icon: '📂' },
-  subsección: { label: 'Subsección', badge: 'bg-purple-900/50 text-purple-300 border-purple-700', color: 'border-l-purple-500', icon: '📁' },
-  producto:   { label: 'Producto',   badge: 'bg-green-900/50 text-green-300 border-green-700',  color: 'border-l-green-500',  icon: '🛍️' },
-  blog:       { label: 'Blog',       badge: 'bg-orange-900/50 text-orange-300 border-orange-700', color: 'border-l-orange-500', icon: '✍️' },
-  home:       { label: 'Home',       badge: 'bg-cyan-900/50 text-cyan-300 border-cyan-700',    color: 'border-l-cyan-500',   icon: '🏠' },
-  contacto:   { label: 'Contacto',   badge: 'bg-yellow-900/50 text-yellow-300 border-yellow-700', color: 'border-l-yellow-500', icon: '📞' },
-  about:      { label: 'About',      badge: 'bg-pink-900/50 text-pink-300 border-pink-700',    color: 'border-l-pink-500',   icon: 'ℹ️' },
+const PAGE_TYPE_CONFIG: Record<string, { label: string; badge: string; color: string; icon: string; pageType: string }> = {
+  home:       { label: 'Home',       badge: 'bg-cyan-900/50 text-cyan-300 border-cyan-700',       color: 'border-l-cyan-500',   icon: '🏠', pageType: 'HOME_PAGE' },
+  sección:    { label: 'Sección',    badge: 'bg-blue-900/50 text-blue-300 border-blue-700',       color: 'border-l-blue-500',   icon: '📂', pageType: 'SECTION_PAGE' },
+  subsección: { label: 'Subsección', badge: 'bg-purple-900/50 text-purple-300 border-purple-700', color: 'border-l-purple-500', icon: '📁', pageType: 'SUBSECTION_PAGE' },
+  producto:   { label: 'Producto',   badge: 'bg-green-900/50 text-green-300 border-green-700',    color: 'border-l-green-500',  icon: '🛍️', pageType: 'PRODUCT_PAGE' },
+  blog:       { label: 'Blog',       badge: 'bg-orange-900/50 text-orange-300 border-orange-700', color: 'border-l-orange-500', icon: '✍️', pageType: 'BLOG_PAGE' },
+  artículo:   { label: 'Artículo',   badge: 'bg-rose-900/50 text-rose-300 border-rose-700',       color: 'border-l-rose-500',   icon: '📰', pageType: 'ARTICLE_PAGE' },
+  contacto:   { label: 'Contacto',   badge: 'bg-yellow-900/50 text-yellow-300 border-yellow-700', color: 'border-l-yellow-500', icon: '📞', pageType: 'CONTACT_PAGE' },
+  about:      { label: 'About',      badge: 'bg-pink-900/50 text-pink-300 border-pink-700',       color: 'border-l-pink-500',   icon: 'ℹ️', pageType: 'ABOUT_PAGE' },
 };
 
 const PRIORITY_BADGE: Record<string, string> = {
@@ -103,6 +104,7 @@ const PRIORITY_BADGE: Record<string, string> = {
 
 export default function SchemaAnalyzerProPage() {
   const [url, setUrl] = useState('');
+  const [selectedType, setSelectedType] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -119,10 +121,19 @@ export default function SchemaAnalyzerProPage() {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4006/api';
+
+      // Si el usuario seleccionó tipo, lo mandamos para que el backend no auto-detecte
+      const body: any = { url: url.trim() };
+      if (selectedType) {
+        const config = PAGE_TYPE_CONFIG[selectedType];
+        body.manualPageType = config.pageType;
+        body.manualTipologia = selectedType;
+      }
+
       const response = await fetch(`${apiUrl}/schema-analyzer-pro/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: url.trim() }),
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
@@ -166,6 +177,41 @@ export default function SchemaAnalyzerProPage() {
         <div className="space-y-2">
           <h1 className="text-4xl font-bold text-white">Schema.org Analyzer PRO</h1>
           <p className="text-gray-400">Análisis avanzado de 30+ entidades Schema.org</p>
+        </div>
+
+        {/* Selector de tipo de página */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-zinc-500 text-xs font-medium">Tipo de página:</span>
+            {Object.entries(PAGE_TYPE_CONFIG).map(([key, config]) => {
+              const isSelected = selectedType === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setSelectedType(isSelected ? null : key)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                    isSelected
+                      ? `${config.badge} ring-2 ring-offset-2 ring-offset-zinc-950 ring-current`
+                      : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:border-zinc-500 hover:text-zinc-300'
+                  }`}
+                >
+                  <span>{config.icon}</span>
+                  {config.label}
+                </button>
+              );
+            })}
+            {selectedType && (
+              <button
+                onClick={() => setSelectedType(null)}
+                className="text-zinc-600 hover:text-zinc-400 text-xs ml-1"
+              >
+                × auto-detectar
+              </button>
+            )}
+          </div>
+          {!selectedType && (
+            <p className="text-zinc-600 text-xs">Sin selección → se auto-detecta por URL y HTML</p>
+          )}
         </div>
 
         {/* Search Bar */}

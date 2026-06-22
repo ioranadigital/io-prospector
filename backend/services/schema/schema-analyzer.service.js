@@ -321,14 +321,35 @@ export class SchemaAnalyzerService {
       } : undefined,
     };
 
-    // Obtener recomendaciones de schemas faltantes (con análisis mejorado de tipología)
-    const recommendations = SchemaRecommender.recommendSchemas(url, analyzedSchemas, html);
+    // Obtener recomendaciones — si viene tipo manual, lo usamos directamente
+    let recommendations;
+    if (options.manualPageType) {
+      const foundTypes = analyzedSchemas.map(s => s.type);
+      const recs = SchemaRecommender._getRecommendationsByType(options.manualPageType, foundTypes);
+      recommendations = {
+        pageType: options.manualPageType,
+        recommendations: recs,
+        implementedCount: analyzedSchemas.length,
+        recommendedCount: recs.length,
+        completeness: Math.round((analyzedSchemas.length / (analyzedSchemas.length + recs.length || 1)) * 100),
+        manual: true,
+      };
+    } else {
+      recommendations = SchemaRecommender.recommendSchemas(url, analyzedSchemas, html);
+    }
 
     // Generar FAQs contextuales validadas por tipología
     const faqs = SchemaFAQGenerator.generateFAQs(recommendations.pageType, url);
 
-    // Generar auditoría técnica/semántica
-    const audit = SchemaAuditEngine.auditUrl(url, analyzedSchemas, recommendations.pageType);
+    // Generar auditoría técnica/semántica (usa tipo manual si viene)
+    const auditPageType = options.manualPageType || recommendations.pageType;
+    const audit = SchemaAuditEngine.auditUrl(url, analyzedSchemas, auditPageType);
+
+    // Si hay tipo manual, sobreescribir la tipología detectada en el audit
+    if (options.manualPageType && options.manualTipologia) {
+      audit.tipologia_detectada = options.manualTipologia;
+      audit.tipologia_manual = true;
+    }
 
     return {
       url,
