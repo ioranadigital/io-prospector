@@ -36,7 +36,9 @@ export class SchemaRecommender {
     // Mapear tipologia a pageType para compatibilidad con recomendaciones existentes
     const tipoliaToPageType = {
       home: 'HOME_PAGE',
-      categoria: 'CATEGORY_PAGE',
+      seccion: 'SECTION_PAGE',
+      subseccion: 'SUBSECTION_PAGE',
+      categoria: 'SECTION_PAGE',   // legacy
       producto: 'PRODUCT_PAGE',
       blog: 'BLOG_PAGE',
       articulo: 'ARTICLE_PAGE',
@@ -83,28 +85,73 @@ export class SchemaRecommender {
           reason: 'Mejora navegación en SERP',
         },
       ],
-      CATEGORY_PAGE: [
+      SECTION_PAGE: [
         {
           type: 'CollectionPage',
-          priority: 'HIGH',
-          reason: 'Indica que es una colección de productos',
-          fields: ['name', 'description'],
+          priority: 'CRITICAL',
+          reason: 'Define la sección como colección de contenido/productos',
+          fields: ['name', 'description', 'url'],
         },
         {
           type: 'ItemList',
           priority: 'HIGH',
-          reason: 'Lista los productos de la categoría',
-          fields: ['itemListElement'],
-        },
-        {
-          type: 'Organization',
-          priority: 'MEDIUM',
-          reason: 'Identifica la tienda',
+          reason: 'Lista los elementos de la sección',
+          fields: ['itemListElement', 'numberOfItems'],
         },
         {
           type: 'BreadcrumbList',
+          priority: 'HIGH',
+          reason: 'Navegación en SERP desde la raíz del sitio',
+          fields: ['itemListElement'],
+        },
+        {
+          type: 'WebSite',
           priority: 'MEDIUM',
-          reason: 'Mejora navegación en SERP',
+          reason: 'Ancla la sección al sitio principal',
+        },
+      ],
+      SUBSECTION_PAGE: [
+        {
+          type: 'CollectionPage',
+          priority: 'CRITICAL',
+          reason: 'Define la subsección como colección anidada',
+          fields: ['name', 'description', 'url', 'isPartOf'],
+        },
+        {
+          type: 'BreadcrumbList',
+          priority: 'CRITICAL',
+          reason: 'Esencial para mostrar jerarquía en SERP (Sección > Subsección)',
+          fields: ['itemListElement'],
+        },
+        {
+          type: 'ItemList',
+          priority: 'HIGH',
+          reason: 'Lista los productos o contenidos de la subsección',
+          fields: ['itemListElement', 'numberOfItems'],
+        },
+        {
+          type: 'Organization',
+          priority: 'LOW',
+          reason: 'Identifica la entidad propietaria',
+        },
+      ],
+      CATEGORY_PAGE: [  // legacy alias → SECTION_PAGE
+        {
+          type: 'CollectionPage',
+          priority: 'CRITICAL',
+          reason: 'Define la sección como colección de contenido/productos',
+          fields: ['name', 'description', 'url'],
+        },
+        {
+          type: 'ItemList',
+          priority: 'HIGH',
+          reason: 'Lista los elementos de la sección',
+          fields: ['itemListElement'],
+        },
+        {
+          type: 'BreadcrumbList',
+          priority: 'HIGH',
+          reason: 'Navegación en SERP desde la raíz del sitio',
         },
       ],
       BLOG_PAGE: [

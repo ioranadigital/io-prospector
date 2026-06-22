@@ -39,6 +39,24 @@ export class SchemaAuditEngine {
 
     // DIRECTRIZ POR TIPOLOGÍA
     const faqsConfig = {
+      SECTION_PAGE: {
+        requiere_faqs: true,
+        enfoque_semantico_obligatorio: 'Criterios de elección de la sección, beneficios de la gama, guías de compra (Niveles 1 y 4)',
+        faqs_required: [
+          { numero: 1, intencion_pregunta: 'Guía de elección dentro de la sección', keywords_del_cliente_a_incluir: ['cómo elegir', 'qué es', 'diferencias'], nivel_seo: 'Nivel 1 - Información General' },
+          { numero: 2, intencion_pregunta: 'Características y ventajas de la gama', keywords_del_cliente_a_incluir: ['características', 'ventajas', 'tipos'], nivel_seo: 'Nivel 4 - Profundización' },
+          { numero: 3, intencion_pregunta: 'Comparativa de opciones dentro de la sección', keywords_del_cliente_a_incluir: ['comparativa', 'mejor', 'diferencias entre'], nivel_seo: 'Nivel 1 - Información General' },
+        ],
+      },
+      SUBSECTION_PAGE: {
+        requiere_faqs: true,
+        enfoque_semantico_obligatorio: 'Consultas específicas de la subcategoría, dudas de compra, diferencias dentro del nicho (Niveles 3 y 5)',
+        faqs_required: [
+          { numero: 1, intencion_pregunta: 'Especificidad de la subcategoría: qué incluye y qué diferencia a estos productos', keywords_del_cliente_a_incluir: ['qué son', 'diferencia', 'subcategoría'], nivel_seo: 'Nivel 3 - Solución de Problemas' },
+          { numero: 2, intencion_pregunta: 'Criterios de selección avanzados dentro del nicho', keywords_del_cliente_a_incluir: ['cómo elegir', 'criterios', 'mejor opción'], nivel_seo: 'Nivel 5 - Transaccional' },
+          { numero: 3, intencion_pregunta: 'Dudas habituales de compra en esta subcategoría', keywords_del_cliente_a_incluir: ['precio', 'calidad', 'qué comprar'], nivel_seo: 'Nivel 5 - Transaccional' },
+        ],
+      },
       CATEGORY_PAGE: {
         requiere_faqs: true,
         enfoque_semantico_obligatorio: 'Criterios de elección de gama, materiales, tendencias del sector (Niveles 1 y 4)',
@@ -211,6 +229,31 @@ export class SchemaAuditEngine {
                 email: '[Email]',
               },
             },
+          ],
+        },
+      },
+      SECTION_PAGE: {
+        esquemas_must_have: ['CollectionPage', 'ItemList', 'BreadcrumbList', 'WebSite'],
+        descripcion: 'Sección principal: Colección raíz de contenido. Breadcrumb desde home + ItemList de subcategorías o productos.',
+        schema_json_ld_template: {
+          '@context': 'https://schema.org',
+          '@graph': [
+            { '@type': 'CollectionPage', '@id': 'section-page', name: '[Nombre de la Sección]', description: '[Descripción]', url: '[URL Sección]', mainEntity: { '@id': 'itemlist-section' } },
+            { '@type': 'ItemList', '@id': 'itemlist-section', name: '[Lista de la Sección]', numberOfItems: '[N]', itemListElement: [ { '@type': 'ListItem', position: 1, url: '[URL item]', name: '[Nombre item]' } ] },
+            { '@type': 'BreadcrumbList', itemListElement: [ { '@type': 'ListItem', position: 1, name: 'Inicio', item: '[URL Home]' }, { '@type': 'ListItem', position: 2, name: '[Sección]', item: '[URL Sección]' } ] },
+            { '@type': 'WebSite', name: '[Sitio Web]', url: '[URL]' },
+          ],
+        },
+      },
+      SUBSECTION_PAGE: {
+        esquemas_must_have: ['CollectionPage', 'BreadcrumbList', 'ItemList'],
+        descripcion: 'Subsección: Requiere BreadcrumbList con jerarquía completa (Inicio > Sección > Subsección) para que Google muestre la ruta en SERP.',
+        schema_json_ld_template: {
+          '@context': 'https://schema.org',
+          '@graph': [
+            { '@type': 'CollectionPage', '@id': 'subsection-page', name: '[Nombre de la Subsección]', description: '[Descripción]', url: '[URL Subsección]', isPartOf: { '@id': '[URL Sección Padre]' }, mainEntity: { '@id': 'itemlist-sub' } },
+            { '@type': 'BreadcrumbList', itemListElement: [ { '@type': 'ListItem', position: 1, name: 'Inicio', item: '[URL Home]' }, { '@type': 'ListItem', position: 2, name: '[Sección]', item: '[URL Sección]' }, { '@type': 'ListItem', position: 3, name: '[Subsección]', item: '[URL Subsección]' } ] },
+            { '@type': 'ItemList', '@id': 'itemlist-sub', name: '[Lista Subsección]', numberOfItems: '[N]', itemListElement: [ { '@type': 'ListItem', position: 1, url: '[URL Producto]', name: '[Nombre Producto]' } ] },
           ],
         },
       },
@@ -428,10 +471,12 @@ export class SchemaAuditEngine {
   static _mapPageTypeToSpanish(pageType) {
     const mapping = {
       HOME_PAGE: 'home',
-      CATEGORY_PAGE: 'categoria',
+      SECTION_PAGE: 'sección',
+      SUBSECTION_PAGE: 'subsección',
+      CATEGORY_PAGE: 'sección',   // legacy
       PRODUCT_PAGE: 'producto',
       BLOG_PAGE: 'blog',
-      ARTICLE_PAGE: 'articulo',
+      ARTICLE_PAGE: 'artículo',
       CONTACT_PAGE: 'contacto',
       ABOUT_PAGE: 'about',
       GENERIC_PAGE: 'genérica',

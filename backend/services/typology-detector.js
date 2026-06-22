@@ -358,47 +358,42 @@ export class TypologyDetector {
       };
     }
 
-    // REGLA 7: Categoría (PRIORITIZE Category URL patterns and multi-segment URLs)
+    // REGLA 7: Categoría / Sección / Subsección
     if (urlAnalysis.hasCategoryPattern) {
+      // Subsección: patrón de categoría + 3 o más segmentos (ej: /tienda/ropa/camisetas/)
+      if (urlAnalysis.segmentCount >= 3) {
+        return {
+          tipologia: 'subseccion',
+          nivel: 3,
+          confidence: 0.85,
+        };
+      }
+      // Sección: patrón de categoría con 1-2 segmentos (ej: /tienda/ o /tienda/ropa/)
       return {
-        tipologia: 'categoria',
+        tipologia: 'seccion',
         nivel: 2,
         confidence: 0.85,
       };
     }
 
-    // REGLA 8: Si tiene 2+ segmentos sin otros indicadores, es categoría por defecto
-    if (urlAnalysis.segmentCount >= 2) {
-      return {
-        tipologia: 'categoria',
-        nivel: 2,
-        confidence: 0.6,
-      };
-    }
-
-    // REGLA 9: Por defecto según profundidad
-    if (urlAnalysis.segmentCount === 1) {
-      return {
-        tipologia: 'categoria',
-        nivel: 2,
-        confidence: 0.5,
-      };
+    // REGLA 8: Por profundidad de URL
+    if (urlAnalysis.segmentCount >= 3) {
+      // 3+ segmentos sin patrón de producto → subsección
+      if (htmlAnalysis.productScore >= 6) {
+        return { tipologia: 'producto', nivel: 3, confidence: 0.5 };
+      }
+      return { tipologia: 'subseccion', nivel: 3, confidence: 0.6 };
     }
 
     if (urlAnalysis.segmentCount === 2) {
-      // Con 2 segmentos, preferir categoría a menos que tenga indicadores de producto
       if (htmlAnalysis.productScore >= 6) {
-        return {
-          tipologia: 'producto',
-          nivel: 3,
-          confidence: 0.5,
-        };
+        return { tipologia: 'producto', nivel: 3, confidence: 0.5 };
       }
-      return {
-        tipologia: 'categoria',
-        nivel: 2,
-        confidence: 0.5,
-      };
+      return { tipologia: 'seccion', nivel: 2, confidence: 0.55 };
+    }
+
+    if (urlAnalysis.segmentCount === 1) {
+      return { tipologia: 'seccion', nivel: 2, confidence: 0.5 };
     }
 
     // Fallback
