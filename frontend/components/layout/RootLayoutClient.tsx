@@ -1,11 +1,15 @@
 'use client';
+
+import { Suspense } from 'react';
 import { Sidebar } from './Sidebar';
 import { Toaster } from 'react-hot-toast';
 
 export function RootLayoutClient({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Sidebar />
+      <Suspense fallback={<div />}>
+        <Sidebar />
+      </Suspense>
       <main className="ml-60 flex-1 min-w-0 p-8 overflow-y-auto overflow-x-hidden min-h-screen">
         {children}
       </main>

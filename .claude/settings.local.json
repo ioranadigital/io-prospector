@@ -137,7 +137,14 @@
       "Bash(Format-Table -AutoSize)",
       "PowerShell(cd \"E:\\\\git\\\\tools\\\\io-prospector\" && npm run dev 2>&1 &)",
       "PowerShell(cd \"E:\\\\git\\\\tools\\\\io-prospector\\\\backend\" && npm run dev 2>&1 &)",
-      "PowerShell(cd \"E:\\\\git\\\\tools\\\\io-prospector\\\\frontend\" && npm run dev 2>&1 &)"
+      "PowerShell(cd \"E:\\\\git\\\\tools\\\\io-prospector\\\\frontend\" && npm run dev 2>&1 &)",
+      "Bash(grep -c '//' E:/git/tools/io-prospector/frontend/app/\\\\\\(app\\\\\\)/schema-analyzer-pro/page.tsx)",
+      "Bash(echo \"Total // comments: $\\(grep -c '//' E:/git/tools/io-prospector/frontend/app/\\\\\\(app\\\\\\)/schema-analyzer-pro/page.tsx\\)\")",
+      "Bash(grep -v \"className\\\\|http\\\\|'/\\\\|\\\\\"/\")",
+      "Bash(awk -F\"'\" 'NF % 2 == 0 {print NR\": \" $0}' \"E:/git/tools/io-prospector/frontend/app/\\(app\\)/schema-analyzer-pro/page.tsx\")",
+      "Bash(awk -F\"'\" '{print NF-1, NR\": \"$0}' \"frontend/app/\\(app\\)/schema-analyzer-pro/page.tsx\")",
+      "Bash(awk '$1 % 2 == 1 {print}')",
+      "Bash(grep -E \"\\\\.\\(tsx?|js\\)$\")"
     ]
   }
 }
