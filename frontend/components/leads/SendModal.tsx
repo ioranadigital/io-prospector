@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase, type MessageTemplate } from '@/lib/supabase';
+import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 import { X, Loader, Mail, MessageCircle, Copy } from 'lucide-react';
 
@@ -133,22 +134,22 @@ export function SendModal({
         gmb_status: gmbClaimed ? `${gmbRating}/5 ⭐ (${reviewCount} reseñas)` : 'No reclamado en Google Maps',
       };
 
-      const fnName = type === 'email' ? 'send-email' : 'send-whatsapp';
       const recipient = type === 'email' ? email : phone;
+      const body = {
+        leadId,
+        [type === 'email' ? 'email' : 'phone']: recipient,
+        templateId: selectedTemplate,
+        templateName,
+        variables,
+      };
 
-      const { data, error } = await supabase.functions.invoke(fnName, {
-        body: {
-          leadId,
-          [type === 'email' ? 'email' : 'phone']: recipient,
-          templateId: selectedTemplate,
-          templateName,
-          variables,
-        },
-      });
+      if (type === 'email') {
+        await api.sendEmail(body);
+      } else {
+        await api.sendWhatsApp(body);
+      }
 
-      if (error) throw error;
-
-      toast.success(`${type === 'email' ? 'Email' : 'WhatsApp'} enviado (Mock en console)`);
+      toast.success(`${type === 'email' ? 'Email' : 'WhatsApp'} enviado`);
       onSent();
       onClose();
     } catch (error) {

@@ -1,6 +1,6 @@
 // Cliente HTTP centralizado — todas las llamadas al backend pasan por aquí
 
-const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4006/api';
 console.log('API BASE URL:', BASE);
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {

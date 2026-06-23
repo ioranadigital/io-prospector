@@ -12,58 +12,51 @@ interface TierSummaryModalProps {
 export function TierSummaryModal({ lead, isOpen, onClose }: TierSummaryModalProps) {
   if (!isOpen) return null;
 
+  // Cada check usa campos reales de io_pro_leads (Lead type en lib/supabase.ts)
   const tiers = [
     {
-      label: 'TIER 1',
+      label: 'TIER 1 — Contacto & Presencia',
       color: 'bg-red-500',
       items: [
-        { key: 'has_phone', label: 'Teléfono' },
-        { key: 'has_email', label: 'Email' },
-        { key: 'has_contact_form', label: 'Formulario de contacto' },
-        { key: 'has_address', label: 'Dirección' },
-        { key: 'has_ssl', label: 'SSL' },
-        { key: 'has_privacy_policy', label: 'Política de privacidad' },
-        { key: 'has_trust_badges', label: 'Badges de confianza' },
-        { key: 'has_gmb', label: 'Google Business Profile' }
+        { label: 'Email',                   has: !!lead.email },
+        { label: 'Teléfono',                has: !!lead.phone },
+        { label: 'HTTPS / SSL',             has: !!lead.ssl_active },
+        { label: 'Google Business reclamado', has: !!lead.gmb_claimed },
       ]
     },
     {
-      label: 'TIER 2',
+      label: 'TIER 2 — Señales SEO',
       color: 'bg-yellow-500',
       items: [
-        { key: 'has_h1', label: 'H1 Tag' },
-        { key: 'has_cta', label: 'Call-to-action' },
-        { key: 'has_meta_desc', label: 'Meta description' },
-        { key: 'has_analytics', label: 'Analytics' },
-        { key: 'has_og_tags', label: 'OG Tags' }
+        { label: 'H1 correcto (exactamente 1)', has: lead.h1_count === 1 },
+        { label: 'Schema markup',             has: !!lead.has_schema },
+        { label: 'Diseño mobile responsive',  has: !!lead.is_mobile_responsive },
+        { label: 'Sin enlaces rotos',         has: (lead.broken_links_count ?? 1) === 0 },
       ]
     },
     {
-      label: 'TIER 3',
+      label: 'TIER 3 — Reputación GMB',
       color: 'bg-blue-500',
       items: [
-        { key: 'has_gallery', label: 'Galería de fotos' },
-        { key: 'has_social_links', label: 'Enlaces a redes sociales' },
-        { key: 'has_blog', label: 'Blog' },
-        { key: 'has_certifications', label: 'Certificaciones' }
+        { label: 'Rating GMB ≥ 4',   has: (lead.gmb_rating ?? 0) >= 4 },
+        { label: 'Fotos en GMB',     has: (lead.photo_count ?? 0) > 0 },
+        { label: 'Reseñas > 10',     has: (lead.review_count ?? 0) > 10 },
       ]
     },
     {
-      label: 'TIER 4',
+      label: 'TIER 4 — Rendimiento',
       color: 'bg-green-500',
       items: [
-        { key: 'has_map', label: 'Mapa' },
-        { key: 'has_compressed_images', label: 'Imágenes optimizadas' }
+        { label: 'TTFB < 300ms',  has: lead.ttfb_ms ? lead.ttfb_ms < 300 : false },
+        { label: 'LCP < 2.5s',    has: lead.lcp_ms  ? lead.lcp_ms  < 2500 : false },
       ]
     },
     {
-      label: 'TIER 5',
+      label: 'TIER 5 — Stack Técnico',
       color: 'bg-purple-500',
       items: [
-        { key: 'has_share_buttons', label: 'Botones de compartir' },
-        { key: 'has_newsletter', label: 'Newsletter' },
-        { key: 'has_whatsapp', label: 'WhatsApp widget' },
-        { key: 'has_multiple_forms', label: 'Múltiples formularios' }
+        { label: 'CMS detectado',       has: !!lead.tech_cms },
+        { label: 'Analytics detectado', has: !!lead.tech_analytics },
       ]
     }
   ];
@@ -85,7 +78,7 @@ export function TierSummaryModal({ lead, isOpen, onClose }: TierSummaryModalProp
         {/* Content */}
         <div className="p-6 space-y-6">
           {tiers.map((tier) => {
-            const completed = tier.items.filter(item => lead[item.key as keyof Lead]).length;
+            const completed = tier.items.filter(item => item.has).length;
             const total = tier.items.length;
             const percentage = Math.round((completed / total) * 100);
 
@@ -113,22 +106,21 @@ export function TierSummaryModal({ lead, isOpen, onClose }: TierSummaryModalProp
 
                 {/* Items Grid */}
                 <div className="grid grid-cols-2 gap-2">
-                  {tier.items.map((item) => {
-                    const hasItem = lead[item.key as keyof Lead];
-                    return (
-                      <div
-                        key={item.key}
-                        className={`p-2 rounded text-sm flex items-center gap-2 ${
-                          hasItem
-                            ? 'bg-green-900/30 text-green-300'
-                            : 'bg-zinc-800 text-zinc-400'
-                        }`}
-                      >
-                        {hasItem ? <CheckCircle size={14} className="text-green-400 flex-shrink-0" /> : <XCircle size={14} className="text-red-400 flex-shrink-0" />}
-                        <span>{item.label}</span>
-                      </div>
-                    );
-                  })}
+                  {tier.items.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className={`p-2 rounded text-sm flex items-center gap-2 ${
+                        item.has
+                          ? 'bg-green-900/30 text-green-300'
+                          : 'bg-zinc-800 text-zinc-400'
+                      }`}
+                    >
+                      {item.has
+                        ? <CheckCircle size={14} className="text-green-400 flex-shrink-0" />
+                        : <XCircle size={14} className="text-red-400 flex-shrink-0" />}
+                      <span>{item.label}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             );

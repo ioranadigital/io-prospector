@@ -57,15 +57,14 @@ export function CsvUploader({ onSuccess }: { onSuccess: () => void }) {
 
       // Get existing emails to detect duplicates
       const { data: existingLeads } = await supabase
-        .from('io_prospecto_leads')
-        .select('email')
-        .eq('client_id', CLIENT_ID);
+        .from('io_pro_leads')
+        .select('email');
 
       const existingEmails = new Set(existingLeads?.map(l => l.email) || []);
       let duplicateCount = 0;
       let insertedCount = 0;
 
-      // Insert new leads
+      // Insert new leads mapped to io_pro_leads schema
       const leadsToInsert = rows
         .filter(row => {
           if (!row.Email) return false;
@@ -76,34 +75,33 @@ export function CsvUploader({ onSuccess }: { onSuccess: () => void }) {
           return true;
         })
         .map(row => ({
-          client_id: CLIENT_ID,
-          company_name: row.Company_Name || 'N/A',
-          first_name: row.First_Name || '',
+          business_name: row.Company_Name || row.Business_Name || 'N/A',
           email: row.Email,
-          website: row.Website || '',
-          phone: row.Phone || '',
+          website: row.Website || null,
+          phone: row.Phone || null,
+          city: row.City || null,
+          category: row.Category || null,
           gmb_rating: row.GMB_Rating ? parseFloat(row.GMB_Rating) : null,
           review_count: row.Review_Count ? parseInt(row.Review_Count) : null,
-          gmb_claimed: row.GMB_Claimed === 'Sí',
-          has_website: row.Has_Website === 'Sí',
-          ssl_active: row.SSL_Active === 'Sí',
-          load_time_ms: row.Load_Time_Ms ? parseInt(row.Load_Time_Ms) : null,
-          is_mobile_responsive: row.Is_Mobile_Responsive === 'Sí',
-          has_schema: row.Has_Schema === 'Sí',
+          gmb_claimed: row.GMB_Claimed === 'Sí' || row.GMB_Claimed === 'true',
+          ssl_active: row.SSL_Active === 'Sí' || row.SSL_Active === 'true',
+          is_mobile_responsive: row.Is_Mobile_Responsive === 'Sí' || row.Is_Mobile_Responsive === 'true',
+          has_schema: row.Has_Schema === 'Sí' || row.Has_Schema === 'true',
           broken_links_count: row.Broken_Links_Count ? parseInt(row.Broken_Links_Count) : null,
           photo_count: row.Photo_Count ? parseInt(row.Photo_Count) : null,
-          gmb_description: row.GMB_Description || '',
-          gmb_has_hours: row.GMB_Has_Hours === 'Sí',
-          gmb_hours_updated: row.GMB_Hours_Updated === 'Sí',
-          main_competitor: row.Main_Competitor || '',
-          missing_service: row.Missing_Service || '',
-          icebreaker: row.Icebreaker || '',
+          main_competitor: row.Main_Competitor || null,
+          missing_service: row.Missing_Service || null,
+          icebreaker: row.Icebreaker || null,
           seo_gap: calculateSEOGap(row),
+          status: 'candidate',
+          crm_status: 'new',
+          priority: 'normal',
+          audit_score: 0,
         }));
 
       if (leadsToInsert.length > 0) {
         const { error } = await supabase
-          .from('io_prospecto_leads')
+          .from('io_pro_leads')
           .insert(leadsToInsert);
 
         if (error) throw error;
