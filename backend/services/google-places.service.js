@@ -26,10 +26,11 @@ export const googlePlacesService = {
       error: null,
     };
 
-    const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+    // Acepta GOOGLE_PLACES_API_KEY o GOOGLE_MAPS_API_KEY (misma clave, distintos nombres según proyecto)
+    const apiKey = process.env.GOOGLE_PLACES_API_KEY || process.env.GOOGLE_MAPS_API_KEY;
     if (!apiKey) {
       result.error = 'GOOGLE_PLACES_API_KEY no configurada';
-      logger.warn('⚠️  Google Places API: falta GOOGLE_PLACES_API_KEY en .env');
+      logger.warn('⚠️  Google Places API: falta GOOGLE_PLACES_API_KEY o GOOGLE_MAPS_API_KEY en .env');
       return result;
     }
 
