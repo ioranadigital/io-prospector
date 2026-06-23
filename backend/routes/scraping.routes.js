@@ -277,7 +277,7 @@ async function executeProspectionAsync(prospectionId, params) {
   try {
     // 1. Scraping
     prospectionStateService.updateProgress(prospectionId, 10);
-    const scrapingResult = await startProspectionV2(params);
+    const scrapingResult = await startProspectionV2({ ...params, sessionId: prospectionId });
 
     if (!scrapingResult.success || !scrapingResult.csvPath) {
       throw new Error('Scraping failed');

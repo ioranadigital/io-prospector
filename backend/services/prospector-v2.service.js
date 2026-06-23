@@ -1,68 +1,123 @@
 // backend/services/prospector-v2.service.js
-// Versión 2: Scraping completo con exportación a CSV local
-// Flujo: SerpAPI → ContactExtractor → GMBScraper → CSV
+// v3: Google Places API + deduplicación + query variaciones + rate limiting mejorado
 
 import { contactExtractorService } from './contact-extractor.service.js';
-import { gmbScraperService } from './gmb-scraper.service.js';
+import { googlePlacesService } from './google-places.service.js';
 import { csvExportService } from './csv-export.service.js';
 import { performanceAuditService } from './seo-technical/performance-audit.service.js';
 import { techDetectionService } from './tech-stack/tech-detection.service.js';
+import { supabase } from '../config/supabase.js';
 import { logger } from '../utils/logger.js';
 
+// Dominios a saltar — directórios/redes sociales/plataformas
 const SKIP_DOMAINS = [
   'google.com', 'facebook.com', 'yelp.com', 'tripadvisor.com',
-  'instagram.com', 'twitter.com', 'linkedin.com', 'youtube.com',
-  'wikipedia.org', 'amazon.com', 'maps.google.com', 'reddit.com'
+  'instagram.com', 'twitter.com', 'x.com', 'linkedin.com', 'youtube.com',
+  'wikipedia.org', 'amazon.com', 'maps.google.com', 'reddit.com',
+  'bing.com', 'yahoo.com', 'booking.com', 'idealista.com', 'fotocasa.es',
+  'infojobs.net', 'indeed.com', 'paginas-amarillas.com', 'paginasamarillas.es',
+  'habitaclia.com', 'wallapop.com', 'milanuncios.com',
 ];
 
-const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+// Variaciones de query por página para ampliar resultados y evitar duplicados
+const QUERY_VARIATIONS = [
+  (q, c) => `${q} ${c}`,
+  (q, c) => `${q} en ${c}`,
+  (q, c) => `empresa ${q} ${c}`,
+  (q, c) => `servicio ${q} ${c}`,
+  (q, c) => `${q} profesional ${c}`,
+];
 
-export async function startProspectionV2({ query, city, category, pagesFrom = 2, pagesTo = 4 }) {
-  const leads = [];
-  const startTime = Date.now();
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-  logger.info(`🚀 Iniciando prospección: "${query}" en ${city} (pág ${pagesFrom}-${pagesTo})`);
+function extractDomain(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return null;
+  }
+}
+
+// Verificar si un dominio ya existe en BD para no procesar duplicados
+async function isDuplicate(url, sessionId) {
+  if (!url) return false;
+  const domain = extractDomain(url);
+  if (!domain) return false;
 
   try {
-    // 1. Buscar en Google con SerpAPI
+    const { data } = await supabase
+      .from('io_pro_leads')
+      .select('id')
+      .ilike('website', `%${domain}%`)
+      .neq('session_id', sessionId)
+      .limit(1);
+    return data && data.length > 0;
+  } catch {
+    return false; // Si falla la consulta, procesamos igualmente
+  }
+}
+
+export async function startProspectionV2({ query, city, category, pagesFrom = 2, pagesTo = 4, sessionId }) {
+  const leads = [];
+  const seenDomains = new Set(); // dedup dentro de la misma sesión
+  const startTime = Date.now();
+
+  logger.info(`🚀 Iniciando prospección v3: "${query}" en ${city} (pág ${pagesFrom}-${pagesTo})`);
+  logger.info(`   Google Places API: ${process.env.GOOGLE_PLACES_API_KEY ? '✅ activa' : '⚠️ no configurada (usando scraper)'}`);
+
+  try {
     for (let page = pagesFrom; page <= pagesTo; page++) {
-      logger.info(`📖 Buscando página ${page}...`);
-      const results = await fetchSerpPage({ query: `${query} ${city}`, page });
-      logger.info(`   Resultados encontrados: ${results.length}`);
+      // Rotar variación de query por página para diversificar resultados
+      const variationFn = QUERY_VARIATIONS[(page - pagesFrom) % QUERY_VARIATIONS.length];
+      const queryVariant = variationFn(query, city);
+
+      logger.info(`📖 Buscando página ${page} con query: "${queryVariant}"`);
+      const results = await fetchSerpPage({ query: queryVariant, city, page });
+      logger.info(`   Resultados: ${results.length}`);
 
       if (results.length === 0) {
-        logger.warn(`   ⚠️  No results for page ${page}`);
+        logger.warn(`   ⚠️  Sin resultados en página ${page}`);
+        continue;
       }
 
-      // 2. Procesar cada resultado
       for (const result of results) {
         try {
-          const lead = await processResultV2({ result, city, category });
+          // Deduplicación por dominio
+          const domain = extractDomain(result.url);
+          if (domain && seenDomains.has(domain)) {
+            logger.debug(`   ⏭️  Duplicado (sesión): ${domain}`);
+            continue;
+          }
+          if (domain && await isDuplicate(result.url, sessionId)) {
+            logger.info(`   ⏭️  Ya existe en BD: ${domain}`);
+            seenDomains.add(domain);
+            continue;
+          }
+          if (domain) seenDomains.add(domain);
+
+          const lead = await processResult({ result, city, category });
           if (lead) {
             leads.push(lead);
-            logger.info(`   ✅ ${lead.company_name}`);
-          } else {
-            logger.warn(`   ⚠️  Lead processing returned null for ${result.title}`);
+            logger.info(`   ✅ ${lead.company_name}${lead.email ? ` — ${lead.email}` : ''}${lead.gmb_rating ? ` ⭐${lead.gmb_rating}` : ''}`);
           }
         } catch (err) {
           logger.warn(`   ⚠️  Error procesando ${result.title}: ${err.message}`);
         }
 
-        // Rate limiting
-        await sleep(1500 + Math.random() * 1000);
+        // Rate limiting adaptativo: más espera entre páginas para evitar bloqueos
+        const delay = 1500 + Math.random() * 1500;
+        await sleep(delay);
+      }
+
+      // Pausa extra entre páginas
+      if (page < pagesTo) {
+        await sleep(2000 + Math.random() * 1000);
       }
     }
 
-    // 3. Exportar a CSV
     logger.info(`\n📊 Exportando ${leads.length} leads a CSV...`);
-    const exportResult = await csvExportService.saveLeadsToCSV(leads, {
-      query,
-      city,
-      category,
-    });
-
+    const exportResult = await csvExportService.saveLeadsToCSV(leads, { query, city, category });
     logger.info(`✅ CSV guardado: ${exportResult.filename}`);
-    logger.info(`   Path: ${exportResult.path}`);
 
     const duration = ((Date.now() - startTime) / 1000 / 60).toFixed(1);
     logger.info(`⏱️  Tiempo total: ${duration} minutos`);
@@ -80,26 +135,33 @@ export async function startProspectionV2({ query, city, category, pagesFrom = 2,
   }
 }
 
-async function fetchSerpPage({ query, page }) {
+async function fetchSerpPage({ query, city, page }) {
   const start = (page - 1) * 10;
   const url = new URL('https://serpapi.com/search.json');
   url.searchParams.set('q', query);
   url.searchParams.set('hl', 'es');
   url.searchParams.set('gl', 'es');
+  // Parámetro location mejora resultados locales vs. mezclar en el texto
+  url.searchParams.set('location', `${city}, Spain`);
   url.searchParams.set('num', '10');
   url.searchParams.set('start', String(start));
   url.searchParams.set('api_key', process.env.SERP_API_KEY);
 
   try {
-    const res = await fetch(url.toString());
+    const res = await fetch(url.toString(), { signal: AbortSignal.timeout(15000) });
     if (!res.ok) throw new Error(`SerpAPI error ${res.status}`);
     const data = await res.json();
+
+    if (data.error) {
+      logger.error(`SerpAPI error: ${data.error}`);
+      return [];
+    }
 
     return (data.organic_results || []).map((r, i) => ({
       title: r.title,
       url: r.link,
       position: start + i + 1,
-      snippet: r.snippet,
+      snippet: r.snippet || '',
       page,
     }));
   } catch (error) {
@@ -108,16 +170,16 @@ async function fetchSerpPage({ query, page }) {
   }
 }
 
-async function processResultV2({ result, city, category }) {
+async function processResult({ result, city, category }) {
   const isSkipped = !result.url || SKIP_DOMAINS.some(d => result.url.includes(d));
 
-  // Información básica
   const lead = {
     company_name: result.title,
     first_name: 'propietario',
     website: isSkipped ? null : result.url,
     google_position: result.position,
     serp_page: result.page,
+    serp_snippet: result.snippet,
     city,
     category,
     has_website: !isSkipped,
@@ -137,8 +199,8 @@ async function processResultV2({ result, city, category }) {
     return lead;
   }
 
-  // Extraer datos de contacto del website
-  logger.info(`   🌐 Scrapeando ${result.url.substring(0, 50)}...`);
+  // Contacto: Playwright mejorado
+  logger.info(`   🌐 Extrayendo contacto: ${result.url.substring(0, 60)}...`);
   const contacted = await contactExtractorService.extract(result.url);
   lead.email = contacted.email;
   lead.phone = contacted.phone;
@@ -148,9 +210,9 @@ async function processResultV2({ result, city, category }) {
   lead.has_schema = contacted.has_schema;
   lead.broken_links_count = contacted.broken_links_count;
 
-  // Intentar obtener datos de Google Maps (best-effort)
-  logger.info(`   📍 Intentando obtener GMB data...`);
-  const gmb = await gmbScraperService.scrapeGoogleMaps(result.title, city);
+  // GMB: Google Places API (con fallback automático al scraper si no hay clave)
+  logger.info(`   📍 Consultando Google Places: "${result.title}"...`);
+  const gmb = await googlePlacesService.getBusinessData(result.title, city);
   lead.gmb_rating = gmb.gmb_rating;
   lead.review_count = gmb.review_count;
   lead.gmb_claimed = gmb.gmb_claimed;
@@ -158,29 +220,35 @@ async function processResultV2({ result, city, category }) {
   lead.gmb_description = gmb.description;
   lead.gmb_has_hours = gmb.has_hours;
   lead.gmb_hours_updated = gmb.hours_updated_recently;
+  lead.gmb_url = gmb.gmb_url;
 
-  // Auditorías en background (sin bloquear flujo principal)
+  // Si GMB devuelve teléfono y no lo encontramos en la web, usarlo
+  if (!lead.phone && gmb.phone_gmb) {
+    lead.phone = gmb.phone_gmb;
+  }
+
+  // Auditorías técnicas en background
   performanceAuditService.auditPerformanceAndCanonical(result.url)
-    .then(auditResult => {
-      lead.ttfb_ms = auditResult.ttfb_ms;
-      lead.lcp_ms = auditResult.largest_contentful_paint_ms;
-      lead.cls = auditResult.cumulative_layout_shift;
-      lead.canonical_url = auditResult.canonical_url;
-      lead.h1_count = auditResult.h1_count;
-      lead.top_issue = auditResult.top_issue;
-      lead.top_issue_severity = auditResult.top_issue_severity;
+    .then(a => {
+      lead.ttfb_ms = a.ttfb_ms;
+      lead.lcp_ms = a.largest_contentful_paint_ms;
+      lead.cls = a.cumulative_layout_shift;
+      lead.canonical_url = a.canonical_url;
+      lead.h1_count = a.h1_count;
+      lead.top_issue = a.top_issue;
+      lead.top_issue_severity = a.top_issue_severity;
     })
-    .catch(err => logger.warn(`Performance audit error for ${result.url}: ${err.message}`));
+    .catch(e => logger.warn(`Performance audit error: ${e.message}`));
 
-  techDetectionService.detectTechStack(result.url, contacted.html || '')
-    .then(techResult => {
-      lead.tech_cms = techResult.cms?.join(',') || null;
-      lead.tech_ecommerce = techResult.ecommerce;
-      lead.tech_analytics = techResult.analytics?.join(',') || null;
-      lead.tech_server = techResult.server;
-      lead.tech_risks = techResult.risks?.join(',') || null;
+  techDetectionService.detectTechStack(result.url, '')
+    .then(t => {
+      lead.tech_cms = t.cms?.join(',') || null;
+      lead.tech_ecommerce = t.ecommerce;
+      lead.tech_analytics = t.analytics?.join(',') || null;
+      lead.tech_server = t.server;
+      lead.tech_risks = t.risks?.join(',') || null;
     })
-    .catch(err => logger.warn(`Tech detection error for ${result.url}: ${err.message}`));
+    .catch(e => logger.warn(`Tech detection error: ${e.message}`));
 
   return lead;
 }
