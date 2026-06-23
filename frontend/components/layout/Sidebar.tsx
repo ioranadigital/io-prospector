@@ -43,8 +43,8 @@ const NAV_SECTIONS = [
   {
     title: 'Admin',
     items: [
-      { href: '/admin',   icon: Users,    label: 'Usuarios',     desc: 'Gestión de accesos' },
-      { href: '/admin',   icon: Settings, label: 'Configuración',desc: 'Sistema global' },
+      { href: '/admin',  icon: Users,    label: 'Usuarios',      desc: 'Gestión de accesos (próximo)' },
+      { href: '/config', icon: Settings, label: 'Configuración', desc: 'Sectores, exclusiones, API' },
     ]
   },
   {

@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { AlertCircle, Users, Settings, Lightbulb } from 'lucide-react';
 
 export default function AdminPage() {
@@ -34,8 +35,11 @@ export default function AdminPage() {
       {/* Nota sobre Configuración */}
       <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
         <p className="text-xs text-zinc-500">
-          <span className="flex items-center gap-1.5"><Lightbulb size={14} className="text-zinc-400 flex-shrink-0" /> <strong>Nota:</strong></span> Las categorías, plantillas de email/WhatsApp y exclusiones se gestionan en
-          <strong className="text-zinc-300"> <Settings size={14} className="inline" /> Configuración</strong> (en el menú Prospección).
+          <span className="flex items-center gap-1.5"><Lightbulb size={14} className="text-zinc-400 flex-shrink-0" /> <strong>Nota:</strong></span>{' '}
+          Las categorías, plantillas de email/WhatsApp y exclusiones se gestionan en{' '}
+          <Link href="/config" className="text-zinc-300 hover:text-white underline inline-flex items-center gap-1">
+            <Settings size={13} className="inline" /> Configuración
+          </Link>.
         </p>
       </div>
     </div>
