@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, Search, Database, Settings, BarChart3, Zap, Mail, MessageCircle } from 'lucide-react';
+import { ChevronDown, Search, Database, Settings, BarChart3, Zap, Mail, MessageCircle, Lightbulb, CheckCircle, Timer, BookOpen, HelpCircle, Eye, Download, Trash2, Pencil, MapPin, Phone, Target } from 'lucide-react';
 
 type Section = 'start' | 'prospector' | 'leads' | 'modal' | 'admin' | 'dashboard' | 'variables' | 'faq';
 
@@ -10,7 +10,7 @@ export default function GuidePage() {
 
   const sections = {
     start: {
-      title: '🚀 Inicio Rápido',
+      title: 'Inicio Rápido',
       icon: Zap,
       content: (
         <div className="space-y-6">
@@ -54,7 +54,7 @@ export default function GuidePage() {
 
           <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4">
             <p className="text-sm text-blue-200">
-              💡 <strong>Consejo:</strong> Comienza en Prospector para buscar negocios, luego gestiona los leads en Leads, configura plantillas en Admin y analiza métricas en Dashboard.
+              <span className="flex items-start gap-1.5"><Lightbulb size={14} className="text-yellow-400 flex-shrink-0 mt-0.5" /><span><strong>Consejo:</strong> Comienza en Prospector para buscar negocios, luego gestiona los leads en Leads, configura plantillas en Admin y analiza métricas en Dashboard.</span></span>
             </p>
           </div>
         </div>
@@ -62,7 +62,7 @@ export default function GuidePage() {
     },
 
     prospector: {
-      title: '🔍 Prospector — Buscar Negocios',
+      title: 'Prospector — Buscar Negocios',
       icon: Search,
       content: (
         <div className="space-y-6">
@@ -70,8 +70,8 @@ export default function GuidePage() {
             <h3 className="text-lg font-semibold mb-3">Paso 1: Seleccionar Categoría</h3>
             <p className="text-zinc-300 mb-3">Elige una categoría principal (Abogados, Fontaneros, etc.) y subcategoría.</p>
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3 text-sm">
-              <p>✅ Categoría: Servicios Profesionales</p>
-              <p>✅ Subcategoría: Abogados</p>
+              <p className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400" /> Categoría: Servicios Profesionales</p>
+              <p className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400" /> Subcategoría: Abogados</p>
             </div>
           </div>
 
@@ -79,9 +79,9 @@ export default function GuidePage() {
             <h3 className="text-lg font-semibold mb-3">Paso 2: Seleccionar Ubicación</h3>
             <p className="text-zinc-300 mb-3">Elige la región geográfica donde buscar.</p>
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3 text-sm space-y-2">
-              <p>✅ Comunidad Autónoma: Andalucía</p>
-              <p>✅ Provincia: Sevilla</p>
-              <p>✅ Municipio: Sevilla (capital)</p>
+              <p className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400" /> Comunidad Autónoma: Andalucía</p>
+              <p className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400" /> Provincia: Sevilla</p>
+              <p className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400" /> Municipio: Sevilla (capital)</p>
             </div>
           </div>
 
@@ -89,7 +89,7 @@ export default function GuidePage() {
             <h3 className="text-lg font-semibold mb-3">Paso 3: Rango de Búsqueda</h3>
             <p className="text-zinc-300 mb-3">Selecciona de qué páginas de Google extraer resultados (pág. 2-5 es recomendado).</p>
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3 text-sm">
-              <p>📊 Páginas 2 → 5 = ~40 resultados a analizar (⏱️ ~4-6 minutos)</p>
+              <p className="flex items-center gap-1.5"><BarChart3 size={13} className="text-blue-400" /> Páginas 2 → 5 = ~40 resultados a analizar (<Timer size={12} className="inline" /> ~4-6 minutos)</p>
             </div>
           </div>
 
@@ -97,7 +97,7 @@ export default function GuidePage() {
             <h3 className="text-lg font-semibold mb-3">Paso 4: Iniciar Búsqueda</h3>
             <p className="text-zinc-300 mb-3">Haz click en "Iniciar prospección" y espera a que termine.</p>
             <div className="bg-green-900/20 border border-green-800 rounded-lg p-4 text-sm">
-              <p className="text-green-200">✅ El sistema:
+              <p className="text-green-200 flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400" /> El sistema:
               <ul className="mt-2 space-y-1 ml-4">
                 <li>• Scrapeará los resultados de Google</li>
                 <li>• Analizará SEO de cada sitio</li>
@@ -110,7 +110,7 @@ export default function GuidePage() {
 
           <div className="bg-yellow-900/20 border border-yellow-800 rounded-lg p-4">
             <p className="text-sm text-yellow-200">
-              ⏱️ <strong>Tiempo:</strong> Aproximadamente 2-3 minutos por búsqueda.
+              <span className="flex items-center gap-1.5"><Timer size={13} className="text-yellow-400 flex-shrink-0" /> <span><strong>Tiempo:</strong> Aproximadamente 2-3 minutos por búsqueda.</span></span>
             </p>
           </div>
         </div>
@@ -118,7 +118,7 @@ export default function GuidePage() {
     },
 
     leads: {
-      title: '📊 Leads — Gestionar Contactos',
+      title: 'Leads — Gestionar Contactos',
       icon: Database,
       content: (
         <div className="space-y-6">
@@ -126,12 +126,12 @@ export default function GuidePage() {
             <h3 className="text-lg font-semibold mb-3">Tabla de Leads</h3>
             <p className="text-zinc-300 mb-3">Aquí ves todos los negocios encontrados con información rápida:</p>
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-2 text-sm">
-              <div><strong>📊 Negocio:</strong> Nombre y website</div>
-              <div><strong>📧 Email:</strong> Email del negocio (si disponible)</div>
-              <div><strong>📱 Teléfono:</strong> Teléfono (si disponible)</div>
-              <div><strong>🔍 Rating SEO:</strong> Score de 0-100</div>
-              <div><strong>📍 Rating GMB:</strong> Estrellas en Google Maps</div>
-              <div><strong>📨 Estado:</strong> Último contacto y plantilla usada</div>
+              <div><strong>Negocio:</strong> Nombre y website</div>
+              <div><strong>Email:</strong> Email del negocio (si disponible)</div>
+              <div><strong>Teléfono:</strong> Teléfono (si disponible)</div>
+              <div><strong>Rating SEO:</strong> Score de 0-100</div>
+              <div><strong>Rating GMB:</strong> Estrellas en Google Maps</div>
+              <div><strong>Estado:</strong> Último contacto y plantilla usada</div>
             </div>
           </div>
 
@@ -140,21 +140,21 @@ export default function GuidePage() {
             <div className="grid gap-3">
               <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-purple-400 text-lg">👁️</span>
+                  <Eye size={16} className="text-purple-400" />
                   <span className="font-semibold">Ver Ficha Completa</span>
                 </div>
                 <p className="text-sm text-zinc-400">Abre modal con todos los detalles del lead (editable)</p>
               </div>
               <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-blue-400 text-lg">📧</span>
+                  <Mail size={16} className="text-blue-400" />
                   <span className="font-semibold">Enviar Email</span>
                 </div>
                 <p className="text-sm text-zinc-400">Selecciona plantilla y envía email personalizado</p>
               </div>
               <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-green-400 text-lg">💬</span>
+                  <MessageCircle size={16} className="text-green-400" />
                   <span className="font-semibold">Enviar WhatsApp</span>
                 </div>
                 <p className="text-sm text-zinc-400">Envía mensaje de WhatsApp con plantilla</p>
@@ -166,10 +166,10 @@ export default function GuidePage() {
             <h3 className="text-lg font-semibold mb-3">Historial de Envíos</h3>
             <p className="text-zinc-300 mb-3">Tab "Historial" muestra todos los emails/WhatsApp enviados:</p>
             <ul className="text-sm text-zinc-400 space-y-1">
-              <li>✅ Filtrar por tipo (Email/WhatsApp)</li>
-              <li>✅ Filtrar por estado (Enviado, Error, Pendiente)</li>
-              <li>✅ Ver plantilla usada</li>
-              <li>✅ Fecha exacta del envío</li>
+              <li className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400 flex-shrink-0" /> Filtrar por tipo (Email/WhatsApp)</li>
+              <li className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400 flex-shrink-0" /> Filtrar por estado (Enviado, Error, Pendiente)</li>
+              <li className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400 flex-shrink-0" /> Ver plantilla usada</li>
+              <li className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400 flex-shrink-0" /> Fecha exacta del envío</li>
             </ul>
           </div>
         </div>
@@ -177,7 +177,7 @@ export default function GuidePage() {
     },
 
     modal: {
-      title: '📝 Ficha Completa del Lead',
+      title: 'Ficha Completa del Lead',
       icon: Database,
       content: (
         <div className="space-y-6">
@@ -185,30 +185,30 @@ export default function GuidePage() {
 
           <div className="space-y-3">
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
-              <h4 className="font-semibold mb-2">📍 Información General</h4>
+              <h4 className="font-semibold mb-2 flex items-center gap-1.5"><MapPin size={14} /> Información General</h4>
               <p className="text-sm text-zinc-400">Nombre, website, ciudad, categoría</p>
             </div>
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
-              <h4 className="font-semibold mb-2">📞 Contacto (Editable)</h4>
+              <h4 className="font-semibold mb-2 flex items-center gap-1.5"><Phone size={14} /> Contacto (Editable)</h4>
               <p className="text-sm text-zinc-400">Email y teléfono — puedes editar si falta info</p>
             </div>
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
-              <h4 className="font-semibold mb-2">🔍 SEO Detectado</h4>
+              <h4 className="font-semibold mb-2 flex items-center gap-1.5"><Search size={14} /> SEO Detectado</h4>
               <p className="text-sm text-zinc-400">Score, SSL, Mobile, Schema, broken links — datos extraídos automáticamente</p>
             </div>
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
-              <h4 className="font-semibold mb-2">🗺️ Google My Business</h4>
+              <h4 className="font-semibold mb-2 flex items-center gap-1.5"><MapPin size={14} /> Google My Business</h4>
               <p className="text-sm text-zinc-400">Rating, reviews, claimed, fotos</p>
             </div>
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
-              <h4 className="font-semibold mb-2">🎯 Contexto Comercial (Editable)</h4>
+              <h4 className="font-semibold mb-2 flex items-center gap-1.5"><Target size={14} /> Contexto Comercial (Editable)</h4>
               <p className="text-sm text-zinc-400">Competidor principal, servicios faltantes, icebreaker, notas personalizadas</p>
             </div>
           </div>
 
           <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4">
             <p className="text-sm text-blue-200">
-              💡 <strong>Editar:</strong> Click en "✏️ Editar" para cambiar email, teléfono, notas y contexto. Luego "Guardar Cambios".
+              <span className="flex items-start gap-1.5"><Lightbulb size={14} className="text-yellow-400 flex-shrink-0 mt-0.5" /><span><strong>Editar:</strong> Click en "<Pencil size={12} className="inline" /> Editar" para cambiar email, teléfono, notas y contexto. Luego "Guardar Cambios".</span></span>
             </p>
           </div>
         </div>
@@ -216,7 +216,7 @@ export default function GuidePage() {
     },
 
     admin: {
-      title: '⚙️ Administración',
+      title: 'Administración',
       icon: Settings,
       content: (
         <div className="space-y-6">
@@ -224,10 +224,10 @@ export default function GuidePage() {
             <h3 className="text-lg font-semibold mb-3">Gestión de Plantillas</h3>
             <p className="text-zinc-300 mb-3">Crea y edita plantillas de Email/WhatsApp reutilizables:</p>
             <ul className="text-sm text-zinc-400 space-y-2">
-              <li>✅ Categorías: Análisis Inicial, Prospección, Seguimiento, General</li>
-              <li>✅ Variables dinámicas: <code className="bg-zinc-800 px-1 py-0.5 rounded text-xs">{'{{business_name}}'}</code>, <code className="bg-zinc-800 px-1 py-0.5 rounded text-xs">{'{{audit_score}}'}</code>, <code className="bg-zinc-800 px-1 py-0.5 rounded text-xs">{'{{gmb_rating}}'}</code>, etc.</li>
-              <li>✅ Vista previa en tiempo real</li>
-              <li>✅ Activa/desactiva plantillas fácilmente</li>
+              <li className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400 flex-shrink-0" /> Categorías: Análisis Inicial, Prospección, Seguimiento, General</li>
+              <li className="flex items-start gap-1.5"><CheckCircle size={13} className="text-green-400 flex-shrink-0 mt-0.5" /> Variables dinámicas: <code className="bg-zinc-800 px-1 py-0.5 rounded text-xs">{'{{business_name}}'}</code>, <code className="bg-zinc-800 px-1 py-0.5 rounded text-xs">{'{{audit_score}}'}</code>, <code className="bg-zinc-800 px-1 py-0.5 rounded text-xs">{'{{gmb_rating}}'}</code>, etc.</li>
+              <li className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400 flex-shrink-0" /> Vista previa en tiempo real</li>
+              <li className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400 flex-shrink-0" /> Activa/desactiva plantillas fácilmente</li>
             </ul>
           </div>
 
@@ -258,7 +258,7 @@ export default function GuidePage() {
     },
 
     dashboard: {
-      title: '📈 Dashboard — Métricas',
+      title: 'Dashboard — Métricas',
       icon: BarChart3,
       content: (
         <div className="space-y-6">
@@ -285,16 +285,16 @@ export default function GuidePage() {
             <h3 className="text-lg font-semibold mb-3">Histórico de Prospecciones</h3>
             <p className="text-zinc-300 mb-3">Tabla con todas las búsquedas realizadas:</p>
             <ul className="text-sm text-zinc-400 space-y-2">
-              <li>✅ Estado (Completada ✅, Error ❌, En progreso ⏳)</li>
-              <li>✅ Búsqueda realizada y rango de páginas</li>
-              <li>✅ Ciudad/ubicación</li>
-              <li>✅ Leads encontrados</li>
-              <li>✅ Fecha y hora</li>
-              <li>✅ Acciones por prospección completada:
+              <li className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400 flex-shrink-0" /> Estado (Completada, Error, En progreso)</li>
+              <li className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400 flex-shrink-0" /> Búsqueda realizada y rango de páginas</li>
+              <li className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400 flex-shrink-0" /> Ciudad/ubicación</li>
+              <li className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400 flex-shrink-0" /> Leads encontrados</li>
+              <li className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400 flex-shrink-0" /> Fecha y hora</li>
+              <li className="flex items-center gap-1.5"><CheckCircle size={13} className="text-green-400 flex-shrink-0" /> Acciones por prospección completada:
                 <ul className="mt-1 ml-4 space-y-1">
-                  <li>👁️ <strong>Ver:</strong> Abre dashboard detallado en backend</li>
-                  <li>📥 <strong>CSV:</strong> Descarga resultados en CSV</li>
-                  <li>🗑️ <strong>Eliminar:</strong> Borra prospección + todos sus leads (confirmación requerida)</li>
+                  <li className="flex items-center gap-1.5"><Eye size={12} className="flex-shrink-0" /> <strong>Ver:</strong> Abre dashboard detallado en backend</li>
+                  <li className="flex items-center gap-1.5"><Download size={12} className="flex-shrink-0" /> <strong>CSV:</strong> Descarga resultados en CSV</li>
+                  <li className="flex items-center gap-1.5"><Trash2 size={12} className="flex-shrink-0 text-red-400" /> <strong>Eliminar:</strong> Borra prospección + todos sus leads (confirmación requerida)</li>
                 </ul>
               </li>
             </ul>
@@ -304,7 +304,7 @@ export default function GuidePage() {
     },
 
     variables: {
-      title: '🔤 Variables de Plantillas',
+      title: 'Variables de Plantillas',
       icon: Mail,
       content: (
         <div className="space-y-6">
@@ -366,7 +366,7 @@ export default function GuidePage() {
     },
 
     faq: {
-      title: '❓ Preguntas Frecuentes',
+      title: 'Preguntas Frecuentes',
       icon: MessageCircle,
       content: (
         <div className="space-y-4">
@@ -377,7 +377,7 @@ export default function GuidePage() {
 
           <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
             <p className="font-semibold mb-2">¿Se pueden editar los datos del lead?</p>
-            <p className="text-sm text-zinc-400">Sí, en el modal de ficha completa. Haz click en "✏️ Editar" para cambiar email, teléfono, contexto, notas, etc.</p>
+            <p className="text-sm text-zinc-400">Sí, en el modal de ficha completa. Haz click en "<Pencil size={12} className="inline" /> Editar" para cambiar email, teléfono, contexto, notas, etc.</p>
           </div>
 
           <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
@@ -392,7 +392,7 @@ export default function GuidePage() {
 
           <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
             <p className="font-semibold mb-2">¿Se pueden eliminar prospecciones?</p>
-            <p className="text-sm text-zinc-400">Sí, en Dashboard → Acciones (columna roja "🗑️ Eliminar"). Se requiere confirmación y se elimina la sesión con TODOS sus leads asociados (irreversible).</p>
+            <p className="text-sm text-zinc-400">Sí, en Dashboard → Acciones (columna roja "<Trash2 size={12} className="inline text-red-400" /> Eliminar"). Se requiere confirmación y se elimina la sesión con TODOS sus leads asociados (irreversible).</p>
           </div>
 
           <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
@@ -412,7 +412,7 @@ export default function GuidePage() {
     <div className="space-y-6 fade-in max-w-5xl">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold mb-2">📖 Guía de Uso</h1>
+        <h1 className="text-3xl font-bold mb-2 flex items-center gap-2"><BookOpen size={22} className="text-white" /> Guía de Uso</h1>
         <p className="text-zinc-400">Documentación completa de IO-Prospector</p>
       </div>
 

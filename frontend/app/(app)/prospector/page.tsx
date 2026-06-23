@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { Search, Loader2, Play, CheckCircle, AlertCircle, Download, Eye, Clock, Save, Trash2 } from 'lucide-react';
+import { Search, Loader2, Play, CheckCircle, AlertCircle, Download, Eye, Clock, Save, Trash2, FileText, Globe, Check, Timer, XCircle, ClipboardList } from 'lucide-react';
 import { api } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 import { SECTORS } from '@/lib/sectors';
@@ -44,7 +44,7 @@ export default function ProspectorPage() {
         .update({ status: 'active' })
         .in('id', ids);
       if (error) throw error;
-      toast.success(`✅ ${ids.length} cliente${ids.length !== 1 ? 's' : ''} enviado${ids.length !== 1 ? 's' : ''} a Leads › Prospector`);
+      toast.success(`${ids.length} cliente${ids.length !== 1 ? 's' : ''} enviado${ids.length !== 1 ? 's' : ''} a Leads › Prospector`);
       // Refrescar la tabla para reflejar el nuevo estado
       if (prospectionId) {
         const updated = await api.getLeads({ session_id: prospectionId }).catch(() => []);
@@ -140,7 +140,7 @@ export default function ProspectorPage() {
         if (status?.status === 'completed') {
           setLoading(false);
           clearInterval(interval); // Detener polling cuando completa
-          toast.success('✅ Prospección completada');
+          toast.success('Prospección completada');
           // Cargar leads de esta prospección
           const leadsData = await api.getLeads({ session_id: prospectionId }).catch(() => []);
           setLeads(Array.isArray(leadsData) ? leadsData : []);
@@ -149,7 +149,7 @@ export default function ProspectorPage() {
         } else if (status?.status === 'error') {
           setLoading(false);
           clearInterval(interval); // Detener polling cuando hay error
-          toast.error(`❌ Error: ${status?.error}`);
+          toast.error(`Error: ${status?.error}`);
         }
       } catch (err) {
         console.error('Status polling error:', err);
@@ -190,7 +190,7 @@ export default function ProspectorPage() {
 
       setProspectionId(result?.sessionId);
       setProspectionStatus({ status: 'starting', progress: 0 });
-      toast.success('🚀 Scraping iniciado...');
+      toast.success('Scraping iniciado...');
     } catch (e: any) {
       toast.error(e.message);
       setLoading(false);
@@ -230,7 +230,7 @@ export default function ProspectorPage() {
           return next;
         });
       }
-      toast.success('✅ Prospección eliminada');
+      toast.success('Prospección eliminada');
       setConfirmDelProspection(null);
     } catch (error) {
       toast.error('Error al eliminar prospección');
@@ -260,7 +260,7 @@ export default function ProspectorPage() {
       const newSet = new Set(savedProspections);
       newSet.add(prospectionId!);
       setSavedProspections(newSet);
-      toast.success('✅ Prospección guardada · visible en el Historial (abajo) y en el Dashboard');
+      toast.success('Prospección guardada · visible en el Historial (abajo) y en el Dashboard');
     } catch (error: any) {
       const errorMsg = error?.message || 'Error desconocido';
       toast.error(`Error: ${errorMsg}`);
@@ -285,7 +285,7 @@ export default function ProspectorPage() {
   return (
     <div className="space-y-8 fade-in w-full">
       <div>
-        <h1 className="text-3xl font-bold text-white">🔍 Prospector</h1>
+        <h1 className="text-3xl font-bold text-white flex items-center gap-2"><Search size={22} className="text-white" /> Prospector</h1>
         <p className="text-zinc-400 text-sm mt-1">
           Busca negocios en Google e identifica sus debilidades SEO automáticamente. Genera dashboards y campañas de email personalizadas.
         </p>
@@ -351,7 +351,7 @@ export default function ProspectorPage() {
         {/* Constructor de términos de búsqueda con tags */}
         <div className="space-y-3">
           <div>
-            <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-2">📝 Términos de Búsqueda</label>
+            <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-2 flex items-center gap-1.5"><FileText size={14} /> Términos de Búsqueda</label>
 
             {/* Tags para incluir */}
             <div className="mb-3">
@@ -422,7 +422,7 @@ export default function ProspectorPage() {
 
             {/* Preview del query final */}
             <div className="mt-3 p-3 bg-zinc-800 border border-zinc-700 rounded-lg">
-              <p className="text-xs text-zinc-500 mb-1">🔍 Query final:</p>
+              <p className="text-xs text-zinc-500 mb-1 flex items-center gap-1"><Search size={12} /> Query final:</p>
               <p className="text-sm text-zinc-200 font-mono break-words">
                 {[...includeTags, ...excludeTags.map(t => `-${t}`)].join(' ')} {form.municipio}
               </p>
@@ -433,7 +433,7 @@ export default function ProspectorPage() {
         {/* Exclusiones Globales */}
         {globalExcludes.length > 0 && (
           <div className="p-4 bg-red-900/20 border border-red-800 rounded-lg">
-            <p className="text-xs font-semibold text-red-300 uppercase tracking-wider mb-2">🌍 Exclusiones Globales (Aplicadas a todas las búsquedas)</p>
+            <p className="text-xs font-semibold text-red-300 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Globe size={12} /> Exclusiones Globales (Aplicadas a todas las búsquedas)</p>
             <div className="flex flex-wrap gap-2">
               {globalExcludes.map((term, idx) => (
                 <div key={idx} className="bg-red-900/40 border border-red-700 text-red-200 text-xs px-2.5 py-1 rounded-full">
@@ -441,7 +441,7 @@ export default function ProspectorPage() {
                 </div>
               ))}
             </div>
-            <p className="text-xs text-red-300 mt-2">✓ {globalExcludes.length} término(s) excluido(s) globalmente</p>
+            <p className="text-xs text-red-300 mt-2 flex items-center gap-1"><Check size={12} /> {globalExcludes.length} término(s) excluido(s) globalmente</p>
           </div>
         )}
 
@@ -511,7 +511,7 @@ export default function ProspectorPage() {
             </div>
           </div>
           <p className="text-xs text-zinc-600 mt-2">
-            ~{(form.pagesTo - form.pagesFrom + 1) * 10} resultados a analizar (⏱️ ~{(form.pagesTo - form.pagesFrom + 1) * 2}-3 minutos)
+            ~{(form.pagesTo - form.pagesFrom + 1) * 10} resultados a analizar (<Timer size={12} className="inline align-middle" /> ~{(form.pagesTo - form.pagesFrom + 1) * 2}-3 minutos)
           </p>
         </div>
 
@@ -545,7 +545,7 @@ export default function ProspectorPage() {
           <div className="flex items-center gap-3">
             <CheckCircle size={20} className="text-green-400" />
             <div>
-              <p className="text-white font-semibold">✅ Prospección completada</p>
+              <p className="text-white font-semibold flex items-center gap-2"><CheckCircle size={16} className="text-green-400" /> Prospección completada</p>
               <p className="text-zinc-400 text-sm">{prospectionStatus?.result?.leadsCount} leads encontrados y analizados</p>
             </div>
           </div>
@@ -586,7 +586,7 @@ export default function ProspectorPage() {
           <div className="flex items-center gap-3">
             <AlertCircle size={20} className="text-red-400" />
             <div>
-              <p className="text-white font-semibold">❌ Error en la prospección</p>
+              <p className="text-white font-semibold flex items-center gap-2"><XCircle size={16} className="text-red-400" /> Error en la prospección</p>
               <p className="text-red-400 text-sm">{prospectionStatus?.error}</p>
             </div>
           </div>
@@ -596,8 +596,8 @@ export default function ProspectorPage() {
       {/* Resultados del scraping (candidatos) */}
       {prospectionStatus?.status === 'completed' && leads.length > 0 && (
         <div>
-          <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">
-            🔎 Resultados del scraping — selecciona los interesantes
+          <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <Search size={14} /> Resultados del scraping — selecciona los interesantes
           </h2>
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
             <LeadsTable
@@ -616,7 +616,7 @@ export default function ProspectorPage() {
       {/* Historial */}
       {history.length > 0 && !prospectionStatus && (
         <div>
-          <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-3">📋 Historial Reciente</h2>
+          <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-3 flex items-center gap-2"><ClipboardList size={14} /> Historial Reciente</h2>
           <div className="space-y-2">
             {history.slice(0, 5).map((h: any) => (
               <div key={h.id} className="flex items-center gap-4 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3">
@@ -649,7 +649,7 @@ export default function ProspectorPage() {
                           const newSet = new Set(savedProspections);
                           newSet.add(h.id);
                           setSavedProspections(newSet);
-                          toast.success('✅ Prospección guardada');
+                          toast.success('Prospección guardada');
                         } catch (error: any) {
                           toast.error(`Error: ${error?.message || 'Error desconocido'}`);
                         }

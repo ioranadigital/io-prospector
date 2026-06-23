@@ -1,7 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Search, Loader2, ChevronDown, ChevronRight, AlertTriangle, X } from 'lucide-react';
+import { Search, Loader2, ChevronDown, ChevronRight, AlertTriangle, X, Lock, Globe, FileText, Zap, Bot, Target } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { api } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
@@ -43,21 +44,21 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   compliance: 'Política de cookies, RGPD, aviso legal y términos de uso.',
 };
 
-const CATEGORY_STYLES: Record<string, { bg: string; border: string; icon: string; textColor: string }> = {
-  seo: { bg: 'bg-blue-950/30 border-blue-800/50', border: 'border-blue-700', icon: '🔵', textColor: 'text-blue-400' },
-  headings: { bg: 'bg-yellow-950/30 border-yellow-800/50', border: 'border-yellow-700', icon: '🟡', textColor: 'text-yellow-400' },
-  images: { bg: 'bg-purple-950/30 border-purple-800/50', border: 'border-purple-700', icon: '🟣', textColor: 'text-purple-400' },
-  links: { bg: 'bg-cyan-950/30 border-cyan-800/50', border: 'border-cyan-700', icon: '🔷', textColor: 'text-cyan-400' },
-  technical: { bg: 'bg-red-950/30 border-red-800/50', border: 'border-red-700', icon: '🔴', textColor: 'text-red-400' },
-  performance: { bg: 'bg-orange-950/30 border-orange-800/50', border: 'border-orange-700', icon: '🟠', textColor: 'text-orange-400' },
-  content: { bg: 'bg-green-950/30 border-green-800/50', border: 'border-green-700', icon: '🟢', textColor: 'text-green-400' },
-  a11y: { bg: 'bg-cyan-950/30 border-cyan-800/50', border: 'border-cyan-700', icon: '🔷', textColor: 'text-cyan-400' },
-  local: { bg: 'bg-green-950/30 border-green-800/50', border: 'border-green-700', icon: '🟢', textColor: 'text-green-400' },
-  mobile: { bg: 'bg-yellow-950/30 border-yellow-800/50', border: 'border-yellow-700', icon: '🟡', textColor: 'text-yellow-400' },
-  schema: { bg: 'bg-indigo-950/30 border-indigo-800/50', border: 'border-indigo-700', icon: '🟦', textColor: 'text-indigo-400' },
-  crawl: { bg: 'bg-rose-950/30 border-rose-800/50', border: 'border-rose-700', icon: '🔗', textColor: 'text-rose-400' },
-  compliance: { bg: 'bg-emerald-950/30 border-emerald-800/50', border: 'border-emerald-700', icon: '✅', textColor: 'text-emerald-400' },
-  analytics: { bg: 'bg-sky-950/30 border-sky-800/50', border: 'border-sky-700', icon: '📊', textColor: 'text-sky-400' },
+const CATEGORY_STYLES: Record<string, { bg: string; border: string; textColor: string }> = {
+  seo: { bg: 'bg-blue-950/30 border-blue-800/50', border: 'border-blue-700', textColor: 'text-blue-400' },
+  headings: { bg: 'bg-yellow-950/30 border-yellow-800/50', border: 'border-yellow-700', textColor: 'text-yellow-400' },
+  images: { bg: 'bg-purple-950/30 border-purple-800/50', border: 'border-purple-700', textColor: 'text-purple-400' },
+  links: { bg: 'bg-cyan-950/30 border-cyan-800/50', border: 'border-cyan-700', textColor: 'text-cyan-400' },
+  technical: { bg: 'bg-red-950/30 border-red-800/50', border: 'border-red-700', textColor: 'text-red-400' },
+  performance: { bg: 'bg-orange-950/30 border-orange-800/50', border: 'border-orange-700', textColor: 'text-orange-400' },
+  content: { bg: 'bg-green-950/30 border-green-800/50', border: 'border-green-700', textColor: 'text-green-400' },
+  a11y: { bg: 'bg-cyan-950/30 border-cyan-800/50', border: 'border-cyan-700', textColor: 'text-cyan-400' },
+  local: { bg: 'bg-green-950/30 border-green-800/50', border: 'border-green-700', textColor: 'text-green-400' },
+  mobile: { bg: 'bg-yellow-950/30 border-yellow-800/50', border: 'border-yellow-700', textColor: 'text-yellow-400' },
+  schema: { bg: 'bg-indigo-950/30 border-indigo-800/50', border: 'border-indigo-700', textColor: 'text-indigo-400' },
+  crawl: { bg: 'bg-rose-950/30 border-rose-800/50', border: 'border-rose-700', textColor: 'text-rose-400' },
+  compliance: { bg: 'bg-emerald-950/30 border-emerald-800/50', border: 'border-emerald-700', textColor: 'text-emerald-400' },
+  analytics: { bg: 'bg-sky-950/30 border-sky-800/50', border: 'border-sky-700', textColor: 'text-sky-400' },
 };
 
 export default function AuditoriaPage() {
@@ -71,12 +72,12 @@ export default function AuditoriaPage() {
   const [allRules, setAllRules] = useState<any[]>([]);
   const [expandedBlocks, setExpandedBlocks] = useState<Set<string>>(new Set());
 
-  const BLOCKS = [
+  const BLOCKS: { id: string; title: string; description: string; icon: LucideIcon; categories: string[]; bgColor: string; borderColor: string }[] = [
     {
       id: 'bloque-1',
       title: 'SEO Técnico y Rastreabilidad',
       description: 'La base del proyecto. Si los buscadores no pueden acceder, procesar o proteger el sitio, el resto del SEO no importa.',
-      icon: '🔒',
+      icon: Lock,
       categories: ['technical', 'crawl', 'security'],
       bgColor: 'bg-red-950/30',
       borderColor: 'border-red-800/50',
@@ -85,7 +86,7 @@ export default function AuditoriaPage() {
       id: 'bloque-2',
       title: 'SEO Local y Legal',
       description: 'Optimización geográfica y cumplimiento normativo para negocios y pymes.',
-      icon: '🌍',
+      icon: Globe,
       categories: ['local', 'compliance'],
       bgColor: 'bg-green-950/30',
       borderColor: 'border-green-800/50',
@@ -94,7 +95,7 @@ export default function AuditoriaPage() {
       id: 'bloque-3',
       title: 'Optimización On-Page y Contenido',
       description: 'El núcleo semántico. Fundamental tanto para SEO tradicional como para alimentar los motores de respuestas de IA.',
-      icon: '📝',
+      icon: FileText,
       categories: ['meta', 'headings', 'content', 'images', 'links'],
       bgColor: 'bg-blue-950/30',
       borderColor: 'border-blue-800/50',
@@ -103,7 +104,7 @@ export default function AuditoriaPage() {
       id: 'bloque-4',
       title: 'Rendimiento y Experiencia de Usuario',
       description: 'Factores de retención humana y señales técnicas que Google y los usuarios exigen por igual.',
-      icon: '⚡',
+      icon: Zap,
       categories: ['performance', 'mobile', 'a11y'],
       bgColor: 'bg-orange-950/30',
       borderColor: 'border-orange-800/50',
@@ -112,7 +113,7 @@ export default function AuditoriaPage() {
       id: 'bloque-5',
       title: 'Datos Estructurados y Analítica',
       description: 'El idioma de las máquinas. Crítico para destacar, ya que los LLMs extraen información directamente de aquí.',
-      icon: '🤖',
+      icon: Bot,
       categories: ['schema', 'analytics'],
       bgColor: 'bg-indigo-950/30',
       borderColor: 'border-indigo-800/50',
@@ -210,7 +211,7 @@ export default function AuditoriaPage() {
 
         {/* Header + URL */}
         <div className="px-6 py-5 border-b border-zinc-800">
-          <h1 className="text-2xl font-bold text-white">🔍 Auditoría SEO</h1>
+          <h1 className="text-2xl font-bold text-white flex items-center gap-2"><Search size={22} className="text-white" /> Auditoría SEO</h1>
           <p className="text-zinc-400 text-sm mt-1 mb-4">Analiza cualquier sitio web</p>
           <form onSubmit={handleAudit} className="w-full">
             <div className="w-full flex flex-row gap-2 items-center">
@@ -236,7 +237,7 @@ export default function AuditoriaPage() {
         {/* Selecciona qué auditar */}
         <div className="px-6 py-4 border-b border-zinc-800">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xl">🎯</span>
+            <Target size={20} className="text-blue-400" />
             <div>
               <h3 className="font-bold text-white text-lg">Selecciona qué auditar</h3>
               <p className="text-xs text-zinc-500">5 bloques temáticos · Configura tu auditoría</p>
@@ -269,7 +270,7 @@ export default function AuditoriaPage() {
                   }}
                 >
                   <div className="flex items-start gap-4">
-                    <span className="text-3xl">{block.icon}</span>
+                    <block.icon size={28} className="text-white" />
                     <div className="text-left">
                       <h3 className="font-bold text-lg text-white">{block.title}</h3>
                       <p className="text-xs text-zinc-400 mt-1">{block.description}</p>
@@ -313,7 +314,7 @@ export default function AuditoriaPage() {
                       const catRules = groupedRules[cat] || [];
                       const catEnabled = selectedCategories.has(cat);
                       const selectedInCat = catRules.filter(r => selectedRules.has(r.check_id)).length;
-                      const style = CATEGORY_STYLES[cat] || { bg: 'bg-zinc-950/30', border: 'border-zinc-800/50', icon: '⚙️', textColor: 'text-zinc-400' };
+                      const style = CATEGORY_STYLES[cat] || { bg: 'bg-zinc-950/30', border: 'border-zinc-800/50', textColor: 'text-zinc-400' };
 
                       return (
                         <div key={cat} className="space-y-2">

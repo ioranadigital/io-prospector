@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { X, Send, Loader2, Check, AlertCircle } from 'lucide-react';
+import { X, Send, Loader2, Check, AlertCircle, MessageCircle, Leaf, Zap, Flame } from 'lucide-react';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 
@@ -71,7 +71,7 @@ export function WhatsAppSendModal({ leads, isOpen, onClose, onSuccess }: WhatsAp
         if (status.completed) {
           setSent(true);
           setSending(false);
-          toast.success(`✅ ${status.sent} mensajes enviados`);
+          toast.success(`${status.sent} mensajes enviados`);
           setTimeout(() => {
             onClose();
             onSuccess?.();
@@ -94,7 +94,7 @@ export function WhatsAppSendModal({ leads, isOpen, onClose, onSuccess }: WhatsAp
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-zinc-800 sticky top-0 bg-zinc-900">
-          <h2 className="text-xl font-bold text-white">💬 Enviar WhatsApp Masivo</h2>
+          <h2 className="text-xl font-bold text-white flex items-center gap-2"><MessageCircle size={18} /> Enviar WhatsApp Masivo</h2>
           <button
             onClick={onClose}
             className="p-1.5 hover:bg-zinc-800 rounded-lg transition-colors"
@@ -183,9 +183,9 @@ export function WhatsAppSendModal({ leads, isOpen, onClose, onSuccess }: WhatsAp
                         : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
                     }`}
                   >
-                    {level === 'soft' && '🌱 Suave (1 msg)'}
-                    {level === 'medium' && '⚡ Media (2 msgs)'}
-                    {level === 'hard' && '🔥 Fuerte (3 msgs)'}
+                    {level === 'soft' && <><Leaf size={12} className="inline mr-1" />Suave (1 msg)</>}
+                    {level === 'medium' && <><Zap size={12} className="inline mr-1" />Media (2 msgs)</>}
+                    {level === 'hard' && <><Flame size={12} className="inline mr-1" />Fuerte (3 msgs)</>}
                   </button>
                 ))}
               </div>

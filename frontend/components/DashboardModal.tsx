@@ -1,6 +1,6 @@
 'use client';
 
-import { X, BarChart3 } from 'lucide-react';
+import { X, BarChart3, Mail, Phone, Calendar, Download } from 'lucide-react';
 
 interface DashboardModalProps {
   prospectionId: string | null;
@@ -48,7 +48,7 @@ export function DashboardModal({ prospectionId, isOpen, onClose, leads }: Dashbo
         <div className="p-6 space-y-6">
           {/* Summary */}
           <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-800 rounded-lg p-4">
-            <p className="text-sm text-blue-300 font-semibold mb-2">📊 Resumen</p>
+            <p className="text-sm text-blue-300 font-semibold mb-2 flex items-center gap-1.5"><BarChart3 size={14} /> Resumen</p>
             <div className="grid grid-cols-4 gap-4">
               <div>
                 <p className="text-xs text-zinc-400">Leads Procesados</p>
@@ -100,9 +100,9 @@ export function DashboardModal({ prospectionId, isOpen, onClose, leads }: Dashbo
 
                   {/* Contact Info */}
                   <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
-                    {lead.email && <p className="text-zinc-300">📧 {lead.email}</p>}
-                    {lead.phone && <p className="text-zinc-300">📞 {lead.phone}</p>}
-                    {lead.created_at && <p className="text-zinc-400 text-xs">📅 {new Date(lead.created_at).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' })}</p>}
+                    {lead.email && <p className="text-zinc-300 flex items-center gap-1"><Mail size={12} /> {lead.email}</p>}
+                    {lead.phone && <p className="text-zinc-300 flex items-center gap-1"><Phone size={12} /> {lead.phone}</p>}
+                    {lead.created_at && <p className="text-zinc-400 text-xs flex items-center gap-1"><Calendar size={11} /> {new Date(lead.created_at).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' })}</p>}
                   </div>
 
                   {/* TIERs Progress */}
@@ -139,7 +139,7 @@ export function DashboardModal({ prospectionId, isOpen, onClose, leads }: Dashbo
               download
               className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold text-center"
             >
-              📥 Descargar CSV
+              <Download size={15} className="inline mr-1" />Descargar CSV
             </a>
             <a
               href={`http://localhost:4000/api/scraping/view/${prospectionId}/dashboard`}
@@ -147,7 +147,7 @@ export function DashboardModal({ prospectionId, isOpen, onClose, leads }: Dashbo
               rel="noopener"
               className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded font-semibold text-center"
             >
-              📊 Ver Reporte Completo
+              <BarChart3 size={15} className="inline mr-1" />Ver Reporte Completo
             </a>
           </div>
         </div>

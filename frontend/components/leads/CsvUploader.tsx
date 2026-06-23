@@ -111,7 +111,7 @@ export function CsvUploader({ onSuccess }: { onSuccess: () => void }) {
       }
 
       toast.success(
-        `✅ ${insertedCount} leads importados${duplicateCount > 0 ? ` | ⚠️ ${duplicateCount} duplicados ignorados` : ''}`
+        `${insertedCount} leads importados${duplicateCount > 0 ? ` | ${duplicateCount} duplicados ignorados` : ''}`
       );
       onSuccess();
     } catch (error) {

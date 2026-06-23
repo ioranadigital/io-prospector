@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { X, Sparkles, Loader2, Copy, Mail, MessageCircle, Check } from 'lucide-react';
+import { X, Sparkles, Loader2, Copy, Mail, MessageCircle, Check, ClipboardList, Eye, Pencil, XCircle, AlertTriangle } from 'lucide-react';
 import { ClientReport, SCORE_LABELS } from '@/lib/audit-client-report';
 
 interface ClientReportModalProps {
@@ -184,20 +184,20 @@ ${report.issues.slice(0, 4).map((issue, i) =>
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 flex-shrink-0">
           <div>
-            <h2 className="text-lg font-bold text-white">📋 Informe para el cliente</h2>
+            <h2 className="text-lg font-bold text-white flex items-center gap-2"><ClipboardList size={18} /> Informe para el cliente</h2>
             <p className="text-xs text-zinc-500 mt-0.5">{report.domain} · Score: {report.score}/100</p>
           </div>
           <div className="flex items-center gap-2">
             {/* Tabs */}
             <div className="flex gap-1 bg-zinc-800 rounded-lg p-1">
               {([
-                { id: 'visual',    label: '👁 Vista previa' },
-                { id: 'email',     label: '📧 Email HTML' },
-                { id: 'whatsapp',  label: '💬 WhatsApp' },
+                { id: 'visual',    icon: <Eye size={12} />,          label: 'Vista previa' },
+                { id: 'email',     icon: <Mail size={12} />,         label: 'Email HTML' },
+                { id: 'whatsapp',  icon: <MessageCircle size={12} />, label: 'WhatsApp' },
               ] as const).map(t => (
                 <button key={t.id} onClick={() => setMode(t.id)}
-                  className={`px-3 py-1.5 rounded text-xs font-medium transition ${mode === t.id ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:text-white'}`}>
-                  {t.label}
+                  className={`px-3 py-1.5 rounded text-xs font-medium transition flex items-center gap-1 ${mode === t.id ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:text-white'}`}>
+                  {t.icon} {t.label}
                 </button>
               ))}
             </div>
@@ -234,9 +234,9 @@ ${report.issues.slice(0, 4).map((issue, i) =>
                       <p className="text-sm text-zinc-500 mt-1">/100 · {scoreMeta.emoji} {report.scoreLabel}</p>
                     </div>
                     <div className="border-l border-zinc-300 pl-8 space-y-2">
-                      <p className="text-sm text-green-600">✓ {report.passCount} checks correctos</p>
-                      <p className="text-sm text-red-600">✗ {report.issues.filter(i=>i.severity==='critical').length} errores críticos</p>
-                      <p className="text-sm text-yellow-600">⚠ {report.issues.filter(i=>i.severity==='warning').length} avisos</p>
+                      <p className="text-sm text-green-600 flex items-center gap-1"><Check size={12} /> {report.passCount} checks correctos</p>
+                      <p className="text-sm text-red-600 flex items-center gap-1"><XCircle size={12} /> {report.issues.filter(i=>i.severity==='critical').length} errores críticos</p>
+                      <p className="text-sm text-yellow-600 flex items-center gap-1"><AlertTriangle size={12} /> {report.issues.filter(i=>i.severity==='warning').length} avisos</p>
                     </div>
                   </div>
                   {/* Problemas */}
@@ -245,8 +245,8 @@ ${report.issues.slice(0, 4).map((issue, i) =>
                     <div className="space-y-3">
                       {report.issues.map((issue, i) => (
                         <div key={i} className={`border rounded-lg p-4 ${issue.severity === 'critical' ? 'border-red-200 bg-red-50' : 'border-yellow-200 bg-yellow-50'}`}>
-                          <p className={`font-semibold text-sm ${issue.severity === 'critical' ? 'text-red-800' : 'text-yellow-800'}`}>
-                            {issue.severity === 'critical' ? '❌' : '⚠️'} {issue.title}
+                          <p className={`font-semibold text-sm flex items-center gap-1 ${issue.severity === 'critical' ? 'text-red-800' : 'text-yellow-800'}`}>
+                            {issue.severity === 'critical' ? <XCircle size={13} /> : <AlertTriangle size={13} />} {issue.title}
                           </p>
                           <p className="text-sm text-zinc-600 mt-1">{issue.impact}</p>
                         </div>
@@ -276,8 +276,8 @@ ${report.issues.slice(0, 4).map((issue, i) =>
 
               {/* Texto editable del intro */}
               <div>
-                <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-2 block">
-                  ✏️ Texto de introducción (editable)
+                <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-2 flex items-center gap-1">
+                  <Pencil size={11} /> Texto de introducción (editable)
                 </label>
                 <textarea
                   value={hookText}
@@ -290,8 +290,8 @@ ${report.issues.slice(0, 4).map((issue, i) =>
 
               {/* Texto de despedida editable */}
               <div>
-                <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-2 block">
-                  ✏️ Texto de despedida (editable)
+                <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-2 flex items-center gap-1">
+                  <Pencil size={11} /> Texto de despedida (editable)
                 </label>
                 <textarea
                   value={farewellText}

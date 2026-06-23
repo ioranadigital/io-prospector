@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Phone, Mail, MessageCircle, FileText, Loader2 } from 'lucide-react';
+import { Phone, Mail, MessageCircle, FileText, Loader2, Leaf, Flame, Zap } from 'lucide-react';
 import { ScriptModal } from '@/components/ui/ScriptModal';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -141,7 +141,11 @@ export default function CrmPage() {
                       .replace(/{{audit_score}}/g, selected.audit_score ?? '?')
                       .replace(/{{city}}/g, selected.city ?? ''));
                   }} className="py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-xs font-medium capitalize transition-colors">
-                    {intensity === 'soft' ? '🌱 Suave' : intensity === 'medium' ? '🔥 Media' : '⚡ Fuerte'}
+                    {intensity === 'soft'
+                      ? <><Leaf size={13} className="inline mr-1 text-green-400" />Suave</>
+                      : intensity === 'medium'
+                        ? <><Flame size={13} className="inline mr-1 text-orange-400" />Media</>
+                        : <><Zap size={13} className="inline mr-1 text-yellow-400" />Fuerte</>}
                   </button>
                 ))}
               </div>

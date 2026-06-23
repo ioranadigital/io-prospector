@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { X, Send, Loader2, Check } from 'lucide-react';
+import { X, Send, Loader2, Check, Mail } from 'lucide-react';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 
@@ -79,7 +79,7 @@ export function EmailSendModal({ leads, isOpen, onClose, onSuccess }: EmailSendM
           setProgress(100);
           setSent(true);
           setSending(false);
-          toast.success(`✅ ${status.sent} emails enviados`);
+          toast.success(`${status.sent} emails enviados`);
           setTimeout(() => {
             onClose();
             onSuccess?.();
@@ -102,7 +102,7 @@ export function EmailSendModal({ leads, isOpen, onClose, onSuccess }: EmailSendM
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-zinc-800 sticky top-0 bg-zinc-900">
-          <h2 className="text-xl font-bold text-white">📧 Enviar Email Masivo</h2>
+          <h2 className="text-xl font-bold text-white flex items-center gap-2"><Mail size={18} /> Enviar Email Masivo</h2>
           <button
             onClick={onClose}
             className="p-1.5 hover:bg-zinc-800 rounded-lg transition-colors"

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { Trash2, RefreshCw } from 'lucide-react';
+import { Trash2, RefreshCw, MapPin, CheckCircle, Clock, XCircle, Lightbulb } from 'lucide-react';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 type SearchSession = {
@@ -84,7 +84,7 @@ export function ProspectionsAdmin() {
 
       if (sessionError) throw sessionError;
 
-      toast.success('✅ Prospección eliminada completamente');
+      toast.success('Prospección eliminada completamente');
       setConfirmDel(null);
       loadSessions();
     } catch (error) {
@@ -155,16 +155,16 @@ export function ProspectionsAdmin() {
                   <div className="flex-1">
                     <h4 className="font-semibold text-white">
                       {session.query}
-                      {session.city && <span className="text-zinc-400 ml-2">📍 {session.city}</span>}
+                      {session.city && <span className="text-zinc-400 ml-2 inline-flex items-center gap-0.5"><MapPin size={11} /> {session.city}</span>}
                     </h4>
                     {session.category && (
                       <p className="text-xs text-zinc-500 mt-1">Categoría: {session.category}</p>
                     )}
                   </div>
                   <span className={`text-xs px-2 py-1 rounded font-medium ${getStatusColor(session.status)}`}>
-                    {session.status === 'completed' && '✅ Completada'}
-                    {session.status === 'in_progress' && '⏳ En progreso'}
-                    {session.status === 'failed' && '❌ Error'}
+                    {session.status === 'completed' && <span className="inline-flex items-center gap-1"><CheckCircle size={12} /> Completada</span>}
+                    {session.status === 'in_progress' && <span className="inline-flex items-center gap-1"><Clock size={12} /> En progreso</span>}
+                    {session.status === 'failed' && <span className="inline-flex items-center gap-1"><XCircle size={12} /> Error</span>}
                   </span>
                 </div>
 
@@ -205,8 +205,8 @@ export function ProspectionsAdmin() {
 
       {/* Info */}
       <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-4 text-xs text-zinc-400">
-        <p>
-          💡 <strong>Nota:</strong> Al eliminar una prospección se borran automáticamente todos los leads asociados. Esta acción no se puede deshacer.
+        <p className="flex items-start gap-1.5">
+          <Lightbulb size={13} className="text-zinc-400 flex-shrink-0 mt-0.5" /> <strong>Nota:</strong> Al eliminar una prospección se borran automáticamente todos los leads asociados. Esta acción no se puede deshacer.
         </p>
       </div>
 

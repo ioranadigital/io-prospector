@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Check, AlertCircle, Clock } from 'lucide-react';
+import { Check, AlertCircle, Clock, Mail, MessageCircle } from 'lucide-react';
 
 type Activity = {
   id: string;
@@ -95,8 +95,8 @@ export function ActivitiesTable({ leadId }: { leadId?: string }) {
             className="bg-zinc-800 border border-zinc-700 px-3 py-2 rounded text-white"
           >
             <option value="all">Todos</option>
-            <option value="email">📧 Email</option>
-            <option value="whatsapp">💬 WhatsApp</option>
+            <option value="email">Email</option>
+            <option value="whatsapp">WhatsApp</option>
           </select>
         </div>
         <div>
@@ -107,9 +107,9 @@ export function ActivitiesTable({ leadId }: { leadId?: string }) {
             className="bg-zinc-800 border border-zinc-700 px-3 py-2 rounded text-white"
           >
             <option value="all">Todos</option>
-            <option value="sent">✅ Enviado</option>
-            <option value="failed">❌ Error</option>
-            <option value="pending">⏳ Pendiente</option>
+            <option value="sent">Enviado</option>
+            <option value="failed">Error</option>
+            <option value="pending">Pendiente</option>
           </select>
         </div>
       </div>
@@ -136,7 +136,12 @@ export function ActivitiesTable({ leadId }: { leadId?: string }) {
               activities.map(activity => (
                 <tr key={activity.id} className="border-b border-zinc-800 hover:bg-zinc-800/50">
                   <td className="px-4 py-3">
-                    {activity.type === 'email' ? '📧 Email' : '💬 WhatsApp'}
+                    <span className="flex items-center gap-1.5">
+                      {activity.type === 'email'
+                        ? <><Mail size={14} className="text-blue-400" /> Email</>
+                        : <><MessageCircle size={14} className="text-green-400" /> WhatsApp</>
+                      }
+                    </span>
                   </td>
                   <td className="px-4 py-3 flex items-center gap-2">
                     {getOutcomeIcon(activity.outcome)}

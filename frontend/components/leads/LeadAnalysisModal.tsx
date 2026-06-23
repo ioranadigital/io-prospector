@@ -1,6 +1,6 @@
 'use client';
 
-import { X } from 'lucide-react';
+import { X, Mail, Phone, Lock, MapPin, FileText, Link2, Smartphone, Star, Camera, Zap, Target, Wrench, BarChart2, CheckCircle, XCircle, Check } from 'lucide-react';
 import type { Lead } from '@/lib/supabase';
 
 interface LeadAnalysisModalProps {
@@ -16,43 +16,43 @@ export function LeadAnalysisModal({ lead, onClose }: LeadAnalysisModalProps) {
       name: 'TIER 1: Contacto & Confianza',
       color: 'red',
       checks: [
-        { label: '📧 Email', has: !!lead.email },
-        { label: '📞 Teléfono', has: !!lead.phone },
-        { label: '🔒 SSL/HTTPS', has: lead.ssl_active },
-        { label: '📍 GMB', has: lead.gmb_claimed },
+        { label: 'Email', icon: Mail, has: !!lead.email },
+        { label: 'Teléfono', icon: Phone, has: !!lead.phone },
+        { label: 'SSL/HTTPS', icon: Lock, has: lead.ssl_active },
+        { label: 'GMB', icon: MapPin, has: lead.gmb_claimed },
       ]
     },
     tier2: {
       name: 'TIER 2: Conversión',
       color: 'yellow',
       checks: [
-        { label: '📝 H1', has: (lead.h1_count || 0) === 1 },
-        { label: '🔗 Schema', has: lead.has_schema },
-        { label: '📱 Mobile', has: lead.is_mobile_responsive },
+        { label: 'H1', icon: FileText, has: (lead.h1_count || 0) === 1 },
+        { label: 'Schema', icon: Link2, has: lead.has_schema },
+        { label: 'Mobile', icon: Smartphone, has: lead.is_mobile_responsive },
       ]
     },
     tier3: {
       name: 'TIER 3: Credibilidad',
       color: 'blue',
       checks: [
-        { label: '⭐ GMB Rating', has: !!lead.gmb_rating },
-        { label: '📸 Fotos GMB', has: (lead.photo_count || 0) > 0 },
-        { label: '📝 Reseñas', has: (lead.review_count || 0) > 0 },
+        { label: 'GMB Rating', icon: Star, has: !!lead.gmb_rating },
+        { label: 'Fotos GMB', icon: Camera, has: (lead.photo_count || 0) > 0 },
+        { label: 'Reseñas', icon: FileText, has: (lead.review_count || 0) > 0 },
       ]
     },
     tier4: {
       name: 'TIER 4: Rendimiento',
       color: 'green',
       checks: [
-        { label: '⚡ TTFB', has: lead.ttfb_ms ? lead.ttfb_ms < 300 : false },
-        { label: '🎯 LCP', has: lead.lcp_ms ? lead.lcp_ms < 2500 : false },
+        { label: 'TTFB', icon: Zap, has: lead.ttfb_ms ? lead.ttfb_ms < 300 : false },
+        { label: 'LCP', icon: Target, has: lead.lcp_ms ? lead.lcp_ms < 2500 : false },
       ]
     },
     tier5: {
       name: 'TIER 5: Engagement',
       color: 'purple',
       checks: [
-        { label: '🔧 Tech Stack', has: !!lead.tech_cms },
+        { label: 'Tech Stack', icon: Wrench, has: !!lead.tech_cms },
       ]
     }
   };
@@ -93,10 +93,10 @@ export function LeadAnalysisModal({ lead, onClose }: LeadAnalysisModalProps) {
 
   const scores = calculateScores();
   const statusText =
-    scores.totalScore >= 80 ? '🟢 EXCELENTE - Contactar' :
-    scores.totalScore >= 60 ? '🟡 BUENO - Contactar con propuesta' :
-    scores.totalScore >= 40 ? '🟠 REGULAR - Esperar mejoras' :
-    '🔴 CRÍTICO - Enfoque en TIER 1 primero';
+    scores.totalScore >= 80 ? 'EXCELENTE - Contactar' :
+    scores.totalScore >= 60 ? 'BUENO - Contactar con propuesta' :
+    scores.totalScore >= 40 ? 'REGULAR - Esperar mejoras' :
+    'CRÍTICO - Enfoque en TIER 1 primero';
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -121,7 +121,7 @@ export function LeadAnalysisModal({ lead, onClose }: LeadAnalysisModalProps) {
           {/* Puntuación General */}
           <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-800 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-semibold text-blue-300">📊 Puntuación Integral</p>
+              <p className="text-sm font-semibold text-blue-300 flex items-center gap-1.5"><BarChart2 size={14} /> Puntuación Integral</p>
               <span className="text-3xl font-bold text-blue-400">{scores.totalScore}%</span>
             </div>
             <div className="w-full bg-zinc-800 rounded-full h-2 mb-2">
@@ -180,19 +180,23 @@ export function LeadAnalysisModal({ lead, onClose }: LeadAnalysisModalProps) {
 
                   {/* Checks en una sola línea */}
                   <div className="flex flex-wrap gap-1.5">
-                    {tier.checks.map((check, idx) => (
-                      <div
-                        key={idx}
-                        className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors ${
-                          check.has
-                            ? `${colors.bg} border ${colors.border} text-zinc-200`
-                            : 'bg-zinc-800/50 border border-zinc-700 text-zinc-400 line-through opacity-50'
-                        }`}
-                      >
-                        <span>{check.has ? '✓' : '✗'}</span>
-                        <span>{check.label}</span>
-                      </div>
-                    ))}
+                    {tier.checks.map((check, idx) => {
+                      const CheckIcon = check.icon;
+                      return (
+                        <div
+                          key={idx}
+                          className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors ${
+                            check.has
+                              ? `${colors.bg} border ${colors.border} text-zinc-200`
+                              : 'bg-zinc-800/50 border border-zinc-700 text-zinc-400 line-through opacity-50'
+                          }`}
+                        >
+                          {check.has ? <Check size={10} /> : <X size={10} />}
+                          <CheckIcon size={10} />
+                          <span>{check.label}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );

@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import {
   CheckCircle, AlertTriangle, XCircle,
   ChevronDown, ChevronRight, ExternalLink, Trash2,
-  RotateCw, ArrowUpRight, ArrowDownRight, Minus, LineChart,
+  RotateCw, ArrowUpRight, ArrowDownRight, Minus, LineChart, BarChart2, Check, X,
 } from 'lucide-react';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
@@ -193,7 +193,7 @@ export default function AuditHistoricoPage() {
       {/* Header */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-white">📊 Histórico de Auditorías</h1>
+          <h1 className="text-2xl font-bold text-white flex items-center gap-2"><BarChart2 size={22} className="text-white" /> Histórico de Auditorías</h1>
           <p className="text-zinc-400 text-sm mt-1">Resultados guardados, agrupados por cliente</p>
         </div>
         <div className="flex gap-2">
@@ -264,9 +264,9 @@ export default function AuditHistoricoPage() {
                       </div>
                       <p className="text-xs text-zinc-400 mt-0.5">{domainLogs.length} auditoría{domainLogs.length !== 1 ? 's' : ''}</p>
                       <div className="flex items-center gap-3 mt-1.5">
-                        <span className="text-xs text-green-400">✓ {pass}</span>
-                        <span className="text-xs text-yellow-400">⚠ {warn}</span>
-                        <span className="text-xs text-red-400">✗ {fail}</span>
+                        <span className="text-xs text-green-400 flex items-center gap-0.5"><Check size={11} /> {pass}</span>
+                        <span className="text-xs text-yellow-400 flex items-center gap-0.5"><AlertTriangle size={11} /> {warn}</span>
+                        <span className="text-xs text-red-400 flex items-center gap-0.5"><X size={11} /> {fail}</span>
                       </div>
                     </div>
                   </div>
@@ -307,9 +307,9 @@ export default function AuditHistoricoPage() {
                           <div className="flex items-center gap-5 ml-4 flex-shrink-0">
                             <span className={`font-bold text-sm ${scoreColor(log.total_score)}`}>{log.total_score}</span>
                             <div className="text-xs space-x-2">
-                              <span className="text-green-400">✓ {log.pass_count}</span>
-                              <span className="text-yellow-400">⚠ {log.warn_count}</span>
-                              <span className="text-red-400">✗ {log.fail_count}</span>
+                              <span className="text-green-400 inline-flex items-center gap-0.5"><Check size={11} /> {log.pass_count}</span>
+                              <span className="text-yellow-400 inline-flex items-center gap-0.5"><AlertTriangle size={11} /> {log.warn_count}</span>
+                              <span className="text-red-400 inline-flex items-center gap-0.5"><X size={11} /> {log.fail_count}</span>
                             </div>
                             <span className="text-zinc-600 text-xs">{log.duration_ms}ms</span>
                             <button

@@ -2,7 +2,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, Lock, Globe, FileText, Zap, Bot, Circle, ClipboardList } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 type Rule = {
   id: string;
@@ -31,12 +32,12 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   compliance: 'Política de cookies, RGPD, aviso legal y términos de uso.',
 };
 
-const BLOCKS = [
+const BLOCKS: { id: string; title: string; description: string; icon: LucideIcon; categories: string[]; bgColor: string; borderColor: string }[] = [
   {
     id: 'bloque-1',
     title: 'SEO Técnico y Rastreabilidad',
     description: 'La base del proyecto. Si los buscadores no pueden acceder, procesar o proteger el sitio, el resto del SEO no importa.',
-    icon: '🔒',
+    icon: Lock,
     categories: ['technical', 'crawl', 'security'],
     bgColor: 'bg-red-950/30',
     borderColor: 'border-red-800/50',
@@ -45,7 +46,7 @@ const BLOCKS = [
     id: 'bloque-2',
     title: 'SEO Local y Legal',
     description: 'Optimización geográfica y cumplimiento normativo para negocios y pymes.',
-    icon: '🌍',
+    icon: Globe,
     categories: ['local', 'compliance'],
     bgColor: 'bg-green-950/30',
     borderColor: 'border-green-800/50',
@@ -54,7 +55,7 @@ const BLOCKS = [
     id: 'bloque-3',
     title: 'Optimización On-Page y Contenido',
     description: 'El núcleo semántico. Fundamental tanto para SEO tradicional como para alimentar los motores de respuestas de IA.',
-    icon: '📝',
+    icon: FileText,
     categories: ['meta', 'headings', 'content', 'images', 'links'],
     bgColor: 'bg-blue-950/30',
     borderColor: 'border-blue-800/50',
@@ -63,7 +64,7 @@ const BLOCKS = [
     id: 'bloque-4',
     title: 'Rendimiento y Experiencia de Usuario',
     description: 'Factores de retención humana y señales técnicas que Google y los usuarios exigen por igual.',
-    icon: '⚡',
+    icon: Zap,
     categories: ['performance', 'mobile', 'a11y'],
     bgColor: 'bg-orange-950/30',
     borderColor: 'border-orange-800/50',
@@ -72,7 +73,7 @@ const BLOCKS = [
     id: 'bloque-5',
     title: 'Datos Estructurados y Analítica',
     description: 'El idioma de las máquinas. Crítico para destacar, ya que los LLMs extraen información directamente de aquí.',
-    icon: '🤖',
+    icon: Bot,
     categories: ['schema', 'analytics'],
     bgColor: 'bg-indigo-950/30',
     borderColor: 'border-indigo-800/50',
@@ -161,95 +162,80 @@ export default function AuditConfigPage() {
   };
 
   // Colores por categoría (coherentes con auditoría)
-  const CATEGORY_STYLES: Record<string, { bg: string; border: string; icon: string; label: string }> = {
+  const CATEGORY_STYLES: Record<string, { bg: string; border: string; label: string }> = {
     meta: {
       bg: 'bg-blue-950/30 border-blue-800/50',
       border: 'border-blue-700',
-      icon: '🔵',
       label: 'Metadatos (12 checks)'
     },
     headings: {
       bg: 'bg-yellow-950/30 border-yellow-800/50',
       border: 'border-yellow-700',
-      icon: '🟡',
       label: 'Headings (6 checks)'
     },
     images: {
       bg: 'bg-purple-950/30 border-purple-800/50',
       border: 'border-purple-700',
-      icon: '🟣',
       label: 'Imágenes (4 checks)'
     },
     links: {
       bg: 'bg-cyan-950/30 border-cyan-800/50',
       border: 'border-cyan-700',
-      icon: '🔷',
       label: 'Enlaces (4 checks)'
     },
     technical: {
       bg: 'bg-red-950/30 border-red-800/50',
       border: 'border-red-700',
-      icon: '🔴',
       label: 'SEO Técnico (8 checks)'
     },
     performance: {
       bg: 'bg-orange-950/30 border-orange-800/50',
       border: 'border-orange-700',
-      icon: '🟠',
       label: 'Performance (7 checks)'
     },
     ux: {
       bg: 'bg-purple-950/30 border-purple-800/50',
       border: 'border-purple-700',
-      icon: '🟣',
       label: 'UX (12 checks)'
     },
     security: {
       bg: 'bg-red-950/30 border-red-800/50',
       border: 'border-red-700',
-      icon: '🔴',
       label: 'Seguridad (8 checks)'
     },
     a11y: {
       bg: 'bg-cyan-950/30 border-cyan-800/50',
       border: 'border-cyan-700',
-      icon: '🔷',
       label: 'Accesibilidad (7 checks)'
     },
     local: {
       bg: 'bg-green-950/30 border-green-800/50',
       border: 'border-green-700',
-      icon: '🟢',
       label: 'SEO Local (5 checks)'
     },
     mobile: {
       bg: 'bg-yellow-950/30 border-yellow-800/50',
       border: 'border-yellow-700',
-      icon: '🟡',
       label: 'Mobile (4 checks)'
     },
     schema: {
       bg: 'bg-indigo-950/30 border-indigo-800/50',
       border: 'border-indigo-700',
-      icon: '🟦',
       label: 'Datos Estructurados (6 checks)'
     },
     crawl: {
       bg: 'bg-rose-950/30 border-rose-800/50',
       border: 'border-rose-700',
-      icon: '🔗',
       label: 'Crawlability (5 checks)'
     },
     compliance: {
       bg: 'bg-emerald-950/30 border-emerald-800/50',
       border: 'border-emerald-700',
-      icon: '✅',
       label: 'Compliance Legal (4 checks)'
     },
     analytics: {
       bg: 'bg-sky-950/30 border-sky-800/50',
       border: 'border-sky-700',
-      icon: '📊',
       label: 'Analytics Tracking (3 checks)'
     },
   };
@@ -295,7 +281,7 @@ export default function AuditConfigPage() {
   return (
     <div className="w-full space-y-6 px-6">
       <div>
-        <h1 className="text-3xl font-bold text-white">📋 Reglas de Auditoría</h1>
+        <h1 className="text-3xl font-bold text-white flex items-center gap-2"><ClipboardList size={22} className="text-white" /> Reglas de Auditoría</h1>
         <p className="text-zinc-400 text-sm mt-1">Configura qué checks ejecutar y sus penalizaciones</p>
         <p className="text-zinc-500 text-xs mt-2">Total: {rules.length} reglas en 5 bloques temáticos</p>
       </div>
@@ -322,7 +308,7 @@ export default function AuditConfigPage() {
                   className="w-full px-6 py-4 flex items-start justify-between hover:bg-white/5 transition"
                 >
                   <div className="flex items-start gap-4">
-                    <span className="text-3xl">{block.icon}</span>
+                    <block.icon size={28} className="text-white" />
                     <div className="text-left">
                       <h3 className="font-bold text-lg text-white">{block.title}</h3>
                       <p className="text-xs text-zinc-400 mt-1">{block.description}</p>
@@ -346,7 +332,6 @@ export default function AuditConfigPage() {
                       const style = CATEGORY_STYLES[category] || {
                         bg: 'bg-zinc-950/30 border-zinc-800/50',
                         border: 'border-zinc-700',
-                        icon: '⚙️',
                         label: category
                       };
                       const isCategoryExpanded = expandedCategories.has(category);
@@ -360,7 +345,7 @@ export default function AuditConfigPage() {
                             className="w-full px-5 py-3 flex items-center justify-between hover:bg-white/5 transition"
                           >
                             <div className="flex items-center gap-3 flex-1">
-                              <span className="text-xl">{style.icon}</span>
+                              <Circle size={14} fill="currentColor" className={TEXT_COLORS[category] || 'text-zinc-400'} />
                               <input
                                 type="checkbox"
                                 checked={categoryState.enabled}

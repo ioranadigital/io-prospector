@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase, type MessageTemplate } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { X, Loader } from 'lucide-react';
+import { X, Loader, Mail, MessageCircle, Copy } from 'lucide-react';
 
 type SendModalProps = {
   leadId: string;
@@ -148,7 +148,7 @@ export function SendModal({
 
       if (error) throw error;
 
-      toast.success(`✅ ${type === 'email' ? 'Email' : 'WhatsApp'} enviado (Mock en console)`);
+      toast.success(`${type === 'email' ? 'Email' : 'WhatsApp'} enviado (Mock en console)`);
       onSent();
       onClose();
     } catch (error) {
@@ -168,8 +168,9 @@ export function SendModal({
       <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-6 max-w-2xl w-full mx-4 space-y-4 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-xl font-semibold">
-              {type === 'email' ? '📧 Enviar Email' : '💬 Enviar WhatsApp'}
+            <h2 className="text-xl font-semibold flex items-center gap-2">
+              {type === 'email' ? <Mail size={18} /> : <MessageCircle size={18} />}
+              {type === 'email' ? 'Enviar Email' : 'Enviar WhatsApp'}
             </h2>
             <p className="text-sm text-zinc-400 mt-1">
               Destinatario: <span className="text-zinc-200 font-medium">{leadName}</span>
@@ -190,7 +191,7 @@ export function SendModal({
                   onClick={() => navigator.clipboard.writeText(email)}
                   className="text-blue-400 hover:text-blue-300 text-xs"
                 >
-                  📋
+                  <Copy size={12} />
                 </button>
               )}
             </div>
@@ -202,7 +203,7 @@ export function SendModal({
                   onClick={() => navigator.clipboard.writeText(phone)}
                   className="text-green-400 hover:text-green-300 text-xs"
                 >
-                  📋
+                  <Copy size={12} />
                 </button>
               )}
             </div>
@@ -261,7 +262,7 @@ export function SendModal({
                 Enviando...
               </span>
             ) : (
-              `${type === 'email' ? '📧' : '💬'} Enviar`
+              <span className="flex items-center justify-center gap-2">{type === 'email' ? <Mail size={14} /> : <MessageCircle size={14} />} Enviar</span>
             )}
           </button>
           <button

@@ -111,7 +111,7 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">📊 Dashboard de Análisis</h1>
+          <h1 className="text-3xl font-bold text-white flex items-center gap-2"><BarChart3 size={22} className="text-white" /> Dashboard de Análisis</h1>
           <p className="text-zinc-400 text-sm mt-1">Control analítico de SEO, prospecting y leads</p>
         </div>
         <button onClick={loadAnalytics}
@@ -144,7 +144,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <SectionCard title="📈 Funnel CRM" accent="blue">
+            <SectionCard title="Funnel CRM" accent="blue">
               <div className="space-y-3">
                 {Object.entries(CRM_LABELS).map(([key, label]) => {
                   const count = data.crm[key] || 0;
@@ -165,7 +165,7 @@ export default function DashboardPage() {
               </div>
             </SectionCard>
 
-            <SectionCard title="🎯 Distribución de Score SEO" accent="green">
+            <SectionCard title="Distribución de Score SEO" accent="green">
               <ScoreDistribution dist={data.seo?.score_distribution} />
             </SectionCard>
           </div>
@@ -184,11 +184,11 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <SectionCard title="🎯 Distribución de Score" accent="green">
+            <SectionCard title="Distribución de Score" accent="green">
               <ScoreDistribution dist={data.seo?.score_distribution} />
             </SectionCard>
 
-            <SectionCard title="🔧 Checks Técnicos" accent="green">
+            <SectionCard title="Checks Técnicos" accent="green">
               <div className="space-y-3">
                 {[
                   { icon: Globe, label: 'Tiene Sitio Web', value: data.seo?.pct_has_website || 0, bar: 'bg-blue-500' },
@@ -204,7 +204,7 @@ export default function DashboardPage() {
           </div>
 
           {data.audits?.total_audits > 0 && (
-            <SectionCard title="🔍 Auditorías guardadas (checks acumulados)" accent="green">
+            <SectionCard title="Auditorías guardadas (checks acumulados)" accent="green">
               <div className="grid grid-cols-3 gap-4">
                 <MiniStat label="Correctos" value={data.audits.total_pass} color="text-green-400" />
                 <MiniStat label="Avisos" value={data.audits.total_warn} color="text-yellow-400" />
@@ -225,10 +225,10 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <SectionCard title="🏆 Top Categorías" accent="sky">
+            <SectionCard title="Top Categorías" accent="sky">
               <TopList items={data.prospections?.top_categories} nameKey="category" barClass="bg-purple-500" empty="Sin datos" />
             </SectionCard>
-            <SectionCard title="🏙️ Top Ciudades" accent="sky">
+            <SectionCard title="Top Ciudades" accent="sky">
               <TopList items={data.prospections?.top_cities} nameKey="city" barClass="bg-cyan-500" empty="Sin datos" />
             </SectionCard>
           </div>
@@ -246,7 +246,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <SectionCard title="📈 Funnel CRM" accent="purple">
+            <SectionCard title="Funnel CRM" accent="purple">
               <div className="space-y-3">
                 {Object.entries(CRM_LABELS).map(([key, label]) => {
                   const count = data.crm[key] || 0;
@@ -267,12 +267,12 @@ export default function DashboardPage() {
               </div>
             </SectionCard>
 
-            <SectionCard title="⚡ Reparto por Prioridad" accent="purple">
+            <SectionCard title="Reparto por Prioridad" accent="purple">
               <PriorityList priority={data.leads?.priority} />
             </SectionCard>
           </div>
 
-          <SectionCard title="✉️ Actividad de Contacto" accent="pink">
+          <SectionCard title="Actividad de Contacto" accent="pink">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <MiniStat icon={Mail} label="Emails enviados" value={data.activity?.total_emails || 0} color="text-blue-400" />
               <MiniStat icon={MessageCircle} label="WhatsApps enviados" value={data.activity?.total_whatsapp || 0} color="text-green-400" />
@@ -325,7 +325,7 @@ function PriorityList({ priority }: { priority?: Record<string, number> }) {
   if (entries.length === 0) return <p className="text-xs text-zinc-600">Sin datos</p>;
   const max = Math.max(...entries.map(([, v]) => v));
   const labels: Record<string, string> = {
-    web_design: '🔴 Diseño web', seo: '🟡 SEO', normal: 'Normal',
+    web_design: 'Diseño web', seo: 'SEO', normal: 'Normal',
     medium: 'Media', high: 'Alta', low: 'Baja', 'sin definir': 'Sin definir',
   };
   const colors: Record<string, string> = {
@@ -351,3 +351,4 @@ function MiniStat({ icon: Icon, label, value, color }:
     </div>
   );
 }
+

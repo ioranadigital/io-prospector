@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { BarChart2, TrendingUp, ClipboardList, Search, Target, Tag } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { CsvUploader } from '@/components/leads/CsvUploader';
 import { LeadsTable } from '@/components/leads/LeadsTable';
@@ -41,8 +42,8 @@ export default function LeadsPage() {
   return (
     <div className="space-y-6 h-screen flex flex-col">
       <div>
-        <h1 className="text-2xl font-bold mb-1">
-          Prospector<br />CRM 🎯
+        <h1 className="text-2xl font-bold mb-1 flex items-center gap-2">
+          Prospector CRM <Target size={22} className="text-blue-400" />
         </h1>
         <p className="text-xs text-zinc-400">Análisis de clientes | Gestión de campañas</p>
       </div>
@@ -58,7 +59,7 @@ export default function LeadsPage() {
                 : 'border-transparent text-zinc-400 hover:text-white'
             }`}
           >
-            📊 Leads ({refreshTrigger})
+            <BarChart2 size={15} className="inline mr-1" /> Leads ({refreshTrigger})
           </button>
           <button
             onClick={() => setActiveTab('activities')}
@@ -68,7 +69,7 @@ export default function LeadsPage() {
                 : 'border-transparent text-zinc-400 hover:text-white'
             }`}
           >
-            📈 Historial
+            <TrendingUp size={15} className="inline mr-1" /> Historial
           </button>
         </div>
 
@@ -85,9 +86,9 @@ export default function LeadsPage() {
           {/* Pestañas de ORIGEN */}
           <div className="flex gap-2 flex-shrink-0">
             {([
-              { id: 'all',        label: '📋 Todos' },
-              { id: 'prospector', label: '🔎 Prospector' },
-              { id: 'audit',      label: '🎯 Auditoría' },
+              { id: 'all',        label: 'Todos',      icon: ClipboardList },
+              { id: 'prospector', label: 'Prospector', icon: Search },
+              { id: 'audit',      label: 'Auditoría',  icon: Target },
             ] as const).map(t => (
               <button
                 key={t.id}
@@ -96,7 +97,7 @@ export default function LeadsPage() {
                   source === t.id ? 'bg-blue-600 text-white' : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white'
                 }`}
               >
-                {t.label}
+                <t.icon size={14} className="inline mr-1" />{t.label}
               </button>
             ))}
           </div>
@@ -111,7 +112,7 @@ export default function LeadsPage() {
                   : 'border-transparent text-zinc-400 hover:text-white'
               }`}
             >
-              📋 Todos
+              <ClipboardList size={14} className="inline mr-1" /> Todos
             </button>
             {categories.map(category => (
               <button
@@ -123,7 +124,7 @@ export default function LeadsPage() {
                     : 'border-transparent text-zinc-400 hover:text-white'
                 }`}
               >
-                🏷️ {category}
+                <Tag size={14} className="inline mr-1" /> {category}
               </button>
             ))}
           </div>

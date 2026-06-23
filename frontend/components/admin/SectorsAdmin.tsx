@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Plus, X, ChevronRight } from 'lucide-react';
+import { Plus, X, ChevronRight, Globe, FolderOpen, ClipboardList, Check, XCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -286,7 +286,7 @@ export function SectorsAdmin() {
     <div className="space-y-6">
       {/* SECCIÓN: EXCLUSIONES GLOBALES */}
       <div className="bg-red-900/20 border border-red-800 rounded-lg p-4">
-        <div className="font-semibold text-red-300 mb-3">🌍 Exclusiones Globales (aplica a todas las categorías)</div>
+        <div className="font-semibold text-red-300 mb-3 flex items-center gap-1.5"><Globe size={14} /> Exclusiones Globales (aplica a todas las categorías)</div>
         <div className="flex flex-wrap gap-2 mb-3">
           {globalExcludes.map(exc => (
             <div key={exc.id} className="bg-red-800/40 border border-red-700 rounded px-3 py-1 flex items-center gap-2">
@@ -325,7 +325,7 @@ export function SectorsAdmin() {
       <div className="grid gap-6" style={{gridTemplateColumns: '400px 1fr 1fr 1fr'}}>
         {/* COLUMNA 1: CATEGORÍAS */}
         <div className="flex flex-col bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden">
-          <div className="p-4 border-b border-zinc-700 font-semibold text-zinc-300">📁 Categorías</div>
+          <div className="p-4 border-b border-zinc-700 font-semibold text-zinc-300 flex items-center gap-1.5"><FolderOpen size={14} /> Categorías</div>
           <div className="flex-1 overflow-y-auto p-2">
             {categories.map(cat => (
               <div
@@ -356,7 +356,7 @@ export function SectorsAdmin() {
                   placeholder="Nueva categoría"
                   className="flex-1 px-3 py-2 bg-zinc-700 text-zinc-200 text-base rounded border border-zinc-600 focus:outline-none"
                 />
-                <button onClick={addCategory} className="text-green-400">✓</button>
+                <button onClick={addCategory} className="text-green-400"><Check size={16} /></button>
               </div>
             ) : (
               <button onClick={() => setAddingCategory(true)} className="w-full text-blue-400 text-sm">
@@ -368,7 +368,7 @@ export function SectorsAdmin() {
 
         {/* COLUMNA 2: SUBCATEGORÍA (muestra SECTORES) */}
         <div className="flex flex-col bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden">
-          <div className="p-4 border-b border-zinc-700 font-semibold text-zinc-300">📋 Subcategoría</div>
+          <div className="p-4 border-b border-zinc-700 font-semibold text-zinc-300 flex items-center gap-1.5"><ClipboardList size={14} /> Subcategoría</div>
           <div className="flex-1 overflow-y-auto p-2">
             {sectors.map(sec => (
               <div
@@ -399,7 +399,7 @@ export function SectorsAdmin() {
                   placeholder="Nuevo sector"
                   className="flex-1 px-3 py-2 bg-zinc-700 text-zinc-200 text-base rounded border border-zinc-600 focus:outline-none"
                 />
-                <button onClick={addSector} className="text-green-400">✓</button>
+                <button onClick={addSector} className="text-green-400"><Check size={16} /></button>
               </div>
             ) : (
               <button
@@ -415,7 +415,7 @@ export function SectorsAdmin() {
 
         {/* COLUMNA 3: TÉRMINOS */}
         <div className="flex flex-col bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden">
-          <div className="p-4 border-b border-zinc-700 font-semibold text-zinc-300">✅ Términos</div>
+          <div className="p-4 border-b border-zinc-700 font-semibold text-zinc-300 flex items-center gap-1.5"><Check size={14} className="text-green-400" /> Términos</div>
           <div className="flex-1 overflow-y-auto p-2">
             {terms.map(term => (
               <div key={term.id} className="p-3 mb-2 rounded-lg bg-green-800/30 border border-green-700/50 flex items-center justify-between">
@@ -437,7 +437,7 @@ export function SectorsAdmin() {
                   placeholder="Nuevo término"
                   className="flex-1 px-3 py-2 bg-zinc-700 text-zinc-200 text-base rounded border border-zinc-600 focus:outline-none"
                 />
-                <button onClick={addTerm} className="text-green-400">✓</button>
+                <button onClick={addTerm} className="text-green-400"><Check size={16} /></button>
               </div>
             ) : (
               <button
@@ -453,7 +453,7 @@ export function SectorsAdmin() {
 
         {/* COLUMNA 4: TÉRMINOS EXCLUIDOS */}
         <div className="flex flex-col bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden">
-          <div className="p-4 border-b border-zinc-700 font-semibold text-zinc-300">❌ Excluir (-)</div>
+          <div className="p-4 border-b border-zinc-700 font-semibold text-zinc-300 flex items-center gap-1.5"><XCircle size={14} className="text-red-400" /> Excluir (-)</div>
           <div className="flex-1 overflow-y-auto p-2">
             {sectorExcludes.map(exc => (
               <div key={exc.id} className="p-3 mb-2 rounded-lg bg-red-800/30 border border-red-700/50 flex items-center justify-between">
@@ -475,7 +475,7 @@ export function SectorsAdmin() {
                   placeholder="-término a excluir"
                   className="flex-1 px-3 py-2 bg-zinc-700 text-zinc-200 text-base rounded border border-zinc-600 focus:outline-none"
                 />
-                <button onClick={addSectorExclude} className="text-red-400">✓</button>
+                <button onClick={addSectorExclude} className="text-red-400"><Check size={16} /></button>
               </div>
             ) : (
               <button

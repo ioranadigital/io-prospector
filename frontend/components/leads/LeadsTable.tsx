@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase, type Lead } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { BarChart3, CheckCircle2, Circle, Trash2, Eye } from 'lucide-react';
+import { BarChart3, CheckCircle2, Circle, Trash2, CheckCircle, XCircle, Clock, Mail, MessageCircle, Star, Copy, ClipboardList } from 'lucide-react';
 import { SendModal } from './SendModal';
 import { LeadDetailModal } from './LeadDetailModal';
 import { TierSummaryModal } from './TierSummaryModal';
@@ -93,14 +93,17 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
 
   const getActivityStatus = (activity: LeadActivity | undefined) => {
     if (!activity) return {
-      icon: '⭕',
+      statusIcon: null as React.ReactNode,
       iconDesc: 'Sin contacto',
       text: 'Sin contacto',
       color: 'text-zinc-500',
+      typeIcon: null as React.ReactNode,
       typeDesc: 'No se ha establecido contacto',
+      template: '',
+      timeStr: '',
     };
 
-    const type = activity.type === 'email' ? '📧' : '💬';
+    const typeIcon = activity.type === 'email' ? <Mail size={12} /> : <MessageCircle size={12} />;
     const typeDesc = activity.type === 'email' ? 'Email enviado' : 'WhatsApp enviado';
     const template = activity.metadata?.template_name || 'Contacto';
     const date = new Date(activity.created_at);
@@ -116,28 +119,28 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
     else if (diffHours < 24) timeStr = `Hace ${diffHours}h`;
     else timeStr = `Hace ${diffDays}d`;
 
-    let statusIcon = '';
+    let statusIcon: React.ReactNode = null;
     let statusDesc = '';
     let statusColor = '';
 
     if (activity.outcome === 'sent') {
-      statusIcon = '✅';
+      statusIcon = <CheckCircle size={12} className="text-green-400" />;
       statusDesc = 'Enviado correctamente';
       statusColor = 'text-green-400';
     } else if (activity.outcome === 'failed') {
-      statusIcon = '❌';
+      statusIcon = <XCircle size={12} className="text-red-400" />;
       statusDesc = 'Error al enviar';
       statusColor = 'text-red-400';
     } else {
-      statusIcon = '⏳';
+      statusIcon = <Clock size={12} className="text-yellow-400" />;
       statusDesc = 'Pendiente de envío';
       statusColor = 'text-yellow-400';
     }
 
     return {
-      icon: statusIcon,
+      statusIcon,
       iconDesc: statusDesc,
-      type,
+      typeIcon,
       typeDesc,
       template,
       timeStr,
@@ -207,7 +210,7 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
       if (error) throw error;
 
       setLeads(leads.filter(l => !selected.has(l.id)));
-      toast.success(`✅ ${idsToDelete.length} lead(s) eliminado(s)`);
+      toast.success(`${idsToDelete.length} lead(s) eliminado(s)`);
       setSelected(new Set());
       setConfirmDelOpen(false);
     } catch (err) {
@@ -228,7 +231,7 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="text-sm text-zinc-400">
-          📊 {uniqueCount} leads únicos | {selected.size} seleccionados
+          <span className="inline-flex items-center gap-1.5"><BarChart3 size={14} /> {uniqueCount} leads únicos | {selected.size} seleccionados</span>
         </div>
         {selected.size > 0 && (
           <button
@@ -258,14 +261,14 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
                   )}
                 </button>
               </th>
-              <th className="px-3 py-3 text-left font-semibold">📊 Negocio</th>
-              <th className="px-3 py-3 text-left font-semibold">📧 Email</th>
-              <th className="px-3 py-3 text-left font-semibold">📱 Teléfono</th>
-              <th className="px-3 py-3 text-left font-semibold">🔍 Rating SEO</th>
-              <th className="px-3 py-3 text-left font-semibold">📍 Rating GMB</th>
-              <th className="px-3 py-3 text-left font-semibold">🔴 TIER 1</th>
-              <th className="px-3 py-3 text-left font-semibold">📨 Estado</th>
-              <th className="px-3 py-3 text-left font-semibold">🎯 Acciones</th>
+              <th className="px-3 py-3 text-left font-semibold">Negocio</th>
+              <th className="px-3 py-3 text-left font-semibold"><Mail size={13} className="inline mr-1" />Email</th>
+              <th className="px-3 py-3 text-left font-semibold"><MessageCircle size={13} className="inline mr-1" />Teléfono</th>
+              <th className="px-3 py-3 text-left font-semibold">Rating SEO</th>
+              <th className="px-3 py-3 text-left font-semibold"><Star size={13} className="inline mr-1 text-yellow-400" />Rating GMB</th>
+              <th className="px-3 py-3 text-left font-semibold">TIER 1</th>
+              <th className="px-3 py-3 text-left font-semibold">Estado</th>
+              <th className="px-3 py-3 text-left font-semibold">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -308,7 +311,7 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
                           className="text-blue-400 hover:text-blue-300"
                           title="Copiar email"
                         >
-                          📋
+                          <Copy size={12} />
                         </button>
                       </div>
                     ) : (
@@ -324,7 +327,7 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
                           className="text-green-400 hover:text-green-300"
                           title="Copiar teléfono"
                         >
-                          📋
+                          <Copy size={12} />
                         </button>
                       </div>
                     ) : (
@@ -339,7 +342,7 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
                   <td className="px-3 py-3 text-sm">
                     {lead.gmb_rating ? (
                       <span className="font-semibold text-yellow-400" title="Google My Business Rating">
-                        {lead.gmb_rating.toFixed(1)} ⭐
+                        <span className="inline-flex items-center gap-1">{lead.gmb_rating.toFixed(1)} <Star size={12} className="text-yellow-400 fill-yellow-400" /></span>
                       </span>
                     ) : (
                       <span className="text-zinc-500" title="Sin datos de Google Maps">
@@ -349,10 +352,10 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
                   </td>
                   <td className="px-3 py-3 text-xs">
                     <div className="flex gap-1">
-                      {!lead.email && <span className="px-1 py-0.5 bg-red-900/40 text-red-300 rounded text-xs">📧</span>}
-                      {!lead.phone && <span className="px-1 py-0.5 bg-red-900/40 text-red-300 rounded text-xs">📞</span>}
+                      {!lead.email && <span className="px-1 py-0.5 bg-red-900/40 text-red-300 rounded text-xs inline-flex items-center gap-0.5"><Mail size={10} /></span>}
+                      {!lead.phone && <span className="px-1 py-0.5 bg-red-900/40 text-red-300 rounded text-xs inline-flex items-center gap-0.5"><MessageCircle size={10} /></span>}
                       {lead.email && lead.phone ? (
-                        <span className="px-1 py-0.5 bg-green-900/40 text-green-300 rounded text-xs">✅</span>
+                        <span className="px-1 py-0.5 bg-green-900/40 text-green-300 rounded text-xs inline-flex items-center gap-0.5"><CheckCircle size={10} /></span>
                       ) : null}
                     </div>
                   </td>
@@ -363,8 +366,8 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
                       onMouseLeave={() => setTooltipLead(null)}
                     >
                       <div className="font-medium group relative">
-                        <span title={status.iconDesc}>{status.icon}</span>
-                        <span title={status.typeDesc}>{status.type}</span>
+                        <span title={status.iconDesc} className="inline-flex">{status.statusIcon}</span>
+                        <span title={status.typeDesc} className="inline-flex">{status.typeIcon}</span>
                         {tooltipLead === lead.id && (
                           <div className="absolute left-0 bottom-full mb-2 bg-zinc-900 border border-zinc-700 rounded px-2 py-1 whitespace-nowrap text-xs text-zinc-200 z-40 pointer-events-none">
                             {status.iconDesc}
@@ -388,7 +391,7 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
                       className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium transition"
                       title="Ver ficha completa"
                     >
-                      📋 Ficha
+                      <ClipboardList size={12} className="inline mr-1" /> Ficha
                     </button>
                     <button
                       onClick={(e) => {

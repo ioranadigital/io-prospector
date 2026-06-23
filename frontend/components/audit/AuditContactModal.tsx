@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { X, Send, Loader2, Mail, MessageCircle } from 'lucide-react';
+import { X, Send, Loader2, Mail, MessageCircle, Check, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -146,9 +146,9 @@ export function AuditContactModal({ isOpen, onClose, mode, auditData, prefillBod
             <span className={`font-bold ${auditData.score >= 80 ? 'text-green-400' : auditData.score >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
               {auditData.score}/100
             </span>
-            <span className="text-green-400">✓ {auditData.pass}</span>
-            <span className="text-yellow-400">⚠ {auditData.warn}</span>
-            <span className="text-red-400">✗ {auditData.fail}</span>
+            <span className="text-green-400 inline-flex items-center gap-0.5"><Check size={11} /> {auditData.pass}</span>
+            <span className="text-yellow-400 inline-flex items-center gap-0.5"><AlertTriangle size={11} /> {auditData.warn}</span>
+            <span className="text-red-400 inline-flex items-center gap-0.5"><X size={11} /> {auditData.fail}</span>
           </div>
 
           {/* Plantillas */}
@@ -180,7 +180,7 @@ export function AuditContactModal({ isOpen, onClose, mode, auditData, prefillBod
                         : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700'
                     }`}
                   >
-                    <span>{t.type === 'email' ? '📧' : '💬'}</span>
+                    {t.type === 'email' ? <Mail size={11} /> : <MessageCircle size={11} />}
                     {t.name}
                     {t.category === 'AUDITORÍA SEO' && (
                       <span className="text-[10px] bg-purple-600/40 text-purple-300 px-1 rounded">audit</span>
@@ -248,7 +248,7 @@ export function AuditContactModal({ isOpen, onClose, mode, auditData, prefillBod
               {sending
                 ? <><Loader2 size={15} className="animate-spin" /> Enviando...</>
                 : sent
-                  ? '✓ Enviado'
+                  ? <><Check size={15} /> Enviado</>
                   : <><Send size={15} /> {isEmail ? 'Enviar Email' : 'Enviar WhatsApp'}</>
               }
             </button>

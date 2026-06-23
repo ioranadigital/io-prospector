@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase, type Lead } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { X, Save, Mail, MessageCircle } from 'lucide-react';
+import { X, Save, Mail, MessageCircle, MapPin, Phone, Search, Map, Target, Trophy, Wrench, FileText, Pencil, AlertTriangle, CheckCircle, XCircle, Star } from 'lucide-react';
 
 type LeadDetailModalProps = {
   lead: Lead;
@@ -66,7 +66,7 @@ export function LeadDetailModal({
 
       if (error) throw error;
 
-      toast.success('✅ Lead actualizado');
+      toast.success('Lead actualizado');
       setEditing(false);
       onUpdate();
     } catch (err) {
@@ -97,7 +97,7 @@ export function LeadDetailModal({
         <div className="p-6 space-y-6">
           {/* Info General */}
           <section className="space-y-3">
-            <h3 className="text-sm font-semibold text-zinc-400 uppercase">📍 Información General</h3>
+            <h3 className="text-sm font-semibold text-zinc-400 uppercase flex items-center gap-1.5"><MapPin size={14} /> Información General</h3>
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-2 text-sm">
               <div>
                 <span className="text-zinc-400">Sitio web:</span>{' '}
@@ -125,10 +125,10 @@ export function LeadDetailModal({
 
           {/* Contacto */}
           <section className="space-y-3">
-            <h3 className="text-sm font-semibold text-zinc-400 uppercase">📞 Contacto</h3>
+            <h3 className="text-sm font-semibold text-zinc-400 uppercase flex items-center gap-1.5"><Phone size={14} /> Contacto</h3>
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-3">
               <div>
-                <label className="text-xs text-zinc-400 block mb-1">📧 Email</label>
+                <label className="text-xs text-zinc-400 block mb-1 flex items-center gap-1"><Mail size={12} /> Email</label>
                 <input
                   type="email"
                   value={formData.email}
@@ -139,7 +139,7 @@ export function LeadDetailModal({
                 />
               </div>
               <div>
-                <label className="text-xs text-zinc-400 block mb-1">📱 Teléfono</label>
+                <label className="text-xs text-zinc-400 block mb-1 flex items-center gap-1"><Phone size={12} /> Teléfono</label>
                 <input
                   type="tel"
                   value={formData.phone}
@@ -154,10 +154,10 @@ export function LeadDetailModal({
 
           {/* SEO Detectado */}
           <section className="space-y-3">
-            <h3 className="text-sm font-semibold text-zinc-400 uppercase">🔍 SEO Detectado</h3>
+            <h3 className="text-sm font-semibold text-zinc-400 uppercase flex items-center gap-1.5"><Search size={14} /> SEO Detectado</h3>
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-3">
               <div>
-                <label className="text-xs text-zinc-400 block mb-1">⚠️ Error Principal</label>
+                <label className="text-xs text-zinc-400 block mb-1 flex items-center gap-1"><AlertTriangle size={12} /> Error Principal</label>
                 <textarea
                   value={formData.seo_gap}
                   onChange={e => setFormData({ ...formData, seo_gap: e.target.value })}
@@ -173,15 +173,15 @@ export function LeadDetailModal({
                 </div>
                 <div>
                   <span className="text-zinc-400">Mobile:</span>
-                  <div className="text-white">{lead.is_mobile_responsive ? '✅' : '❌'}</div>
+                  <div className="text-white">{lead.is_mobile_responsive ? <CheckCircle size={16} className="text-green-400" /> : <XCircle size={16} className="text-red-400" />}</div>
                 </div>
                 <div>
                   <span className="text-zinc-400">SSL:</span>
-                  <div className="text-white">{lead.ssl_active ? '✅' : '❌'}</div>
+                  <div className="text-white">{lead.ssl_active ? <CheckCircle size={16} className="text-green-400" /> : <XCircle size={16} className="text-red-400" />}</div>
                 </div>
                 <div>
                   <span className="text-zinc-400">Schema:</span>
-                  <div className="text-white">{lead.has_schema ? '✅' : '❌'}</div>
+                  <div className="text-white">{lead.has_schema ? <CheckCircle size={16} className="text-green-400" /> : <XCircle size={16} className="text-red-400" />}</div>
                 </div>
                 <div>
                   <span className="text-zinc-400">Links rotos:</span>
@@ -194,11 +194,11 @@ export function LeadDetailModal({
           {/* GMB */}
           {(lead.gmb_rating || lead.review_count) && (
             <section className="space-y-3">
-              <h3 className="text-sm font-semibold text-zinc-400 uppercase">🗺️ Google Business</h3>
+              <h3 className="text-sm font-semibold text-zinc-400 uppercase flex items-center gap-1.5"><Map size={14} /> Google Business</h3>
               <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 grid grid-cols-3 gap-4 text-sm">
                 <div>
                   <span className="text-zinc-400 block mb-1">Rating</span>
-                  <div className="text-white font-semibold">{lead.gmb_rating || '-'} ⭐</div>
+                  <div className="text-white font-semibold flex items-center gap-1">{lead.gmb_rating || '-'} <Star size={14} className="text-yellow-400 fill-yellow-400" /></div>
                 </div>
                 <div>
                   <span className="text-zinc-400 block mb-1">Reviews</span>
@@ -206,7 +206,7 @@ export function LeadDetailModal({
                 </div>
                 <div>
                   <span className="text-zinc-400 block mb-1">Claimed</span>
-                  <div className="text-white">{lead.gmb_claimed ? '✅' : '❌'}</div>
+                  <div className="text-white">{lead.gmb_claimed ? <CheckCircle size={16} className="text-green-400" /> : <XCircle size={16} className="text-red-400" />}</div>
                 </div>
               </div>
             </section>
@@ -214,10 +214,10 @@ export function LeadDetailModal({
 
           {/* Contexto Comercial */}
           <section className="space-y-3">
-            <h3 className="text-sm font-semibold text-zinc-400 uppercase">🎯 Contexto Comercial</h3>
+            <h3 className="text-sm font-semibold text-zinc-400 uppercase flex items-center gap-1.5"><Target size={14} /> Contexto Comercial</h3>
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-3">
               <div>
-                <label className="text-xs text-zinc-400 block mb-1">🏆 Competidor Principal</label>
+                <label className="text-xs text-zinc-400 block mb-1 flex items-center gap-1"><Trophy size={12} /> Competidor Principal</label>
                 <input
                   type="text"
                   value={formData.main_competitor}
@@ -228,7 +228,7 @@ export function LeadDetailModal({
                 />
               </div>
               <div>
-                <label className="text-xs text-zinc-400 block mb-1">🔧 Servicio Faltante</label>
+                <label className="text-xs text-zinc-400 block mb-1 flex items-center gap-1"><Wrench size={12} /> Servicio Faltante</label>
                 <input
                   type="text"
                   value={formData.missing_service}
@@ -239,7 +239,7 @@ export function LeadDetailModal({
                 />
               </div>
               <div>
-                <label className="text-xs text-zinc-400 block mb-1">💬 Icebreaker</label>
+                <label className="text-xs text-zinc-400 block mb-1 flex items-center gap-1"><MessageCircle size={12} /> Icebreaker</label>
                 <textarea
                   value={formData.icebreaker}
                   onChange={e => setFormData({ ...formData, icebreaker: e.target.value })}
@@ -249,7 +249,7 @@ export function LeadDetailModal({
                 />
               </div>
               <div>
-                <label className="text-xs text-zinc-400 block mb-1">📝 Notas</label>
+                <label className="text-xs text-zinc-400 block mb-1 flex items-center gap-1"><FileText size={12} /> Notas</label>
                 <textarea
                   value={formData.notes}
                   onChange={e => setFormData({ ...formData, notes: e.target.value })}
@@ -286,7 +286,7 @@ export function LeadDetailModal({
                   onClick={() => setEditing(true)}
                   className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
                 >
-                  ✏️ Editar
+                  <Pencil size={14} className="mr-1" /> Editar
                 </button>
                 <button
                   onClick={onSendEmail}

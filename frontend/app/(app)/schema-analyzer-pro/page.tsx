@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Loader2, AlertTriangle, CheckCircle, ShoppingCart, FileText, Brain, Building2, MapPin, Grid3x3, Users, XCircle, Tag, LayoutGrid } from 'lucide-react';
+import { Search, Loader2, AlertTriangle, CheckCircle, ShoppingCart, FileText, Brain, Building2, MapPin, Grid3x3, Users, XCircle, Tag, LayoutGrid, Home, FolderOpen, Folder, ShoppingBag, PenLine, Newspaper, Phone, Info, Globe, BookOpen } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const SCHEMA_CATEGORIES = {
@@ -84,15 +85,15 @@ const SCHEMA_CATEGORIES = {
   },
 };
 
-const PAGE_TYPE_CONFIG: Record<string, { label: string; badge: string; color: string; icon: string; pageType: string }> = {
-  home:       { label: 'Home',       badge: 'bg-cyan-900/50 text-cyan-300 border-cyan-700',       color: 'border-l-cyan-500',   icon: '🏠', pageType: 'HOME_PAGE' },
-  sección:    { label: 'Sección',    badge: 'bg-blue-900/50 text-blue-300 border-blue-700',       color: 'border-l-blue-500',   icon: '📂', pageType: 'SECTION_PAGE' },
-  subsección: { label: 'Subsección', badge: 'bg-purple-900/50 text-purple-300 border-purple-700', color: 'border-l-purple-500', icon: '📁', pageType: 'SUBSECTION_PAGE' },
-  producto:   { label: 'Producto',   badge: 'bg-green-900/50 text-green-300 border-green-700',    color: 'border-l-green-500',  icon: '🛍️', pageType: 'PRODUCT_PAGE' },
-  blog:       { label: 'Blog',       badge: 'bg-orange-900/50 text-orange-300 border-orange-700', color: 'border-l-orange-500', icon: '✍️', pageType: 'BLOG_PAGE' },
-  artículo:   { label: 'Artículo',   badge: 'bg-rose-900/50 text-rose-300 border-rose-700',       color: 'border-l-rose-500',   icon: '📰', pageType: 'ARTICLE_PAGE' },
-  contacto:   { label: 'Contacto',   badge: 'bg-yellow-900/50 text-yellow-300 border-yellow-700', color: 'border-l-yellow-500', icon: '📞', pageType: 'CONTACT_PAGE' },
-  about:      { label: 'About',      badge: 'bg-pink-900/50 text-pink-300 border-pink-700',       color: 'border-l-pink-500',   icon: 'ℹ️', pageType: 'ABOUT_PAGE' },
+const PAGE_TYPE_CONFIG: Record<string, { label: string; badge: string; color: string; icon: LucideIcon; pageType: string }> = {
+  home:       { label: 'Home',       badge: 'bg-cyan-900/50 text-cyan-300 border-cyan-700',       color: 'border-l-cyan-500',   icon: Home,        pageType: 'HOME_PAGE' },
+  sección:    { label: 'Sección',    badge: 'bg-blue-900/50 text-blue-300 border-blue-700',       color: 'border-l-blue-500',   icon: FolderOpen,  pageType: 'SECTION_PAGE' },
+  subsección: { label: 'Subsección', badge: 'bg-purple-900/50 text-purple-300 border-purple-700', color: 'border-l-purple-500', icon: Folder,      pageType: 'SUBSECTION_PAGE' },
+  producto:   { label: 'Producto',   badge: 'bg-green-900/50 text-green-300 border-green-700',    color: 'border-l-green-500',  icon: ShoppingBag, pageType: 'PRODUCT_PAGE' },
+  blog:       { label: 'Blog',       badge: 'bg-orange-900/50 text-orange-300 border-orange-700', color: 'border-l-orange-500', icon: PenLine,     pageType: 'BLOG_PAGE' },
+  artículo:   { label: 'Artículo',   badge: 'bg-rose-900/50 text-rose-300 border-rose-700',       color: 'border-l-rose-500',   icon: Newspaper,   pageType: 'ARTICLE_PAGE' },
+  contacto:   { label: 'Contacto',   badge: 'bg-yellow-900/50 text-yellow-300 border-yellow-700', color: 'border-l-yellow-500', icon: Phone,       pageType: 'CONTACT_PAGE' },
+  about:      { label: 'About',      badge: 'bg-pink-900/50 text-pink-300 border-pink-700',       color: 'border-l-pink-500',   icon: Info,        pageType: 'ABOUT_PAGE' },
 };
 
 const PRIORITY_BADGE: Record<string, string> = {
@@ -143,7 +144,7 @@ export default function SchemaAnalyzerProPage() {
 
       const data = await response.json();
       setResult(data);
-      toast.success('✅ Análisis completado');
+      toast.success('Análisis completado');
     } catch (err: any) {
       console.error('Analysis error:', err);
       setError(err.message);
@@ -195,7 +196,7 @@ export default function SchemaAnalyzerProPage() {
                       : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:border-zinc-500 hover:text-zinc-300'
                   }`}
                 >
-                  <span>{config.icon}</span>
+                  <config.icon size={14} />
                   {config.label}
                 </button>
               );
@@ -237,7 +238,7 @@ export default function SchemaAnalyzerProPage() {
         {/* Results - Full Width */}
         {result && (() => {
           const tipologia: string = result.audit?.tipologia_detectada || result.recommendations?.pageType?.toLowerCase()?.replace('_page', '') || 'genérica';
-          const pageConfig = PAGE_TYPE_CONFIG[tipologia] || { label: tipologia, badge: 'bg-zinc-800 text-zinc-300 border-zinc-600', color: 'border-l-zinc-500', icon: '🌐' };
+          const pageConfig = PAGE_TYPE_CONFIG[tipologia] || { label: tipologia, badge: 'bg-zinc-800 text-zinc-300 border-zinc-600', color: 'border-l-zinc-500', icon: Globe };
 
           // Schemas encontrados en la página
           const schemasFound: string[] = result.schemasFound || [];
@@ -264,7 +265,7 @@ export default function SchemaAnalyzerProPage() {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold border ${pageConfig.badge}`}>
-                        <span>{pageConfig.icon}</span>
+                        <pageConfig.icon size={14} />
                         Página detectada: <strong>{pageConfig.label}</strong>
                       </span>
                       <span className="text-zinc-500 text-xs">|</span>
@@ -451,7 +452,7 @@ export default function SchemaAnalyzerProPage() {
 
         {/* Schema Reference - Always Below */}
         <div className="border-t border-zinc-700 pt-8">
-          <h2 className="text-xl font-bold text-white mb-6">📚 Entidades Schema.org Disponibles</h2>
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2"><BookOpen size={18} className="text-white" /> Entidades Schema.org Disponibles</h2>
           <div className="space-y-6">
             {Object.entries(SCHEMA_CATEGORIES).map(([key, category]) => {
               const Icon = category.icon;

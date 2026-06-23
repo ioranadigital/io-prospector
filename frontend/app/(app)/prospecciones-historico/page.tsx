@@ -5,7 +5,7 @@ import { SECTORS } from '@/lib/sectors';
 import { fixMojibake } from '@/lib/text';
 import toast from 'react-hot-toast';
 import {
-  ChevronDown, ChevronRight, MapPin, Search, Layers, Tag, Clock, Building2,
+  ChevronDown, ChevronRight, MapPin, Search, Layers, Tag, Clock, Building2, FolderOpen,
 } from 'lucide-react';
 
 type Session = {
@@ -27,7 +27,7 @@ const SUBCAT_INFO = (() => {
   SECTORS.forEach(c => c.subcategories.forEach(s => m.set(norm(s.name), { category: c.category, subName: s.name })));
   return m;
 })();
-const OTHER_CAT = '📦 Otros / personalizadas';
+const OTHER_CAT = 'Otros / personalizadas';
 
 const CAT_COLORS = [
   'bg-blue-950/20 border-blue-800/40',
@@ -109,7 +109,7 @@ export default function ProspeccionesHistoricoPage() {
       {/* Header */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-white">🗂️ Histórico de Prospecciones</h1>
+          <h1 className="text-2xl font-bold text-white flex items-center gap-2"><FolderOpen size={22} className="text-white" /> Histórico de Prospecciones</h1>
           <p className="text-zinc-400 text-sm mt-1">Scrapings ya realizados, agrupados por sector — para no duplicar búsquedas</p>
         </div>
         <div className="flex gap-2">

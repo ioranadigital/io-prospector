@@ -1,6 +1,6 @@
 'use client';
 
-import { X } from 'lucide-react';
+import { X, BarChart2, CheckCircle, XCircle, TrendingUp } from 'lucide-react';
 import { type Lead } from '@/lib/supabase';
 
 interface TierSummaryModalProps {
@@ -74,7 +74,7 @@ export function TierSummaryModal({ lead, isOpen, onClose }: TierSummaryModalProp
         {/* Header */}
         <div className="sticky top-0 bg-zinc-900 border-b border-zinc-700 p-6 flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-white">📊 Resumen de TIERS</h2>
+            <h2 className="text-2xl font-bold text-white flex items-center gap-2"><BarChart2 size={22} className="text-white" /> Resumen de TIERS</h2>
             <p className="text-sm text-zinc-400 mt-1">{lead.business_name}</p>
           </div>
           <button onClick={onClose} className="p-1 hover:bg-zinc-700 rounded">
@@ -124,7 +124,7 @@ export function TierSummaryModal({ lead, isOpen, onClose }: TierSummaryModalProp
                             : 'bg-zinc-800 text-zinc-400'
                         }`}
                       >
-                        <span>{hasItem ? '✅' : '❌'}</span>
+                        {hasItem ? <CheckCircle size={14} className="text-green-400 flex-shrink-0" /> : <XCircle size={14} className="text-red-400 flex-shrink-0" />}
                         <span>{item.label}</span>
                       </div>
                     );
@@ -136,7 +136,7 @@ export function TierSummaryModal({ lead, isOpen, onClose }: TierSummaryModalProp
 
           {/* Score Summary */}
           <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4">
-            <h3 className="text-sm font-semibold text-zinc-400 uppercase mb-3">📈 Puntuación General</h3>
+            <h3 className="text-sm font-semibold text-zinc-400 uppercase mb-3 flex items-center gap-1.5"><TrendingUp size={14} /> Puntuación General</h3>
             <p className="text-3xl font-bold text-white">{lead.audit_score || 0}/100</p>
           </div>
         </div>

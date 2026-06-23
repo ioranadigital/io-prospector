@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Settings, FolderOpen, Ban } from 'lucide-react';
 import { SectorsAdmin } from '@/components/admin/SectorsAdmin';
 
 type GlobalExclude = { id?: string; term: string };
@@ -52,13 +52,13 @@ export default function ConfigPage() {
   return (
     <div className="w-full space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">⚙️ Configuración</h1>
+        <h1 className="text-2xl font-bold text-white flex items-center gap-2"><Settings size={22} className="text-white" /> Configuración</h1>
         <p className="text-zinc-400 text-sm mt-1">Categorías de sectores y exclusiones globales de prospección</p>
       </div>
 
       {/* Categorías / Sectores */}
       <div>
-        <h2 className="text-lg font-bold text-white mb-3">📁 Categorías</h2>
+        <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2"><FolderOpen size={18} /> Categorías</h2>
         <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
           <SectorsAdmin />
         </div>
@@ -67,7 +67,7 @@ export default function ConfigPage() {
       {/* Exclusiones Globales */}
       <div className="space-y-4">
         <div>
-          <h2 className="text-lg font-bold text-white mb-1">🚫 Exclusiones</h2>
+          <h2 className="text-lg font-bold text-white mb-1 flex items-center gap-2"><Ban size={18} /> Exclusiones</h2>
           <p className="text-xs text-zinc-500">
             Términos que se excluyen de <strong className="text-zinc-300">todas</strong> las búsquedas de prospección.
           </p>

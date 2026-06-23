@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { Trash2, Plus, Eye } from 'lucide-react';
+import { Trash2, Plus, Eye, Pencil, Mail, MessageCircle, FolderOpen } from 'lucide-react';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 type Template = {
@@ -208,7 +208,7 @@ export function TemplatesAdmin() {
             {/* Header fijo */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 flex-shrink-0">
               <h3 className="text-lg font-bold text-white">
-                {editing?.id ? '✏️ Editar Plantilla' : '➕ Nueva Plantilla'}
+                <span className="flex items-center gap-2">{editing?.id ? <><Pencil size={16} /> Editar Plantilla</> : <><Plus size={16} /> Nueva Plantilla</>}</span>
               </h3>
               <div className="flex gap-2">
                 <button
@@ -254,8 +254,8 @@ export function TemplatesAdmin() {
                     onChange={e => setEditing({ ...editing!, type: e.target.value as 'email' | 'whatsapp' })}
                     className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2.5 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
                   >
-                    <option value="email">📧 Email</option>
-                    <option value="whatsapp">💬 WhatsApp</option>
+                    <option value="email">Email</option>
+                    <option value="whatsapp">WhatsApp</option>
                   </select>
                 </div>
                 <div>
@@ -386,20 +386,20 @@ export function TemplatesAdmin() {
           {/* Pestañas de navegación tipo Chrome */}
           <div className="flex gap-2 border-b border-zinc-700 mb-6">
             {[
-              { value: 'all', label: '📧 Todas', count: templates.length },
-              { value: 'email', label: '📧 Email', count: templates.filter(t => t.type === 'email').length },
-              { value: 'whatsapp', label: '💬 WhatsApp', count: templates.filter(t => t.type === 'whatsapp').length },
+              { value: 'all', label: 'Todas', icon: null, count: templates.length },
+              { value: 'email', label: 'Email', icon: <Mail size={13} />, count: templates.filter(t => t.type === 'email').length },
+              { value: 'whatsapp', label: 'WhatsApp', icon: <MessageCircle size={13} />, count: templates.filter(t => t.type === 'whatsapp').length },
             ].map(tab => (
               <button
                 key={tab.value}
                 onClick={() => setFilterType(tab.value as any)}
-                className={`px-4 py-3 text-sm font-medium transition-all border-b-2 ${
+                className={`px-4 py-3 text-sm font-medium transition-all border-b-2 flex items-center gap-1.5 ${
                   filterType === tab.value
                     ? 'border-blue-500 text-blue-400 bg-zinc-800/50'
                     : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/30'
                 }`}
               >
-                {tab.label}
+                {tab.icon}{tab.label}
                 <span className="ml-2 text-xs bg-zinc-700 px-2 py-0.5 rounded-full">
                   {tab.count}
                 </span>
@@ -421,8 +421,8 @@ export function TemplatesAdmin() {
 
                 return (
                   <div key={category}>
-                    <h4 className="text-sm font-semibold text-zinc-300 uppercase mb-4 px-2 border-l-4 border-blue-500 pl-3">
-                      📁 {category}
+                    <h4 className="text-sm font-semibold text-zinc-300 uppercase mb-4 px-2 border-l-4 border-blue-500 pl-3 flex items-center gap-1.5">
+                      <FolderOpen size={13} /> {category}
                     </h4>
                     <div className="grid grid-cols-4 gap-2">
                       {categoryTemplates.map(template => (
@@ -440,7 +440,7 @@ export function TemplatesAdmin() {
                                 ? 'bg-blue-600/30 text-blue-300'
                                 : 'bg-green-600/30 text-green-300'
                             }`}>
-                              {template.type === 'email' ? '📧' : '💬'}
+                              {template.type === 'email' ? <Mail size={11} /> : <MessageCircle size={11} />}
                             </span>
                             <p className="text-sm font-medium text-white truncate">{template.name}</p>
                           </div>

@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import {
   ArrowLeft, ExternalLink, ArrowUpRight, ArrowDownRight, Minus, Clock, Link2, TrendingUp,
+  Check, AlertTriangle, X,
 } from 'lucide-react';
 
 type AuditLog = {
@@ -195,9 +196,9 @@ function AuditClienteContent() {
                             <td className={`px-3 py-3 text-right font-bold ${scoreColor(log.total_score)}`}>{log.total_score}</td>
                             <td className="px-3 py-3 text-right"><Delta value={delta} /></td>
                             <td className="px-3 py-3 text-right text-xs space-x-2 whitespace-nowrap">
-                              <span className="text-green-400">✓ {log.pass_count}</span>
-                              <span className="text-yellow-400">⚠ {log.warn_count}</span>
-                              <span className="text-red-400">✗ {log.fail_count}</span>
+                              <span className="text-green-400 inline-flex items-center gap-0.5"><Check size={12} />{log.pass_count}</span>
+                              <span className="text-yellow-400 inline-flex items-center gap-0.5"><AlertTriangle size={12} />{log.warn_count}</span>
+                              <span className="text-red-400 inline-flex items-center gap-0.5"><X size={12} />{log.fail_count}</span>
                             </td>
                             <td className="px-3 py-3 text-right text-zinc-600 text-xs">{log.duration_ms}ms</td>
                             <td className="px-6 py-3 text-right">

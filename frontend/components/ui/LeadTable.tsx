@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Trash2, Eye, Globe, Phone, Mail, MessageCircle, ChevronUp, ChevronDown } from 'lucide-react';
+import { Trash2, Eye, Globe, Phone, Mail, MessageCircle, ChevronUp, ChevronDown, Palette } from 'lucide-react';
 import { AuditPopup } from './AuditPopup';
 import { ConfirmDialog } from './ConfirmDialog';
 import { api } from '@/lib/api';
@@ -173,8 +173,8 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
                     lead.priority === 'web_design' ? 'text-red-400' :
                     lead.priority === 'seo'        ? 'text-amber-400' : 'text-zinc-500'
                   }`}>
-                    {lead.priority === 'web_design' ? '🔴 Diseño web' :
-                     lead.priority === 'seo'        ? '🟡 SEO' : 'Normal'}
+                    {lead.priority === 'web_design' ? 'Diseño web' :
+                     lead.priority === 'seo'        ? 'SEO' : 'Normal'}
                   </span>
                 </td>
 
@@ -217,7 +217,7 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
                       onClick={() => handleGenerateDemo(lead)}
                       className="px-2.5 py-1.5 text-[11px] font-medium rounded-md bg-brand-500/20 hover:bg-brand-500/30 text-brand-400 transition-colors"
                     >
-                      🎨 Demo
+                      <Palette size={11} className="inline mr-1" />Demo
                     </button>
                     <button
                       onClick={() => setConfirmDel({ id: lead.id, name: lead.business_name })}

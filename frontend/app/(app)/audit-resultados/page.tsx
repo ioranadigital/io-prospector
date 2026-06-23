@@ -4,14 +4,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import {
   CheckCircle, XCircle, AlertTriangle, Info,
   ChevronDown, ChevronRight, ExternalLink,
-  UserPlus, History, ArrowLeft, Calendar
+  UserPlus, History, ArrowLeft, Calendar,
+  FileText, Check, X, Circle, Lightbulb
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import { AuditContactModal } from '@/components/audit/AuditContactModal';
 import { ClientReportModal } from '@/components/audit/ClientReportModal';
 import { generateClientReport } from '@/lib/audit-client-report';
-import { FileText } from 'lucide-react';
 
 type CheckStatus = 'pass' | 'warn' | 'fail' | 'info';
 
@@ -43,22 +43,22 @@ const STATUS_CONFIG: Record<CheckStatus, { icon: React.FC<any>; color: string; b
   info: { icon: Info,          color: 'text-blue-400',   bg: 'bg-blue-900/20 border border-blue-800',     label: 'Info' },
 };
 
-const CATEGORY_STYLES: Record<string, { bg: string; border: string; icon: string; textColor: string }> = {
-  meta:        { bg: 'bg-blue-950/30',    border: 'border-blue-800/50',    icon: '🔵', textColor: 'text-blue-400' },
-  headings:    { bg: 'bg-yellow-950/30',  border: 'border-yellow-800/50',  icon: '🟡', textColor: 'text-yellow-400' },
-  images:      { bg: 'bg-purple-950/30',  border: 'border-purple-800/50',  icon: '🟣', textColor: 'text-purple-400' },
-  links:       { bg: 'bg-cyan-950/30',    border: 'border-cyan-800/50',    icon: '🔷', textColor: 'text-cyan-400' },
-  technical:   { bg: 'bg-red-950/30',     border: 'border-red-800/50',     icon: '🔴', textColor: 'text-red-400' },
-  performance: { bg: 'bg-orange-950/30',  border: 'border-orange-800/50',  icon: '🟠', textColor: 'text-orange-400' },
-  content:     { bg: 'bg-green-950/30',   border: 'border-green-800/50',   icon: '🟢', textColor: 'text-green-400' },
-  a11y:        { bg: 'bg-cyan-950/30',    border: 'border-cyan-800/50',    icon: '🔷', textColor: 'text-cyan-400' },
-  local:       { bg: 'bg-green-950/30',   border: 'border-green-800/50',   icon: '🟢', textColor: 'text-green-400' },
-  mobile:      { bg: 'bg-yellow-950/30',  border: 'border-yellow-800/50',  icon: '🟡', textColor: 'text-yellow-400' },
-  security:    { bg: 'bg-red-950/30',     border: 'border-red-800/50',     icon: '🔴', textColor: 'text-red-400' },
-  schema:      { bg: 'bg-indigo-950/30',  border: 'border-indigo-800/50',  icon: '🟦', textColor: 'text-indigo-400' },
-  crawl:       { bg: 'bg-rose-950/30',    border: 'border-rose-800/50',    icon: '🔗', textColor: 'text-rose-400' },
-  compliance:  { bg: 'bg-emerald-950/30', border: 'border-emerald-800/50', icon: '✅', textColor: 'text-emerald-400' },
-  analytics:   { bg: 'bg-sky-950/30',     border: 'border-sky-800/50',     icon: '📊', textColor: 'text-sky-400' },
+const CATEGORY_STYLES: Record<string, { bg: string; border: string; textColor: string }> = {
+  meta:        { bg: 'bg-blue-950/30',    border: 'border-blue-800/50',    textColor: 'text-blue-400' },
+  headings:    { bg: 'bg-yellow-950/30',  border: 'border-yellow-800/50',  textColor: 'text-yellow-400' },
+  images:      { bg: 'bg-purple-950/30',  border: 'border-purple-800/50',  textColor: 'text-purple-400' },
+  links:       { bg: 'bg-cyan-950/30',    border: 'border-cyan-800/50',    textColor: 'text-cyan-400' },
+  technical:   { bg: 'bg-red-950/30',     border: 'border-red-800/50',     textColor: 'text-red-400' },
+  performance: { bg: 'bg-orange-950/30',  border: 'border-orange-800/50',  textColor: 'text-orange-400' },
+  content:     { bg: 'bg-green-950/30',   border: 'border-green-800/50',   textColor: 'text-green-400' },
+  a11y:        { bg: 'bg-cyan-950/30',    border: 'border-cyan-800/50',    textColor: 'text-cyan-400' },
+  local:       { bg: 'bg-green-950/30',   border: 'border-green-800/50',   textColor: 'text-green-400' },
+  mobile:      { bg: 'bg-yellow-950/30',  border: 'border-yellow-800/50',  textColor: 'text-yellow-400' },
+  security:    { bg: 'bg-red-950/30',     border: 'border-red-800/50',     textColor: 'text-red-400' },
+  schema:      { bg: 'bg-indigo-950/30',  border: 'border-indigo-800/50',  textColor: 'text-indigo-400' },
+  crawl:       { bg: 'bg-rose-950/30',    border: 'border-rose-800/50',    textColor: 'text-rose-400' },
+  compliance:  { bg: 'bg-emerald-950/30', border: 'border-emerald-800/50', textColor: 'text-emerald-400' },
+  analytics:   { bg: 'bg-sky-950/30',     border: 'border-sky-800/50',     textColor: 'text-sky-400' },
 };
 
 function ScoreCircle({ score }: { score: number }) {
@@ -499,7 +499,7 @@ function AuditResultadosContent() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-white">{check.label}</p>
                   <p className="text-xs text-zinc-400 mt-0.5">{check.detail}</p>
-                  {check.fix && <p className="text-xs text-zinc-500 mt-1">💡 {check.fix}</p>}
+                  {check.fix && <p className="text-xs text-zinc-500 mt-1 flex items-center gap-1"><Lightbulb size={12} className="text-yellow-400 flex-shrink-0" /> {check.fix}</p>}
                 </div>
               </div>
             ))}
@@ -512,7 +512,7 @@ function AuditResultadosContent() {
         <h2 className="text-lg font-bold text-white mb-3">Análisis por Categoría</h2>
         <div className="space-y-3">
           {Object.entries(result.checks).map(([catId, { label, checks }]) => {
-            const style = CATEGORY_STYLES[catId] || { bg: 'bg-zinc-950/30', border: 'border-zinc-800/50', icon: '⚙️', textColor: 'text-zinc-400' };
+            const style = CATEGORY_STYLES[catId] || { bg: 'bg-zinc-950/30', border: 'border-zinc-800/50', textColor: 'text-zinc-400' };
             const isExpanded = expandedCategory === catId;
             const passCount = checks.filter(c => c.status === 'pass').length;
             const warnCount = checks.filter(c => c.status === 'warn').length;
@@ -526,13 +526,13 @@ function AuditResultadosContent() {
                   className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/5 transition"
                 >
                   <div className="flex items-center gap-4">
-                    <span className="text-2xl">{style.icon}</span>
+                    <Circle size={14} fill="currentColor" className={style.textColor} />
                     <div className="text-left">
                       <h3 className={`font-bold text-base ${style.textColor}`}>{label}</h3>
                       <div className="flex items-center gap-3 mt-1">
-                        <span className="text-xs text-green-400">✓ {passCount}</span>
-                        <span className="text-xs text-yellow-400">⚠ {warnCount}</span>
-                        <span className="text-xs text-red-400">✗ {failCount}</span>
+                        <span className="text-xs text-green-400 flex items-center gap-0.5"><Check size={11} /> {passCount}</span>
+                        <span className="text-xs text-yellow-400 flex items-center gap-0.5"><AlertTriangle size={11} /> {warnCount}</span>
+                        <span className="text-xs text-red-400 flex items-center gap-0.5"><X size={11} /> {failCount}</span>
                       </div>
                     </div>
                   </div>
@@ -570,7 +570,7 @@ function AuditResultadosContent() {
                               <span className={`text-xs px-1.5 py-0.5 rounded ${config.bg}`}>{config.label}</span>
                             </div>
                             <p className="text-xs text-zinc-400 mt-0.5">{check.detail}</p>
-                            {check.fix && <p className="text-xs text-zinc-500 mt-1">💡 {check.fix}</p>}
+                            {check.fix && <p className="text-xs text-zinc-500 mt-1 flex items-center gap-1"><Lightbulb size={12} className="text-yellow-400 flex-shrink-0" /> {check.fix}</p>}
                           </div>
                           {/* Valor real (title, h1, ratios, conteos...) a la derecha — todas las categorías */}
                           {check.value !== null && check.value !== undefined && check.value !== ''
