@@ -1,33 +1,46 @@
-FROM node:20-slim
+# Multi-stage build for Next.js production
 
-ARG NODE_ENV=development
+# Stage 1: Builder
+FROM node:20-slim AS builder
+
+ARG NODE_ENV=production
 ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
 ARG NEXT_PUBLIC_API_URL
-ARG COOLIFY_URL
-ARG COOLIFY_FQDN
-ARG FRONTEND_URL
-ARG SUPABASE_KEY
-ARG SUPABASE_URL
-ARG PORT
-ARG COOLIFY_BUILD_SECRETS_HASH
 
 WORKDIR /app
 
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 ENV NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --omit=dev
+
+COPY frontend/ .
+RUN npm run build
+
+# Stage 2: Runtime
+FROM node:20-alpine
+
+WORKDIR /app
+
+ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=2048"
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3002
 
-COPY frontend/package.json frontend/package-lock.json ./
+COPY --from=builder /app/package.json /app/package-lock.json ./
+RUN npm ci --omit=dev
 
-RUN npm ci
-
-COPY frontend/ .
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
 
 EXPOSE 3002
 
-CMD ["npm", "run", "dev"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3002', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+
+CMD ["npm", "start"]
