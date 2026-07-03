@@ -1,6 +1,12 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    networks:
+      - default
+
   backend:
     build:
       context: .
@@ -13,7 +19,19 @@ services:
       - FRONTEND_URL=http://localhost:3002,http://10.0.7.3:3002,https://pros.iorana.dev
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
     restart: unless-stopped
+    networks:
+      - coolify
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.io-prospector-api.rule=Host(`api.pros.iorana.dev`)"
+      - "traefik.http.routers.io-prospector-api.entrypoints=websecure"
+      - "traefik.http.routers.io-prospector-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.io-prospector-api-service.loadbalancer.server.port=4000"
 
   frontend:
     build:
@@ -21,9 +39,9 @@ services:
       dockerfile: frontend.Dockerfile
       args:
         - NODE_ENV=production
-        - NEXT_PUBLIC_SUPABASE_URL=https://zvehtloitnuglyjtxwye.supabase.co
-        - NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_B0gQyDyf-p2vDg2UhytfDg_H54mWXbB
-        - NEXT_PUBLIC_API_URL=http://localhost:4000/api
+        - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-https://zvehtloitnuglyjtxwye.supabase.co}
+        - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY:-sb_publishable_B0gQyDyf-p2vDg2UhytfDg_H54mWXbB}
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:4000/api}
     ports:
       - "3002:3002"
     environment:
@@ -31,3 +49,18 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - coolify
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.io-prospector-web.rule=Host(`pros.iorana.dev`,`www.pros.iorana.dev`)"
+      - "traefik.http.routers.io-prospector-web.entrypoints=websecure"
+      - "traefik.http.routers.io-prospector-web.tls.certresolver=letsencrypt"
+      - "traefik.http.services.io-prospector-web-service.loadbalancer.server.port=3002"
+
+networks:
+  coolify:
+    external: true
+  default:
+    driver: bridge
