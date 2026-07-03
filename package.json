@@ -1,0 +1,7 @@
+{
+  "name": "tools-io-prospector",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "io-prospector project",
+  "private": true
+}

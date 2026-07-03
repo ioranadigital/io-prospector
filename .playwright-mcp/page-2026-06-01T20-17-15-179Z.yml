@@ -1,0 +1,286 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e8]:
+        - paragraph [ref=e9]: Prospector
+        - paragraph [ref=e10]: Iorana Digital
+    - navigation [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Prospección
+        - generic [ref=e14]:
+          - link "🔍 Prospector Buscar & scrapear" [ref=e15] [cursor=pointer]:
+            - /url: /prospector
+            - img [ref=e16]
+            - generic [ref=e19]:
+              - paragraph [ref=e20]: 🔍 Prospector
+              - paragraph [ref=e21]: Buscar & scrapear
+          - link "📊 Leads Ver resultados" [ref=e22] [cursor=pointer]:
+            - /url: /leads
+            - img [ref=e23]
+            - generic [ref=e27]:
+              - paragraph [ref=e28]: 📊 Leads
+              - paragraph [ref=e29]: Ver resultados
+      - generic [ref=e31]:
+        - paragraph [ref=e32]: Análisis
+        - link "📈 Dashboard Histórico de prospecciones" [ref=e34] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e35]
+          - generic [ref=e37]:
+            - paragraph [ref=e38]: 📈 Dashboard
+            - paragraph [ref=e39]: Histórico de prospecciones
+      - generic [ref=e41]:
+        - paragraph [ref=e42]: Administración
+        - link "⚙️ Admin Configuración" [ref=e44] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e45]
+          - generic [ref=e48]:
+            - paragraph [ref=e49]: ⚙️ Admin
+            - paragraph [ref=e50]: Configuración
+      - generic [ref=e52]:
+        - paragraph [ref=e53]: Ayuda
+        - link "📖 Guía Instrucciones de uso" [ref=e55] [cursor=pointer]:
+          - /url: /guide
+          - img [ref=e56]
+          - generic [ref=e58]:
+            - paragraph [ref=e59]: 📖 Guía
+            - paragraph [ref=e60]: Instrucciones de uso
+    - paragraph [ref=e62]: v1.0.0 · Local
+  - main [ref=e63]:
+    - generic [ref=e224]:
+      - generic [ref=e225]:
+        - heading "Prospector CRM 🎯" [level=1] [ref=e226]:
+          - text: Prospector
+          - text: CRM 🎯
+        - paragraph [ref=e227]: Análisis de clientes | Gestión de campañas
+      - generic [ref=e228]:
+        - generic [ref=e229]:
+          - button "📊 Leads (0)" [ref=e230] [cursor=pointer]
+          - button "📈 Historial" [ref=e231] [cursor=pointer]
+        - button "Importar CSV" [ref=e234] [cursor=pointer]:
+          - img [ref=e235]
+          - text: Importar CSV
+      - generic [ref=e238]:
+        - button "📋 Todos" [ref=e240] [cursor=pointer]
+        - generic [ref=e241]:
+          - generic [ref=e242]:
+            - heading "Análisis de Clientes" [level=2] [ref=e243]
+            - paragraph [ref=e244]: Haz clic en un cliente para ver análisis detallado (Fortalezas & Debilidades)
+          - generic [ref=e246]:
+            - generic [ref=e248]: 📊 2 leads únicos | 0 seleccionados
+            - table [ref=e250]:
+              - rowgroup [ref=e251]:
+                - row "📊 Negocio 📧 Email 📱 Teléfono 🔍 Rating SEO 📍 Rating GMB 🔴 TIER 1 📨 Estado 🎯 Acciones" [ref=e252]:
+                  - columnheader [ref=e253]:
+                    - button [ref=e254] [cursor=pointer]:
+                      - img [ref=e255]
+                  - columnheader "📊 Negocio" [ref=e257]
+                  - columnheader "📧 Email" [ref=e258]
+                  - columnheader "📱 Teléfono" [ref=e259]
+                  - columnheader "🔍 Rating SEO" [ref=e260]
+                  - columnheader "📍 Rating GMB" [ref=e261]
+                  - columnheader "🔴 TIER 1" [ref=e262]
+                  - columnheader "📨 Estado" [ref=e263]
+                  - columnheader "🎯 Acciones" [ref=e264]
+              - rowgroup [ref=e265]:
+                - 'row "Abogado García & Asociados https://abogadogarcia.es contacto@abogadogarcia.es 📋 +34 91 234 5678 📋 /100 - ✅ ⭕No se ha establecido contacto Plantilla: undefined Hace undefined 📧 💬" [ref=e266] [cursor=pointer]':
+                  - cell [ref=e267]:
+                    - button [ref=e268]:
+                      - img [ref=e269]
+                  - cell "Abogado García & Asociados https://abogadogarcia.es" [ref=e271]:
+                    - generic [ref=e272]: Abogado García & Asociados
+                    - link "https://abogadogarcia.es" [ref=e273]:
+                      - /url: https://abogadogarcia.es
+                  - cell "contacto@abogadogarcia.es 📋" [ref=e274]:
+                    - generic [ref=e275]:
+                      - generic [ref=e276]: contacto@abogadogarcia.es
+                      - button "📋" [ref=e277]
+                  - cell "+34 91 234 5678 📋" [ref=e278]:
+                    - generic [ref=e279]:
+                      - generic [ref=e280]: +34 91 234 5678
+                      - button "📋" [ref=e281]
+                  - cell "/100" [ref=e282]
+                  - cell "-" [ref=e283]
+                  - cell "✅" [ref=e284]:
+                    - generic [ref=e286]: ✅
+                  - 'cell "⭕No se ha establecido contacto Plantilla: undefined Hace undefined" [ref=e287]':
+                    - generic [ref=e288]:
+                      - generic [ref=e289]:
+                        - text: ⭕
+                        - generic "No se ha establecido contacto"
+                      - 'generic "Plantilla: undefined"'
+                      - generic "Hace undefined"
+                  - cell "📧 💬" [ref=e290]:
+                    - button "Ver ficha completa" [ref=e291]:
+                      - img [ref=e292]
+                    - button "📧" [ref=e295]
+                    - button "💬" [ref=e296]
+                - 'row "Despacho Jurídico López https://lopezlaw.com info@lopezlaw.com 📋 +34 93 456 7890 📋 /100 - ✅ ⭕No se ha establecido contacto Plantilla: undefined Hace undefined 📧 💬" [ref=e297] [cursor=pointer]':
+                  - cell [ref=e298]:
+                    - button [ref=e299]:
+                      - img [ref=e300]
+                  - cell "Despacho Jurídico López https://lopezlaw.com" [ref=e302]:
+                    - generic [ref=e303]: Despacho Jurídico López
+                    - link "https://lopezlaw.com" [ref=e304]:
+                      - /url: https://lopezlaw.com
+                  - cell "info@lopezlaw.com 📋" [ref=e305]:
+                    - generic [ref=e306]:
+                      - generic [ref=e307]: info@lopezlaw.com
+                      - button "📋" [ref=e308]
+                  - cell "+34 93 456 7890 📋" [ref=e309]:
+                    - generic [ref=e310]:
+                      - generic [ref=e311]: +34 93 456 7890
+                      - button "📋" [ref=e312]
+                  - cell "/100" [ref=e313]
+                  - cell "-" [ref=e314]
+                  - cell "✅" [ref=e315]:
+                    - generic [ref=e317]: ✅
+                  - 'cell "⭕No se ha establecido contacto Plantilla: undefined Hace undefined" [ref=e318]':
+                    - generic [ref=e319]:
+                      - generic [ref=e320]:
+                        - text: ⭕
+                        - generic "No se ha establecido contacto"
+                      - 'generic "Plantilla: undefined"'
+                      - generic "Hace undefined"
+                  - cell "📧 💬" [ref=e321]:
+                    - button "Ver ficha completa" [ref=e322]:
+                      - img [ref=e323]
+                    - button "📧" [ref=e326]
+                    - button "💬" [ref=e327]
+      - generic [ref=e329]:
+        - generic [ref=e330]:
+          - generic [ref=e331]:
+            - heading "Abogado García & Asociados" [level=2] [ref=e332]
+            - link "https://abogadogarcia.es" [ref=e333] [cursor=pointer]:
+              - /url: https://abogadogarcia.es
+          - button [ref=e334] [cursor=pointer]:
+            - img [ref=e335]
+        - generic [ref=e338]:
+          - generic [ref=e339]:
+            - generic [ref=e340]:
+              - paragraph [ref=e341]: 📊 Puntuación Integral
+              - generic [ref=e342]: 9%
+            - paragraph [ref=e345]: 🔴 CRÍTICO - Enfoque en TIER 1 primero
+          - generic [ref=e346]:
+            - generic [ref=e347]:
+              - paragraph [ref=e348]: Email
+              - paragraph [ref=e349]: contacto@abogadogarcia.es
+            - generic [ref=e350]:
+              - paragraph [ref=e351]: Teléfono
+              - paragraph [ref=e352]: +34 91 234 5678
+            - generic [ref=e353]:
+              - paragraph [ref=e354]: Estado CRM
+              - paragraph [ref=e355]: new
+            - generic [ref=e356]:
+              - paragraph [ref=e357]: Score Audit
+              - paragraph [ref=e358]: —/100
+          - generic [ref=e359]:
+            - generic [ref=e360]:
+              - generic [ref=e361]:
+                - paragraph [ref=e362]: "TIER 1: Contacto & Confianza"
+                - generic [ref=e366]: 2/8
+              - generic [ref=e367]:
+                - generic [ref=e368]:
+                  - generic [ref=e369]: ✓
+                  - generic [ref=e370]: 📧 Email
+                - generic [ref=e371]:
+                  - generic [ref=e372]: ✓
+                  - generic [ref=e373]: 📞 Teléfono
+                - generic [ref=e374]:
+                  - generic [ref=e375]: ✗
+                  - generic [ref=e376]: 📋 Formulario
+                - generic [ref=e377]:
+                  - generic [ref=e378]: ✗
+                  - generic [ref=e379]: 📍 Dirección
+                - generic [ref=e380]:
+                  - generic [ref=e381]: ✗
+                  - generic [ref=e382]: 🔒 SSL/HTTPS
+                - generic [ref=e383]:
+                  - generic [ref=e384]: ✗
+                  - generic [ref=e385]: ⚖️ Privacy
+                - generic [ref=e386]:
+                  - generic [ref=e387]: ✗
+                  - generic [ref=e388]: ✅ Trust
+                - generic [ref=e389]:
+                  - generic [ref=e390]: ✗
+                  - generic [ref=e391]: 📍 GMB
+            - generic [ref=e392]:
+              - generic [ref=e393]:
+                - paragraph [ref=e394]: "TIER 2: Conversión"
+                - generic [ref=e397]: 0/9
+              - generic [ref=e398]:
+                - generic [ref=e399]:
+                  - generic [ref=e400]: ✗
+                  - generic [ref=e401]: 📝 H1
+                - generic [ref=e402]:
+                  - generic [ref=e403]: ✗
+                  - generic [ref=e404]: 📄 MetaDesc
+                - generic [ref=e405]:
+                  - generic [ref=e406]: ✗
+                  - generic [ref=e407]: 🔘 CTAs
+                - generic [ref=e408]:
+                  - generic [ref=e409]: ✗
+                  - generic [ref=e410]: 📱 Mobile
+                - generic [ref=e411]:
+                  - generic [ref=e412]: ✗
+                  - generic [ref=e413]: 📚 Contenido
+                - generic [ref=e414]:
+                  - generic [ref=e415]: ✗
+                  - generic [ref=e416]: 🔗 Schema
+                - generic [ref=e417]:
+                  - generic [ref=e418]: ✗
+                  - generic [ref=e419]: 📊 Analytics
+                - generic [ref=e420]:
+                  - generic [ref=e421]: ✗
+                  - generic [ref=e422]: 🎨 OG
+                - generic [ref=e423]:
+                  - generic [ref=e424]: ✗
+                  - generic [ref=e425]: 🔖 Favicon
+            - generic [ref=e426]:
+              - generic [ref=e427]:
+                - paragraph [ref=e428]: "TIER 3: Credibilidad"
+                - generic [ref=e431]: 0/4
+              - generic [ref=e432]:
+                - generic [ref=e433]:
+                  - generic [ref=e434]: ✗
+                  - generic [ref=e435]: 🖼️ Galería
+                - generic [ref=e436]:
+                  - generic [ref=e437]: ✗
+                  - generic [ref=e438]: 🔗 Redes
+                - generic [ref=e439]:
+                  - generic [ref=e440]: ✗
+                  - generic [ref=e441]: 📰 Blog
+                - generic [ref=e442]:
+                  - generic [ref=e443]: ✗
+                  - generic [ref=e444]: 🏆 Certificaciones
+            - generic [ref=e445]:
+              - generic [ref=e446]:
+                - paragraph [ref=e447]: "TIER 4: Rendimiento"
+                - generic [ref=e450]: 0/2
+              - generic [ref=e451]:
+                - generic [ref=e452]:
+                  - generic [ref=e453]: ✗
+                  - generic [ref=e454]: 🗺️ Mapa
+                - generic [ref=e455]:
+                  - generic [ref=e456]: ✗
+                  - generic [ref=e457]: 🖼️ Opt. Img
+            - generic [ref=e458]:
+              - generic [ref=e459]:
+                - paragraph [ref=e460]: "TIER 5: Engagement"
+                - generic [ref=e463]: 0/4
+              - generic [ref=e464]:
+                - generic [ref=e465]:
+                  - generic [ref=e466]: ✗
+                  - generic [ref=e467]: 📤 Compartir
+                - generic [ref=e468]:
+                  - generic [ref=e469]: ✗
+                  - generic [ref=e470]: 📬 Newsletter
+                - generic [ref=e471]:
+                  - generic [ref=e472]: ✗
+                  - generic [ref=e473]: 💬 WhatsApp
+                - generic [ref=e474]:
+                  - generic [ref=e475]: ✗
+                  - generic [ref=e476]: 📝 Formularios
+  - button "Open Next.js Dev Tools" [ref=e119] [cursor=pointer]:
+    - img [ref=e120]
+  - alert [ref=e223]

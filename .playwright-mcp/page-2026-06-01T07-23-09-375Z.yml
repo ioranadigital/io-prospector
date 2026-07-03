@@ -1,0 +1,137 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e8]:
+        - paragraph [ref=e9]: Prospector
+        - paragraph [ref=e10]: Iorana Digital
+    - navigation [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Prospección
+        - generic [ref=e14]:
+          - link "🔍 Prospector Buscar & scrapear" [ref=e15] [cursor=pointer]:
+            - /url: /prospector
+            - img [ref=e16]
+            - generic [ref=e19]:
+              - paragraph [ref=e20]: 🔍 Prospector
+              - paragraph [ref=e21]: Buscar & scrapear
+          - link "📊 Leads Ver resultados" [ref=e22] [cursor=pointer]:
+            - /url: /leads
+            - img [ref=e23]
+            - generic [ref=e27]:
+              - paragraph [ref=e28]: 📊 Leads
+              - paragraph [ref=e29]: Ver resultados
+      - generic [ref=e31]:
+        - paragraph [ref=e32]: Análisis
+        - link "📈 Dashboard Histórico de prospecciones" [ref=e34] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e35]
+          - generic [ref=e37]:
+            - paragraph [ref=e38]: 📈 Dashboard
+            - paragraph [ref=e39]: Histórico de prospecciones
+      - generic [ref=e41]:
+        - paragraph [ref=e42]: Administración
+        - link "⚙️ Admin Configuración" [ref=e44] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e45]
+          - generic [ref=e48]:
+            - paragraph [ref=e49]: ⚙️ Admin
+            - paragraph [ref=e50]: Configuración
+      - generic [ref=e52]:
+        - paragraph [ref=e53]: Ayuda
+        - link "📖 Guía Instrucciones de uso" [ref=e55] [cursor=pointer]:
+          - /url: /guide
+          - img [ref=e56]
+          - generic [ref=e58]:
+            - paragraph [ref=e59]: 📖 Guía
+            - paragraph [ref=e60]: Instrucciones de uso
+    - paragraph [ref=e62]: v1.0.0 · Local
+  - main [ref=e63]:
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - heading "🔍 Prospector" [level=1] [ref=e66]
+        - paragraph [ref=e67]: Busca negocios en Google e identifica sus debilidades SEO automáticamente. Genera dashboards y campañas de email personalizadas.
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - generic [ref=e70]:
+            - generic [ref=e71]: Categoría Principal
+            - combobox [ref=e72]:
+              - option "Seleccionar categoría..."
+              - option "🏠 Servicios para el Hogar"
+              - option "🏥 Profesionales & Salud"
+              - option "⚖️ Abogados" [selected]
+              - option "🏢 Negocios, Construcción & Retail"
+              - option "💄 Estética & Belleza"
+              - option "📚 Educación & Formación"
+              - option "🌊 Turismo & Deportes Acuáticos"
+              - option "🍽️ Hostelería & Restauración"
+              - option "🍴 Referencia"
+          - generic [ref=e73]:
+            - generic [ref=e74]: Subcategoría / Sector
+            - combobox [ref=e75]:
+              - option "Seleccionar sector..." [selected]
+              - option "Abogado Familia"
+              - option "Abogado Penal"
+              - option "Abogado Laboral"
+              - option "Abogado Accidentes"
+              - option "Abogado Inmobiliario"
+              - option "Abogado Mercantil"
+        - generic [ref=e77]:
+          - generic [ref=e78]: 📝 Términos de Búsqueda
+          - generic [ref=e79]:
+            - paragraph [ref=e80]: "Incluir en búsqueda:"
+            - textbox "Escribir y presionar Enter..." [ref=e82]
+          - generic [ref=e83]:
+            - paragraph [ref=e84]: "Excluir de búsqueda:"
+            - textbox "Escribir y presionar Enter..." [ref=e86]
+          - generic [ref=e87]:
+            - paragraph [ref=e88]: "🔍 Query final:"
+            - paragraph
+        - generic [ref=e89]:
+          - generic [ref=e90]:
+            - generic [ref=e91]: Comunidad Autónoma
+            - combobox [ref=e92]:
+              - option "Seleccionar CCAA..." [selected]
+              - option "Andalucía"
+              - option "Aragón"
+              - option "Asturias"
+              - option "Baleares"
+              - option "Canarias"
+              - option "Cantabria"
+              - option "Castilla y León"
+              - option "Castilla-La Mancha"
+              - option "Cataluña"
+              - option "Comunidad Valenciana"
+              - option "Extremadura"
+              - option "Galicia"
+              - option "La Rioja"
+              - option "Madrid"
+              - option "Murcia"
+              - option "Navarra"
+              - option "País Vasco"
+          - generic [ref=e93]:
+            - generic [ref=e94]: Provincia
+            - combobox [disabled] [ref=e95]:
+              - option "Seleccionar provincia..." [selected]
+          - generic [ref=e96]:
+            - generic [ref=e97]: Municipio
+            - combobox [disabled] [ref=e98]:
+              - option "Seleccionar municipio..." [selected]
+        - generic [ref=e99]:
+          - generic [ref=e100]: "Páginas de Google: 2 → 3(siempre salta la pág. 1)"
+          - generic [ref=e101]:
+            - generic [ref=e102]:
+              - paragraph [ref=e103]: Desde página
+              - slider [ref=e104]: "2"
+              - paragraph [ref=e105]: Página 2
+            - generic [ref=e106]:
+              - paragraph [ref=e107]: Hasta página
+              - slider [ref=e108]: "3"
+              - paragraph [ref=e109]: Página 3
+          - paragraph [ref=e110]: ~20 resultados a analizar (⏱️ ~4-3 minutos)
+        - button "Iniciar prospección" [ref=e111] [cursor=pointer]:
+          - img [ref=e112]
+          - text: Iniciar prospección
+  - button "Open Next.js Dev Tools" [ref=e119] [cursor=pointer]:
+    - img [ref=e120]
+  - alert [ref=e123]

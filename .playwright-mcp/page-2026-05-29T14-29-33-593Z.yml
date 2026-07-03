@@ -1,0 +1,176 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e8]:
+        - paragraph [ref=e9]: Prospector
+        - paragraph [ref=e10]: Iorana Digital
+    - navigation [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Prospección
+        - generic [ref=e14]:
+          - link "🔍 Prospector Buscar & scrapear" [ref=e15] [cursor=pointer]:
+            - /url: /prospector
+            - img [ref=e16]
+            - generic [ref=e19]:
+              - paragraph [ref=e20]: 🔍 Prospector
+              - paragraph [ref=e21]: Buscar & scrapear
+          - link "📊 Leads Ver resultados" [ref=e22] [cursor=pointer]:
+            - /url: /leads
+            - img [ref=e23]
+            - generic [ref=e27]:
+              - paragraph [ref=e28]: 📊 Leads
+              - paragraph [ref=e29]: Ver resultados
+      - generic [ref=e31]:
+        - paragraph [ref=e32]: Análisis
+        - link "📈 Dashboard Histórico de prospecciones" [ref=e34] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e35]
+          - generic [ref=e37]:
+            - paragraph [ref=e38]: 📈 Dashboard
+            - paragraph [ref=e39]: Histórico de prospecciones
+      - generic [ref=e41]:
+        - paragraph [ref=e42]: Administración
+        - link "⚙️ Admin Configuración" [ref=e44] [cursor=pointer]:
+          - /url: /admin
+          - img [ref=e45]
+          - generic [ref=e48]:
+            - paragraph [ref=e49]: ⚙️ Admin
+            - paragraph [ref=e50]: Configuración
+      - generic [ref=e52]:
+        - paragraph [ref=e53]: Ayuda
+        - link "📖 Guía Instrucciones de uso" [ref=e55] [cursor=pointer]:
+          - /url: /guide
+          - img [ref=e56]
+          - generic [ref=e58]:
+            - paragraph [ref=e59]: 📖 Guía
+            - paragraph [ref=e60]: Instrucciones de uso
+    - paragraph [ref=e62]: v1.0.0 · Local
+  - main [ref=e63]:
+    - generic [ref=e64]:
+      - generic [ref=e219]:
+        - generic [ref=e220]:
+          - heading "📊 Dashboard de Análisis" [level=1] [ref=e221]
+          - paragraph [ref=e222]: Métricas y análisis de prospecciones y leads
+        - button "Actualizar" [ref=e223] [cursor=pointer]:
+          - img [ref=e224]
+          - text: Actualizar
+      - generic [ref=e229]:
+        - generic [ref=e230]:
+          - generic [ref=e231]:
+            - img [ref=e232]
+            - text: Total Leads
+          - paragraph [ref=e235]: "0"
+          - paragraph [ref=e236]: En el sistema
+        - generic [ref=e237]:
+          - generic [ref=e238]:
+            - img [ref=e239]
+            - text: Puntuación SEO
+          - paragraph [ref=e241]: "0"
+          - paragraph [ref=e242]: Media
+        - generic [ref=e243]:
+          - generic [ref=e244]:
+            - img [ref=e245]
+            - text: Prospecciones
+          - paragraph [ref=e248]: "6"
+          - paragraph [ref=e249]: 100 leads encontrados
+        - generic [ref=e250]:
+          - generic [ref=e251]:
+            - img [ref=e252]
+            - text: Contactos Enviados
+          - paragraph [ref=e255]: "0"
+          - paragraph [ref=e256]: 0 últimos 7 días
+      - generic [ref=e257]:
+        - heading "📈 Funnel CRM" [level=2] [ref=e258]
+        - generic [ref=e259]:
+          - generic [ref=e260]:
+            - generic [ref=e261]: Nuevo
+            - generic [ref=e263]:
+              - text: "0"
+              - generic [ref=e264]: (0%)
+          - generic [ref=e265]:
+            - generic [ref=e266]: Contactado
+            - generic [ref=e268]:
+              - text: "0"
+              - generic [ref=e269]: (0%)
+          - generic [ref=e270]:
+            - generic [ref=e271]: Interesado
+            - generic [ref=e273]:
+              - text: "0"
+              - generic [ref=e274]: (0%)
+          - generic [ref=e275]:
+            - generic [ref=e276]: Reservado
+            - generic [ref=e278]:
+              - text: "0"
+              - generic [ref=e279]: (0%)
+          - generic [ref=e280]:
+            - generic [ref=e281]: Vendido
+            - generic [ref=e283]:
+              - text: "0"
+              - generic [ref=e284]: (0%)
+          - generic [ref=e285]:
+            - generic [ref=e286]: Upselling
+            - generic [ref=e288]:
+              - text: "0"
+              - generic [ref=e289]: (0%)
+          - generic [ref=e290]:
+            - generic [ref=e291]: Perdido
+            - generic [ref=e293]:
+              - text: "0"
+              - generic [ref=e294]: (0%)
+      - generic [ref=e295]:
+        - heading "🔍 Análisis SEO" [level=2] [ref=e296]
+        - generic [ref=e297]:
+          - generic [ref=e298]:
+            - generic [ref=e299]: Tiene Sitio Web
+            - generic [ref=e301]: 0%
+          - generic [ref=e302]:
+            - generic [ref=e303]: SSL Activo
+            - generic [ref=e305]: 0%
+          - generic [ref=e306]:
+            - generic [ref=e307]: Mobile Responsive
+            - generic [ref=e309]: 0%
+          - generic [ref=e310]:
+            - generic [ref=e311]: Schema Markup
+            - generic [ref=e313]: 0%
+          - generic [ref=e314]:
+            - generic [ref=e315]: GMB Reclamado
+            - generic [ref=e317]: 0%
+      - generic [ref=e318]:
+        - generic [ref=e319]:
+          - heading "🏆 Top Categorías" [level=2] [ref=e320]
+          - generic [ref=e321]:
+            - generic [ref=e322]:
+              - generic [ref=e323]: Servicios para el Hogar
+              - generic [ref=e326]: "3"
+            - generic [ref=e327]:
+              - generic [ref=e328]: Limpieza
+              - generic [ref=e331]: "1"
+            - generic [ref=e332]:
+              - generic [ref=e333]: Fontaneros urgente, fontaneros, piscinas
+              - generic [ref=e336]: "1"
+        - generic [ref=e337]:
+          - heading "🏙️ Top Ciudades" [level=2] [ref=e338]
+          - generic [ref=e339]:
+            - generic [ref=e340]:
+              - generic [ref=e341]: Madrid
+              - generic [ref=e344]: "3"
+            - generic [ref=e345]:
+              - generic [ref=e346]: Guadalajara
+              - generic [ref=e349]: "2"
+            - generic [ref=e350]:
+              - generic [ref=e351]: Cabra
+              - generic [ref=e354]: "1"
+      - generic [ref=e355]:
+        - heading "✉️ Actividad de Contacto" [level=2] [ref=e356]
+        - generic [ref=e357]:
+          - generic [ref=e358]:
+            - generic [ref=e359]: Emails Enviados
+            - paragraph [ref=e360]: "0"
+          - generic [ref=e361]:
+            - generic [ref=e362]: WhatsApps Enviados
+            - paragraph [ref=e363]: "0"
+          - generic [ref=e364]:
+            - generic [ref=e365]: Últimos 7 Días
+            - paragraph [ref=e366]: "0"
+  - alert [ref=e70]
