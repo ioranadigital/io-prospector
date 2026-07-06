@@ -1,26 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MOCK_ADMIN_CREDENTIALS, SESSION_COOKIE_NAME } from '@/lib/mock-auth';
+import { createClient } from '@/lib/supabase/server';
 
-// Modo Test: valida contra credenciales mockeadas en lib/mock-auth.ts.
-// Sustituir por supabase.auth.signInWithPassword() al pasar a producción.
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json();
 
-  const valid =
-    email?.trim().toLowerCase() === MOCK_ADMIN_CREDENTIALS.email &&
-    password === MOCK_ADMIN_CREDENTIALS.password;
+  if (!email || !password) {
+    return NextResponse.json({ error: 'Email y contraseña requeridos' }, { status: 400 });
+  }
 
-  if (!valid) {
+  const supabase = createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
     return NextResponse.json({ error: 'Credenciales incorrectas' }, { status: 401 });
   }
 
-  const res = NextResponse.json({ ok: true });
-  res.cookies.set(SESSION_COOKIE_NAME, 'mock-session', {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-    maxAge: 60 * 60 * 8, // 8 horas
-  });
-  return res;
+  return NextResponse.json({ ok: true });
 }

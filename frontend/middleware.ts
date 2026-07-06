@@ -1,20 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { AUTH_MODE, SESSION_COOKIE_NAME } from '@/lib/mock-auth';
+import { type NextRequest } from 'next/server';
+import { updateSession } from '@/lib/supabase/middleware';
 
-// Guardián de acceso — Modo Test.
-// Protege todas las rutas de la app (Prospección, Audit SEO, CRM, Admin)
-// salvo /login y los assets internos de Next. Ver lib/mock-auth.ts para
-// el detalle de qué reemplazar por Supabase Auth en el siguiente paso.
-
-export function middleware(req: NextRequest) {
-  if (AUTH_MODE !== 'test') return NextResponse.next();
-
-  const hasSession = req.cookies.has(SESSION_COOKIE_NAME);
-  if (hasSession) return NextResponse.next();
-
-  const loginUrl = new URL('/login', req.url);
-  loginUrl.searchParams.set('from', req.nextUrl.pathname);
-  return NextResponse.redirect(loginUrl);
+// Guardián de acceso — protege todas las rutas de la app (Prospección,
+// Audit SEO, CRM, Admin) salvo /login. Usa la sesión real de Supabase Auth
+// vía @supabase/ssr (lib/supabase/middleware.ts).
+export async function middleware(request: NextRequest) {
+  return updateSession(request);
 }
 
 export const config = {

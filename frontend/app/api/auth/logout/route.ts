@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { SESSION_COOKIE_NAME } from '@/lib/mock-auth';
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST() {
-  const res = NextResponse.json({ ok: true });
-  res.cookies.delete(SESSION_COOKIE_NAME);
-  return res;
+  const supabase = createClient();
+  await supabase.auth.signOut();
+  return NextResponse.json({ ok: true });
 }
