@@ -1,9 +1,9 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Search, BarChart3, Settings, Database, Zap,
-  ClipboardList, Activity, Users, BookOpen, SlidersHorizontal, Code, Wrench, ChevronDown
+  ClipboardList, Activity, Users, BookOpen, SlidersHorizontal, Code, Wrench, ChevronDown, LogOut
 } from 'lucide-react';
 
 const NAV_SECTIONS = [
@@ -57,6 +57,13 @@ const NAV_SECTIONS = [
 
 export function Sidebar() {
   const path = usePathname() || '';
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/login');
+    router.refresh();
+  };
 
   return (
     <aside className="fixed top-0 left-0 h-screen w-60 bg-zinc-900 border-r border-zinc-800 flex flex-col z-40">
@@ -143,7 +150,13 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="px-5 py-4 border-t border-zinc-800">
+      <div className="px-5 py-4 border-t border-zinc-800 space-y-2">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-zinc-500 hover:bg-zinc-800/50 hover:text-zinc-300 transition"
+        >
+          <LogOut size={14} /> Cerrar sesión
+        </button>
         <p className="text-[11px] text-zinc-600">v1.0.0 · Local</p>
       </div>
     </aside>
