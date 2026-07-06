@@ -64,16 +64,16 @@ services:
         - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     container_name: io-prospector-frontend
     ports:
-      - "${FRONTEND_PORT:-3002}:3002"
+      - "${FRONTEND_PORT:-3004}:3004"
     environment:
-      - PORT=3002
+      - PORT=3004
       - NODE_ENV=${NODE_ENV:-production}
     depends_on:
       backend:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3002', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3004/api/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"]
       interval: 30s
       timeout: 10s
       start_period: 40s
