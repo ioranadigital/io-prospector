@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Search, Loader2, ChevronDown, ChevronRight, AlertTriangle, X, Lock, Globe, FileText, Zap, Bot, Target } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -62,6 +62,14 @@ const CATEGORY_STYLES: Record<string, { bg: string; border: string; textColor: s
 };
 
 export default function AuditoriaPage() {
+  return (
+    <Suspense fallback={<div />}>
+      <AuditoriaPageContent />
+    </Suspense>
+  );
+}
+
+function AuditoriaPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [url, setUrl] = useState(searchParams?.get('url') || '');
