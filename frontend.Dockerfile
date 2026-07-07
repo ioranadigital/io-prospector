@@ -3,23 +3,25 @@
 # Stage 1: Builder
 FROM node:20-slim AS builder
 
-ARG NODE_ENV=production
 ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
 ARG NEXT_PUBLIC_API_URL
 
 WORKDIR /app
 
-ENV NODE_ENV=production
 ENV NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# NODE_ENV se fija DESPUÉS de instalar deps: con NODE_ENV=production activo,
+# `npm ci` omite devDependencies (cross-env, typescript, tailwindcss...),
+# que el build sí necesita.
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
 
 COPY frontend/ .
+ENV NODE_ENV=production
 RUN npm run build
 
 # Stage 2: Runtime
