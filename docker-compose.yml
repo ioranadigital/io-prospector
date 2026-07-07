@@ -29,7 +29,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.io-prospector-api.rule=Host(`api.pros.iorana.dev`)"
-      - "traefik.http.routers.io-prospector-api.entrypoints=websecure"
+      - "traefik.http.routers.io-prospector-api.entrypoints=https"
       - "traefik.http.routers.io-prospector-api.tls.certresolver=letsencrypt"
       - "traefik.http.services.io-prospector-api-service.loadbalancer.server.port=4000"
 
@@ -55,8 +55,8 @@ services:
       - default
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.io-prospector-web.rule=Host(`pros.iorana.dev`,`www.pros.iorana.dev`)"
-      - "traefik.http.routers.io-prospector-web.entrypoints=websecure"
+      - "traefik.http.routers.io-prospector-web.rule=Host(`pros.iorana.dev`)"
+      - "traefik.http.routers.io-prospector-web.entrypoints=https"
       - "traefik.http.routers.io-prospector-web.tls.certresolver=letsencrypt"
       - "traefik.http.services.io-prospector-web-service.loadbalancer.server.port=3004"
 
