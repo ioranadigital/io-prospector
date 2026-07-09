@@ -55,6 +55,7 @@ services:
       - default
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=coolify"
       - "traefik.http.routers.io-prospector-web.rule=Host(`pros.iorana.dev`)"
       - "traefik.http.routers.io-prospector-web.entrypoints=https"
       - "traefik.http.routers.io-prospector-web.tls.certresolver=letsencrypt"
