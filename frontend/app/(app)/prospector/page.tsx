@@ -11,6 +11,7 @@ import { LeadsTable } from '@/components/LeadsTable';
 import { EmailSendModal } from '@/components/EmailSendModal';
 import { WhatsAppSendModal } from '@/components/WhatsAppSendModal';
 import { DashboardModal } from '@/components/DashboardModal';
+import { LeadDetailModal } from '@/components/leads/LeadDetailModal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 export default function ProspectorPage() {
@@ -24,6 +25,7 @@ export default function ProspectorPage() {
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [whatsappModalOpen, setWhatsappModalOpen] = useState(false);
   const [dashboardModalOpen, setDashboardModalOpen] = useState(false);
+  const [detailLead, setDetailLead] = useState<any | null>(null);
   const [selectedLeads, setSelectedLeads] = useState<any[]>([]);
   const [savedProspections, setSavedProspections] = useState<Set<string>>(new Set());
   const [includeTags, setIncludeTags] = useState<string[]>([]);
@@ -602,7 +604,8 @@ export default function ProspectorPage() {
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
             <LeadsTable
               leads={leads}
-              onSelectLead={(lead) => handleOpenEmailModal([lead])}
+              onOpenDetail={(lead) => setDetailLead(lead)}
+              onSendEmail={(lead) => handleOpenEmailModal([lead])}
               loading={false}
               selectable
               onSendToLeads={handleSendToLeads}
@@ -705,6 +708,16 @@ export default function ProspectorPage() {
       )}
 
       {/* Modales */}
+      {detailLead && (
+        <LeadDetailModal
+          lead={detailLead}
+          isOpen={!!detailLead}
+          onClose={() => setDetailLead(null)}
+          onSendEmail={() => handleOpenEmailModal([detailLead])}
+          onSendWhatsApp={() => handleOpenWhatsAppModal([detailLead])}
+          onUpdate={handleModalSuccess}
+        />
+      )}
       <EmailSendModal
         leads={selectedLeads}
         isOpen={emailModalOpen}

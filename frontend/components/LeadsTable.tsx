@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { BarChart3, Send, CheckSquare, Square } from 'lucide-react';
+import { Send, CheckSquare, Square, ClipboardList, Mail } from 'lucide-react';
 import { fixMojibake } from '@/lib/text';
 
 interface Lead {
@@ -16,15 +16,15 @@ interface Lead {
 
 interface LeadsTableProps {
   leads: Lead[];
-  onSelectLead?: (lead: Lead) => void;
-  onSelectTier?: (lead: Lead) => void;
+  onOpenDetail?: (lead: Lead) => void;
+  onSendEmail?: (lead: Lead) => void;
   loading?: boolean;
   selectable?: boolean;
   onSendToLeads?: (ids: string[]) => Promise<void> | void;
   sending?: boolean;
 }
 
-export function LeadsTable({ leads, onSelectLead, onSelectTier, loading, selectable, onSendToLeads, sending }: LeadsTableProps) {
+export function LeadsTable({ leads, onOpenDetail, onSendEmail, loading, selectable, onSendToLeads, sending }: LeadsTableProps) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const statusColors: Record<string, string> = {
@@ -118,12 +118,9 @@ export function LeadsTable({ leads, onSelectLead, onSelectTier, loading, selecta
                 </td>
               )}
               <td className="px-4 py-3">
-                <button
-                  onClick={() => onSelectLead?.(lead)}
-                  className="text-white font-medium hover:text-blue-400 text-left"
-                >
+                <span className="text-white font-medium">
                   {fixMojibake(lead.business_name).substring(0, 35)}
-                </button>
+                </span>
               </td>
               <td className="px-4 py-3 text-zinc-400">{fixMojibake(lead.city) || '—'}</td>
               <td className="px-4 py-3 text-zinc-400 truncate text-xs">
@@ -144,18 +141,18 @@ export function LeadsTable({ leads, onSelectLead, onSelectTier, loading, selecta
               </td>
               <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
                 <button
-                  onClick={() => onSelectLead?.(lead)}
-                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors"
+                  onClick={() => onOpenDetail?.(lead)}
+                  className="p-1.5 hover:bg-blue-900/30 rounded-lg transition-colors"
                   title="Ver ficha"
                 >
-                  📋 Ficha
+                  <ClipboardList size={18} className="text-blue-400" />
                 </button>
                 <button
-                  onClick={() => onSelectTier?.(lead)}
-                  className="p-1.5 hover:bg-purple-900/30 rounded-lg transition-colors"
-                  title="Ver TIER"
+                  onClick={() => onSendEmail?.(lead)}
+                  className="p-1.5 hover:bg-emerald-900/30 rounded-lg transition-colors"
+                  title="Enviar mail"
                 >
-                  <BarChart3 size={18} className="text-purple-400" />
+                  <Mail size={18} className="text-emerald-400" />
                 </button>
               </td>
             </tr>

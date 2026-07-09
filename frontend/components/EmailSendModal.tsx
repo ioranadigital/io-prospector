@@ -102,7 +102,7 @@ export function EmailSendModal({ leads, isOpen, onClose, onSuccess }: EmailSendM
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-zinc-800 sticky top-0 bg-zinc-900">
-          <h2 className="text-xl font-bold text-white flex items-center gap-2"><Mail size={18} /> Enviar Email Masivo</h2>
+          <h2 className="text-xl font-bold text-white flex items-center gap-2"><Mail size={18} /> Enviar Mail</h2>
           <button
             onClick={onClose}
             className="p-1.5 hover:bg-zinc-800 rounded-lg transition-colors"

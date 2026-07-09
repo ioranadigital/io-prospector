@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { BarChart2, TrendingUp, ClipboardList, Search, Target, Tag } from 'lucide-react';
+import { BarChart2, TrendingUp, ClipboardList, Search, Target, Tag, Plus, UserPlus } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { CsvUploader } from '@/components/leads/CsvUploader';
+import { AddLeadModal } from '@/components/leads/AddLeadModal';
 import { LeadsTable } from '@/components/leads/LeadsTable';
 import { LeadDetailModal } from '@/components/leads/LeadDetailModal';
 import { ActivitiesTable } from '@/components/activities/ActivitiesTable';
@@ -12,10 +13,11 @@ import type { Lead } from '@/lib/supabase';
 export default function LeadsPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [activeTab, setActiveTab] = useState<'leads' | 'activities'>('leads');
-  const [source, setSource] = useState<'all' | 'prospector' | 'audit'>('all');
+  const [source, setSource] = useState<'all' | 'prospector' | 'audit' | 'manual'>('all');
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [addLeadOpen, setAddLeadOpen] = useState(false);
 
   useEffect(() => {
     loadCategories();
@@ -73,9 +75,15 @@ export default function LeadsPage() {
           </button>
         </div>
 
-        {/* Botón Importar CSV (visible solo en tab leads) */}
+        {/* Botones Añadir Manual / Importar CSV (visibles solo en tab leads) */}
         {activeTab === 'leads' && (
-          <div className="pb-3">
+          <div className="pb-3 flex items-center gap-3">
+            <button
+              onClick={() => setAddLeadOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-sm font-medium text-white transition-colors"
+            >
+              <Plus size={16} /> Añadir Lead Manual
+            </button>
             <CsvUploader onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
           </div>
         )}
@@ -89,6 +97,7 @@ export default function LeadsPage() {
               { id: 'all',        label: 'Todos',      icon: ClipboardList },
               { id: 'prospector', label: 'Prospector', icon: Search },
               { id: 'audit',      label: 'Auditoría',  icon: Target },
+              { id: 'manual',     label: 'Manual',     icon: UserPlus },
             ] as const).map(t => (
               <button
                 key={t.id}
@@ -104,16 +113,6 @@ export default function LeadsPage() {
 
           {/* Pestañas de categorías */}
           <div className="flex gap-2 border-b border-zinc-800 overflow-x-auto pb-0 flex-shrink-0">
-            <button
-              onClick={() => setSelectedCategory(null)}
-              className={`px-4 py-3 font-medium border-b-2 transition-colors whitespace-nowrap text-sm ${
-                selectedCategory === null
-                  ? 'border-blue-500 text-white'
-                  : 'border-transparent text-zinc-400 hover:text-white'
-              }`}
-            >
-              <ClipboardList size={14} className="inline mr-1" /> Todos
-            </button>
             {categories.map(category => (
               <button
                 key={category}
@@ -148,6 +147,12 @@ export default function LeadsPage() {
           </div>
         </div>
       )}
+
+      <AddLeadModal
+        isOpen={addLeadOpen}
+        onClose={() => setAddLeadOpen(false)}
+        onCreated={() => setRefreshTrigger(prev => prev + 1)}
+      />
 
       {/* Modal de detalle */}
       {selectedLead && (

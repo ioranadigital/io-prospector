@@ -27,7 +27,7 @@ type LeadActivity = {
   };
 };
 
-export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, source = 'all' }: { refreshTrigger: number; filterCategory: string | null; onSelectLead?: (lead: Lead) => void; source?: 'all' | 'prospector' | 'audit' }) {
+export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, source = 'all' }: { refreshTrigger: number; filterCategory: string | null; onSelectLead?: (lead: Lead) => void; source?: 'all' | 'prospector' | 'audit' | 'manual' }) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [allLeads, setAllLeads] = useState<Lead[]>([]);
   const [activities, setActivities] = useState<LeadActivity[]>([]);
@@ -47,10 +47,12 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
   }, [refreshTrigger]);
 
   useEffect(() => {
-    // Filtrar por origen usando la columna 'source' (prospector | audit). Auditoría = todo lo que no es prospector.
+    // Filtrar por origen usando la columna 'source' (prospector | audit | manual).
+    // Auditoría = todo lo que no es prospector ni manual (incluye CSV importado sin source).
     let list = allLeads;
     if (source === 'prospector') list = list.filter(l => (l as any).source === 'prospector');
-    else if (source === 'audit') list = list.filter(l => (l as any).source !== 'prospector');
+    else if (source === 'manual') list = list.filter(l => (l as any).source === 'manual');
+    else if (source === 'audit') list = list.filter(l => (l as any).source !== 'prospector' && (l as any).source !== 'manual');
     if (filterCategory !== null) list = list.filter(lead => lead.category === filterCategory);
     setLeads(list);
     setSelected(new Set()); // Limpiar selección
