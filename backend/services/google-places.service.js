@@ -3,6 +3,7 @@
 // Coste: ~$0.034 por negocio (Find + Details) — $200 crédito = ~5.800 búsquedas/mes gratis
 
 import { logger } from '../utils/logger.js';
+import { fetchWithRetry } from '../utils/fetch-with-retry.js';
 
 const BASE_URL = 'https://maps.googleapis.com/maps/api/place';
 
@@ -69,8 +70,11 @@ export const googlePlacesService = {
       // Fotos
       result.photo_count = details.photos ? details.photos.length : 0;
 
-      // Un negocio reclamado tiene website/teléfono/horarios
-      result.gmb_claimed = !!(details.website || details.formatted_phone_number || details.opening_hours);
+      // La Places API no expone "reclamado" directamente. Heurística conservadora:
+      // negocio operativo + al menos 2 de 3 señales de gestión activa (1 sola señal
+      // da demasiados falsos positivos, ya que datos de terceros también las rellenan).
+      const claimSignals = [details.website, details.formatted_phone_number, details.opening_hours].filter(Boolean).length;
+      result.gmb_claimed = details.business_status === 'OPERATIONAL' && claimSignals >= 2;
 
       // Descripción editorial (editorial_summary si disponible)
       result.description = details.editorial_summary?.overview || null;
@@ -83,7 +87,7 @@ export const googlePlacesService = {
     return result;
   },
 
-  async _findPlaceId(businessName, city, apiKey) {
+  async _findPlaceId(businessName, city, apiKey, attempt = 0) {
     const input = `${businessName} ${city}`;
     const url = new URL(`${BASE_URL}/findplacefromtext/json`);
     url.searchParams.set('input', input);
@@ -93,13 +97,19 @@ export const googlePlacesService = {
     url.searchParams.set('language', 'es');
     url.searchParams.set('key', apiKey);
 
-    const res = await fetch(url.toString(), { signal: AbortSignal.timeout(8000) });
+    const res = await fetchWithRetry(url.toString(), { signal: AbortSignal.timeout(8000) });
     if (!res.ok) throw new Error(`Find Place HTTP ${res.status}`);
 
     const data = await res.json();
 
     if (data.status === 'REQUEST_DENIED') {
       throw new Error(`API denegada: ${data.error_message}`);
+    }
+
+    if (data.status === 'OVER_QUERY_LIMIT' && attempt < 1) {
+      logger.warn('Google Places: cuota excedida en Find Place, reintentando tras pausa...');
+      await new Promise(r => setTimeout(r, 2000));
+      return this._findPlaceId(businessName, city, apiKey, attempt + 1);
     }
 
     if (data.status === 'OK' && data.candidates?.length > 0) {
@@ -110,7 +120,7 @@ export const googlePlacesService = {
     return null;
   },
 
-  async _getPlaceDetails(placeId, apiKey) {
+  async _getPlaceDetails(placeId, apiKey, attempt = 0) {
     const url = new URL(`${BASE_URL}/details/json`);
     url.searchParams.set('place_id', placeId);
     url.searchParams.set('fields', [
@@ -127,13 +137,19 @@ export const googlePlacesService = {
     url.searchParams.set('language', 'es');
     url.searchParams.set('key', apiKey);
 
-    const res = await fetch(url.toString(), { signal: AbortSignal.timeout(8000) });
+    const res = await fetchWithRetry(url.toString(), { signal: AbortSignal.timeout(8000) });
     if (!res.ok) throw new Error(`Place Details HTTP ${res.status}`);
 
     const data = await res.json();
 
     if (data.status === 'REQUEST_DENIED') {
       throw new Error(`API denegada: ${data.error_message}`);
+    }
+
+    if (data.status === 'OVER_QUERY_LIMIT' && attempt < 1) {
+      logger.warn('Google Places: cuota excedida en Place Details, reintentando tras pausa...');
+      await new Promise(r => setTimeout(r, 2000));
+      return this._getPlaceDetails(placeId, apiKey, attempt + 1);
     }
 
     return data.status === 'OK' ? data.result : null;

@@ -49,7 +49,7 @@ emailQueue.process(async (job) => {
     logger.info(`Email sent to lead ${lead_id}`);
     return { success: true, lead_id };
   } catch (err) {
-    logger.error(`Email job failed for ${lead_id}:`, err.message);
+    logger.error(`Email job failed for ${lead_id}: ${err.message}`);
     throw err;
   }
 });
@@ -80,7 +80,7 @@ whatsappQueue.process(async (job) => {
     logger.info(`WhatsApp sent to ${phone}`);
     return { success: true, lead_id, phone };
   } catch (err) {
-    logger.error(`WhatsApp job failed for ${lead_id}:`, err.message);
+    logger.error(`WhatsApp job failed for ${lead_id}: ${err.message}`);
     throw err;
   }
 });
@@ -88,11 +88,11 @@ whatsappQueue.process(async (job) => {
 // ── Manejo de eventos ────────────────────────────────────
 
 emailQueue.on('failed', (job, err) => {
-  logger.error(`Email queue job ${job.id} failed:`, err.message);
+  logger.error(`Email queue job ${job.id} failed: ${err.message}`);
 });
 
 whatsappQueue.on('failed', (job, err) => {
-  logger.error(`WhatsApp queue job ${job.id} failed:`, err.message);
+  logger.error(`WhatsApp queue job ${job.id} failed: ${err.message}`);
 });
 
 // ── API de envío masivo ──────────────────────────────────

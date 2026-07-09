@@ -30,6 +30,7 @@ export const performanceAuditService = {
       });
 
       const page = await browser.newPage();
+      page.setDefaultTimeout(15000);
 
       // Inyectar script para recolectar Web Vitals
       await page.addInitScript(() => {
@@ -60,8 +61,11 @@ export const performanceAuditService = {
         }).observe({ entryTypes: ['layout-shift'], buffered: true });
       });
 
+      // 'networkidle' casi nunca se cumple en sitios reales (analytics/chats en
+      // segundo plano mantienen tráfico) y expiraba por timeout siempre. 'load'
+      // es suficiente para medir TTFB/LCP/CLS y es lo que ya usa contact-extractor.
       const startTime = Date.now();
-      await page.goto(url, { waitUntil: 'networkidle2', timeout: 15000 });
+      await page.goto(url, { waitUntil: 'load', timeout: 15000 });
       const loadTime = Date.now() - startTime;
 
       // Esperar estabilización para recolectar Web Vitals
@@ -152,12 +156,16 @@ export const performanceAuditService = {
         result.top_issue_severity = 'success';
       }
 
-      await browser.close();
     } catch (error) {
-      logger.error(`Performance audit failed for ${url}:`, error.message);
+      logger.error(`Performance audit failed for ${url}: ${error.message}`);
       result.error = error.message;
       result.top_issue = `❌ Audit failed: ${error.message}`;
       result.top_issue_severity = 'error';
+    } finally {
+      // Cerrar SIEMPRE, también en el camino de error — antes se dejaba el
+      // proceso Chromium huérfano en cada fallo, agotando recursos y tumbando
+      // los browser.launch() de otros servicios (contact-extractor) en cascada.
+      if (browser) await browser.close().catch(() => null);
     }
 
     return result;

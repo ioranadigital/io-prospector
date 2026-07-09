@@ -45,7 +45,7 @@ export async function orchestrateProspection(csvPath, prospectionId = null) {
         gmb_has_hours: lead.gmb_has_hours || false,
         gmb_hours_updated: lead.gmb_hours_updated || false,
         audit_score: Math.round(lead.urgency_score || 0),
-        audit_data: lead.issues ? Object.fromEntries(Object.entries(lead.issues).map(([k, v]) => [k, !!v])) : {},
+        audit_data: lead.issues ? Object.fromEntries(lead.issues.map(issue => [issue, true])) : {},
         priority: lead.priority || 'normal',
         crm_status: 'new',
         status: 'candidate', // candidato: no aparece en Leads hasta que se promueve manualmente

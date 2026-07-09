@@ -88,7 +88,7 @@ router.post('/templates/render', async (req, res, next) => {
       body: tpl.body.replace(/\{\{(\w+)\}\}/g, (_, key) => {
         if (key === 'audit_issues') return issues;
         if (key === 'issue_count')  return Object.values(lead.audit_data || {}).filter(Boolean).length;
-        if (key === 'top_issue')    return Object.keys(lead.audit_data || {}).find(k => lead.audit_data[k]) || '';
+        if (key === 'top_issue')    return Object.keys(lead.audit_data || {})[0] || '';
         return lead[key] ?? cfg[key] ?? `{{${key}}}`;
       }),
     };

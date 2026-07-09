@@ -31,6 +31,8 @@ export const csvExportService = {
       'Email',
       'Website',
       'Phone',
+      'City',
+      'Category',
       'GMB_Rating',
       'Review_Count',
       'GMB_Claimed',
@@ -48,6 +50,9 @@ export const csvExportService = {
       'Missing_Service',
       'Icebreaker',
       'SEO_Gap',
+      'Top_Issue',
+      'TTFB_Ms',
+      'Tech_CMS',
     ];
 
     // Convertir leads a CSV
@@ -60,6 +65,8 @@ export const csvExportService = {
         escapeCSV(lead.email || ''),
         escapeCSV(lead.website || ''),
         escapeCSV(lead.phone || ''),
+        escapeCSV(lead.city || ''),
+        escapeCSV(lead.category || ''),
         lead.gmb_rating !== null ? lead.gmb_rating : '',
         lead.review_count !== null ? lead.review_count : '',
         lead.gmb_claimed ? 'Sí' : (lead.gmb_claimed === false ? 'No' : ''),
@@ -77,6 +84,9 @@ export const csvExportService = {
         escapeCSV(lead.missing_service || ''),
         escapeCSV(lead.icebreaker || ''),
         escapeCSV(lead.seo_gap || ''),
+        escapeCSV(lead.top_issue || ''),
+        lead.ttfb_ms || '',
+        escapeCSV(lead.tech_cms || ''),
       ];
 
       csvRows.push(row.join(','));
@@ -114,6 +124,8 @@ export const csvExportService = {
       'Email': 'email',
       'Website': 'website',
       'Phone': 'phone',
+      'City': 'city',
+      'Category': 'category',
       'GMB_Rating': 'gmb_rating',
       'Review_Count': 'review_count',
       'GMB_Claimed': 'gmb_claimed',
@@ -131,6 +143,9 @@ export const csvExportService = {
       'Missing_Service': 'missing_service',
       'Icebreaker': 'icebreaker',
       'SEO_Gap': 'seo_gap',
+      'Top_Issue': 'top_issue',
+      'TTFB_Ms': 'ttfb_ms',
+      'Tech_CMS': 'tech_cms',
     };
 
     const leads = lines.slice(1).map(line => {

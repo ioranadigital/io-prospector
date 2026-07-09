@@ -6,10 +6,12 @@ import { googlePlacesService } from './google-places.service.js';
 import { csvExportService } from './csv-export.service.js';
 import { performanceAuditService } from './seo-technical/performance-audit.service.js';
 import { techDetectionService } from './tech-stack/tech-detection.service.js';
+import { pickMissingService } from './sector-services.util.js';
+import { fetchWithRetry } from '../utils/fetch-with-retry.js';
 import { supabase } from '../config/supabase.js';
 import { logger } from '../utils/logger.js';
 
-// Dominios a saltar — directórios/redes sociales/plataformas
+// Dominios a saltar — directorios/redes sociales/plataformas/institucionales
 const SKIP_DOMAINS = [
   'google.com', 'facebook.com', 'yelp.com', 'tripadvisor.com',
   'instagram.com', 'twitter.com', 'x.com', 'linkedin.com', 'youtube.com',
@@ -17,6 +19,10 @@ const SKIP_DOMAINS = [
   'bing.com', 'yahoo.com', 'booking.com', 'idealista.com', 'fotocasa.es',
   'infojobs.net', 'indeed.com', 'paginas-amarillas.com', 'paginasamarillas.es',
   'habitaclia.com', 'wallapop.com', 'milanuncios.com',
+  // Directorios institucionales/sectoriales — no son la web del negocio
+  'einforma.com', 'empresite.com', 'axesor.es', 'infoisinfo.es',
+  'guiadeltrabajador.com', 'cylex.es', 'europages.es',
+  '.gob.es', '.gub.es', 'sede.', 'ayuntamiento',
 ];
 
 // Variaciones de query por página para ampliar resultados y evitar duplicados
@@ -36,6 +42,34 @@ function extractDomain(url) {
   } catch {
     return null;
   }
+}
+
+// Patrón genérico para fichas de directorio/asociación local (ACEPA, guías
+// sectoriales, etc.). Una lista de dominios nunca cubre el long-tail de
+// asociaciones de comerciantes municipales — esto detecta la FORMA típica
+// de esas URLs en vez de intentar enumerar cada dominio.
+const DIRECTORY_URL_PATTERN = /\/(listing|ficha|directorio|perfil-empresa|empresa-id)\//i;
+const DIRECTORY_HOST_PATTERN = /(^|\.)(guia|directorio|listado|catalogo)[a-z0-9-]*\./i;
+
+function looksLikeDirectoryListing(url) {
+  try {
+    const { hostname, pathname } = new URL(url);
+    return DIRECTORY_URL_PATTERN.test(pathname) || DIRECTORY_HOST_PATTERN.test(hostname);
+  } catch {
+    return false;
+  }
+}
+
+// Competidor principal: reutiliza el SERP ya obtenido (coste de red cero) — el
+// resultado mejor posicionado de la misma página que no sea el propio lead ni
+// un dominio de SKIP_DOMAINS.
+function pickMainCompetitor(pageResults, currentResult) {
+  const rival = (pageResults || []).find(r =>
+    r.position !== currentResult.position &&
+    r.url && !SKIP_DOMAINS.some(d => r.url.includes(d))
+  );
+  if (!rival) return null;
+  return rival.title.replace(/\s*[-|–]\s*.*$/, '').trim() || null;
 }
 
 // Verificar si un dominio ya existe en BD para no procesar duplicados
@@ -95,7 +129,7 @@ export async function startProspectionV2({ query, city, category, pagesFrom = 2,
           }
           if (domain) seenDomains.add(domain);
 
-          const lead = await processResult({ result, city, category });
+          const lead = await processResult({ result, city, category, pageResults: results });
           if (lead) {
             leads.push(lead);
             logger.info(`   ✅ ${lead.company_name}${lead.email ? ` — ${lead.email}` : ''}${lead.gmb_rating ? ` ⭐${lead.gmb_rating}` : ''}`);
@@ -148,7 +182,7 @@ async function fetchSerpPage({ query, city, page }) {
   url.searchParams.set('api_key', process.env.SERP_API_KEY);
 
   try {
-    const res = await fetch(url.toString(), { signal: AbortSignal.timeout(15000) });
+    const res = await fetchWithRetry(url.toString(), { signal: AbortSignal.timeout(15000) });
     if (!res.ok) throw new Error(`SerpAPI error ${res.status}`);
     const data = await res.json();
 
@@ -170,8 +204,10 @@ async function fetchSerpPage({ query, city, page }) {
   }
 }
 
-async function processResult({ result, city, category }) {
-  const isSkipped = !result.url || SKIP_DOMAINS.some(d => result.url.includes(d));
+async function processResult({ result, city, category, pageResults }) {
+  const isSkipped = !result.url
+    || SKIP_DOMAINS.some(d => result.url.includes(d))
+    || looksLikeDirectoryListing(result.url);
 
   const lead = {
     company_name: result.title,
@@ -196,6 +232,10 @@ async function processResult({ result, city, category }) {
     lead.gmb_claimed = null;
     lead.email = null;
     lead.phone = null;
+    lead.main_competitor = pickMainCompetitor(pageResults, result);
+    lead.icebreaker = lead.main_competitor
+      ? `He visto que ${lead.main_competitor} te está ganando en Google en ${city} — y tú ni siquiera tienes web propia todavía.`
+      : null;
     return lead;
   }
 
@@ -227,28 +267,49 @@ async function processResult({ result, city, category }) {
     lead.phone = gmb.phone_gmb;
   }
 
-  // Auditorías técnicas en background
-  performanceAuditService.auditPerformanceAndCanonical(result.url)
-    .then(a => {
-      lead.ttfb_ms = a.ttfb_ms;
-      lead.lcp_ms = a.largest_contentful_paint_ms;
-      lead.cls = a.cumulative_layout_shift;
-      lead.canonical_url = a.canonical_url;
-      lead.h1_count = a.h1_count;
-      lead.top_issue = a.top_issue;
-      lead.top_issue_severity = a.top_issue_severity;
-    })
-    .catch(e => logger.warn(`Performance audit error: ${e.message}`));
+  // Auditorías técnicas — se esperan para que sus datos lleguen al CSV/BD
+  // (antes eran fire-and-forget: el lead se devolvía antes de que resolvieran
+  // y el resultado se perdía siempre).
+  const [perfResult, techResult] = await Promise.allSettled([
+    performanceAuditService.auditPerformanceAndCanonical(result.url),
+    techDetectionService.detectTechStack(result.url, contacted.html || ''),
+  ]);
 
-  techDetectionService.detectTechStack(result.url, '')
-    .then(t => {
-      lead.tech_cms = t.cms?.join(',') || null;
-      lead.tech_ecommerce = t.ecommerce;
-      lead.tech_analytics = t.analytics?.join(',') || null;
-      lead.tech_server = t.server;
-      lead.tech_risks = t.risks?.join(',') || null;
-    })
-    .catch(e => logger.warn(`Tech detection error: ${e.message}`));
+  if (perfResult.status === 'fulfilled') {
+    const a = perfResult.value;
+    lead.ttfb_ms = a.ttfb_ms;
+    lead.lcp_ms = a.largest_contentful_paint_ms;
+    lead.cls = a.cumulative_layout_shift;
+    lead.canonical_url = a.canonical_url;
+    lead.h1_count = a.h1_count;
+    lead.top_issue = a.top_issue;
+    lead.top_issue_severity = a.top_issue_severity;
+    lead.seo_gap = [
+      !lead.has_schema && 'sin datos estructurados (Schema.org)',
+      a.canonical_url && !a.canonical_is_valid && 'canonical mal configurado',
+      a.h1_count !== 1 && 'etiquetas H1 duplicadas o ausentes',
+      a.robots_txt_blocks_indexing && 'robots.txt bloqueando indexación',
+    ].filter(Boolean).join('; ') || null;
+  } else {
+    logger.warn(`Performance audit error: ${perfResult.reason?.message}`);
+  }
+
+  if (techResult.status === 'fulfilled') {
+    const t = techResult.value;
+    lead.tech_cms = t.cms?.join(',') || null;
+    lead.tech_ecommerce = t.ecommerce;
+    lead.tech_analytics = t.analytics?.join(',') || null;
+    lead.tech_server = t.server;
+    lead.tech_risks = t.risks?.join(',') || null;
+  } else {
+    logger.warn(`Tech detection error: ${techResult.reason?.message}`);
+  }
+
+  lead.main_competitor = pickMainCompetitor(pageResults, result);
+  lead.missing_service = pickMissingService(category, `${result.snippet || ''} ${contacted.html || ''}`);
+  lead.icebreaker = lead.main_competitor
+    ? `He visto que ${lead.main_competitor} te está ganando en Google en ${city}.${lead.seo_gap ? ` Además tu web tiene: ${lead.seo_gap}.` : ''}`
+    : null;
 
   return lead;
 }

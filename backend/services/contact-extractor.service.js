@@ -105,6 +105,7 @@ export const contactExtractorService = {
       email: null,
       phone: null,
       isHTTPS: url.startsWith('https://'),
+      html: '',
       html_length: 0,
       load_time_ms: 0,
       is_mobile_responsive: false,
@@ -157,6 +158,7 @@ export const contactExtractorService = {
       result.load_time_ms = Date.now() - startTime;
 
       const html = await page.content().catch(() => '');
+      result.html = html;
       result.html_length = html.length;
       result.is_mobile_responsive = html.includes('viewport') &&
         (html.includes('width=device-width') || html.includes('width=screen-width'));
