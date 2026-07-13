@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { SECTORS } from '@/lib/sectors';
 import toast from 'react-hot-toast';
 import {
   X, Plus, MapPin, Mail, Phone, Search, AlertTriangle, Map, Star,
-  Target, Trophy, Wrench, MessageCircle, FileText,
+  Target, Trophy, Wrench, MessageCircle, FileText, ChevronDown, ChevronRight,
 } from 'lucide-react';
 
 type AddLeadModalProps = {
@@ -43,6 +44,36 @@ const EMPTY_FORM = {
 export function AddLeadModal({ isOpen, onClose, onCreated }: AddLeadModalProps) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [sectors, setSectors] = useState<any[]>(SECTORS);
+  const [selectedCategoryGroup, setSelectedCategoryGroup] = useState('');
+  const [showSeo, setShowSeo] = useState(false);
+  const [showGmb, setShowGmb] = useState(false);
+
+  const selectedCategory = sectors.find(s => s.category === selectedCategoryGroup);
+
+  // Mismas categorías/sectores que Prospector (io_pro_categories + io_pro_sectors),
+  // para que la categoría de un lead manual siempre case con la de prospección.
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('io_pro_categories')
+          .select(`id, name, sort_order, io_pro_sectors(id, name, sort_order)`)
+          .order('sort_order');
+        if (error) throw error;
+        if (data && data.length > 0) {
+          setSectors(data.map((cat: any) => ({
+            category: cat.name,
+            subcategories: (cat.io_pro_sectors || []).map((sector: any) => ({ name: sector.name })),
+          })));
+        }
+      } catch (err) {
+        console.warn('Could not load categories from Supabase, using defaults:', err);
+        setSectors(SECTORS);
+      }
+    };
+    loadCategories();
+  }, []);
 
   if (!isOpen) return null;
 
@@ -52,6 +83,9 @@ export function AddLeadModal({ isOpen, onClose, onCreated }: AddLeadModalProps) 
   const handleClose = () => {
     if (saving) return;
     setForm(EMPTY_FORM);
+    setSelectedCategoryGroup('');
+    setShowSeo(false);
+    setShowGmb(false);
     onClose();
   };
 
@@ -158,15 +192,37 @@ export function AddLeadModal({ isOpen, onClose, onCreated }: AddLeadModalProps) 
                   />
                 </div>
               </div>
-              <div>
-                <label className="text-xs text-zinc-400 block mb-1">Categoría</label>
-                <input
-                  type="text"
-                  value={form.category}
-                  onChange={e => set('category', e.target.value)}
-                  className="w-full bg-zinc-700 border border-zinc-600 px-3 py-2 rounded text-sm text-white placeholder-zinc-500"
-                  placeholder="ej: Ópticas"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-zinc-400 block mb-1">Categoría Principal</label>
+                  <select
+                    value={selectedCategoryGroup}
+                    onChange={e => {
+                      setSelectedCategoryGroup(e.target.value);
+                      set('category', '');
+                    }}
+                    className="w-full bg-zinc-700 border border-zinc-600 px-3 py-2 rounded text-sm text-white"
+                  >
+                    <option value="">Seleccionar categoría...</option>
+                    {sectors.map((sector: any) => (
+                      <option key={sector.category} value={sector.category}>{sector.category}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-zinc-400 block mb-1">Subcategoría / Sector</label>
+                  <select
+                    value={form.category}
+                    onChange={e => set('category', e.target.value)}
+                    disabled={!selectedCategory}
+                    className="w-full bg-zinc-700 border border-zinc-600 px-3 py-2 rounded text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <option value="">Seleccionar sector...</option>
+                    {selectedCategory?.subcategories.map((sub: any) => (
+                      <option key={sub.name} value={sub.name}>{sub.name}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
           </section>
@@ -197,90 +253,108 @@ export function AddLeadModal({ isOpen, onClose, onCreated }: AddLeadModalProps) 
             </div>
           </section>
 
-          {/* SEO (manual) */}
+          {/* SEO (manual) — colapsado por defecto */}
           <section className="space-y-3">
-            <h3 className="text-sm font-semibold text-zinc-400 uppercase flex items-center gap-1.5"><Search size={14} /> SEO (evaluación manual)</h3>
-            <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-3">
-              <div>
-                <label className="text-xs text-zinc-400 block mb-1 flex items-center gap-1"><AlertTriangle size={12} /> Error Principal</label>
-                <textarea
-                  value={form.seo_gap}
-                  onChange={e => set('seo_gap', e.target.value)}
-                  className="w-full bg-zinc-700 border border-zinc-600 px-3 py-2 rounded text-sm text-white placeholder-zinc-500 h-16"
-                  placeholder="ej: sin SSL, web no responsive..."
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setShowSeo(v => !v)}
+              className="w-full text-sm font-semibold text-zinc-400 uppercase flex items-center gap-1.5 hover:text-zinc-200 transition"
+            >
+              {showSeo ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+              <Search size={14} /> SEO (evaluación manual)
+            </button>
+            {showSeo && (
+              <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-3">
                 <div>
-                  <label className="text-xs text-zinc-400 block mb-1">Score (0-100)</label>
-                  <input
-                    type="number" min={0} max={100}
-                    value={form.audit_score}
-                    onChange={e => set('audit_score', e.target.value)}
-                    className="w-full bg-zinc-700 border border-zinc-600 px-3 py-2 rounded text-sm text-white placeholder-zinc-500"
+                  <label className="text-xs text-zinc-400 block mb-1 flex items-center gap-1"><AlertTriangle size={12} /> Error Principal</label>
+                  <textarea
+                    value={form.seo_gap}
+                    onChange={e => set('seo_gap', e.target.value)}
+                    className="w-full bg-zinc-700 border border-zinc-600 px-3 py-2 rounded text-sm text-white placeholder-zinc-500 h-16"
+                    placeholder="ej: sin SSL, web no responsive..."
                   />
                 </div>
-                <div>
-                  <label className="text-xs text-zinc-400 block mb-1">Links rotos</label>
-                  <input
-                    type="number" min={0}
-                    value={form.broken_links_count}
-                    onChange={e => set('broken_links_count', e.target.value)}
-                    className="w-full bg-zinc-700 border border-zinc-600 px-3 py-2 rounded text-sm text-white placeholder-zinc-500"
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-zinc-400 block mb-1">Score (0-100)</label>
+                    <input
+                      type="number" min={0} max={100}
+                      value={form.audit_score}
+                      onChange={e => set('audit_score', e.target.value)}
+                      className="w-full bg-zinc-700 border border-zinc-600 px-3 py-2 rounded text-sm text-white placeholder-zinc-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-zinc-400 block mb-1">Links rotos</label>
+                    <input
+                      type="number" min={0}
+                      value={form.broken_links_count}
+                      onChange={e => set('broken_links_count', e.target.value)}
+                      className="w-full bg-zinc-700 border border-zinc-600 px-3 py-2 rounded text-sm text-white placeholder-zinc-500"
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-4 text-xs text-zinc-300 pt-1">
+                  <label className="flex items-center gap-1.5">
+                    <input type="checkbox" checked={form.ssl_active} onChange={e => set('ssl_active', e.target.checked)} /> SSL activo
+                  </label>
+                  <label className="flex items-center gap-1.5">
+                    <input type="checkbox" checked={form.is_mobile_responsive} onChange={e => set('is_mobile_responsive', e.target.checked)} /> Responsive
+                  </label>
+                  <label className="flex items-center gap-1.5">
+                    <input type="checkbox" checked={form.has_schema} onChange={e => set('has_schema', e.target.checked)} /> Schema/JSON-LD
+                  </label>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-4 text-xs text-zinc-300 pt-1">
-                <label className="flex items-center gap-1.5">
-                  <input type="checkbox" checked={form.ssl_active} onChange={e => set('ssl_active', e.target.checked)} /> SSL activo
-                </label>
-                <label className="flex items-center gap-1.5">
-                  <input type="checkbox" checked={form.is_mobile_responsive} onChange={e => set('is_mobile_responsive', e.target.checked)} /> Responsive
-                </label>
-                <label className="flex items-center gap-1.5">
-                  <input type="checkbox" checked={form.has_schema} onChange={e => set('has_schema', e.target.checked)} /> Schema/JSON-LD
-                </label>
-              </div>
-            </div>
+            )}
           </section>
 
-          {/* Google Business (manual) */}
+          {/* Google Business (manual) — colapsado por defecto */}
           <section className="space-y-3">
-            <h3 className="text-sm font-semibold text-zinc-400 uppercase flex items-center gap-1.5"><Map size={14} /> Google Business (evaluación manual)</h3>
-            <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-3">
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="text-xs text-zinc-400 block mb-1 flex items-center gap-1"><Star size={12} /> Rating</label>
-                  <input
-                    type="number" min={0} max={5} step={0.1}
-                    value={form.gmb_rating}
-                    onChange={e => set('gmb_rating', e.target.value)}
-                    className="w-full bg-zinc-700 border border-zinc-600 px-3 py-2 rounded text-sm text-white placeholder-zinc-500"
-                  />
+            <button
+              type="button"
+              onClick={() => setShowGmb(v => !v)}
+              className="w-full text-sm font-semibold text-zinc-400 uppercase flex items-center gap-1.5 hover:text-zinc-200 transition"
+            >
+              {showGmb ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+              <Map size={14} /> Google Business (evaluación manual)
+            </button>
+            {showGmb && (
+              <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-3">
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-xs text-zinc-400 block mb-1 flex items-center gap-1"><Star size={12} /> Rating</label>
+                    <input
+                      type="number" min={0} max={5} step={0.1}
+                      value={form.gmb_rating}
+                      onChange={e => set('gmb_rating', e.target.value)}
+                      className="w-full bg-zinc-700 border border-zinc-600 px-3 py-2 rounded text-sm text-white placeholder-zinc-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-zinc-400 block mb-1">Reviews</label>
+                    <input
+                      type="number" min={0}
+                      value={form.review_count}
+                      onChange={e => set('review_count', e.target.value)}
+                      className="w-full bg-zinc-700 border border-zinc-600 px-3 py-2 rounded text-sm text-white placeholder-zinc-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-zinc-400 block mb-1">Fotos</label>
+                    <input
+                      type="number" min={0}
+                      value={form.photo_count}
+                      onChange={e => set('photo_count', e.target.value)}
+                      className="w-full bg-zinc-700 border border-zinc-600 px-3 py-2 rounded text-sm text-white placeholder-zinc-500"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="text-xs text-zinc-400 block mb-1">Reviews</label>
-                  <input
-                    type="number" min={0}
-                    value={form.review_count}
-                    onChange={e => set('review_count', e.target.value)}
-                    className="w-full bg-zinc-700 border border-zinc-600 px-3 py-2 rounded text-sm text-white placeholder-zinc-500"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-zinc-400 block mb-1">Fotos</label>
-                  <input
-                    type="number" min={0}
-                    value={form.photo_count}
-                    onChange={e => set('photo_count', e.target.value)}
-                    className="w-full bg-zinc-700 border border-zinc-600 px-3 py-2 rounded text-sm text-white placeholder-zinc-500"
-                  />
-                </div>
+                <label className="flex items-center gap-1.5 text-xs text-zinc-300">
+                  <input type="checkbox" checked={form.gmb_claimed} onChange={e => set('gmb_claimed', e.target.checked)} /> Ficha de Google reclamada
+                </label>
               </div>
-              <label className="flex items-center gap-1.5 text-xs text-zinc-300">
-                <input type="checkbox" checked={form.gmb_claimed} onChange={e => set('gmb_claimed', e.target.checked)} /> Ficha de Google reclamada
-              </label>
-            </div>
+            )}
           </section>
 
           {/* Contexto comercial */}
