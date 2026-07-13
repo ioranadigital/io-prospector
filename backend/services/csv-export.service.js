@@ -109,13 +109,13 @@ export const csvExportService = {
     }
 
     const content = fs.readFileSync(filePath, 'utf8');
-    const lines = content.split('\n').filter(line => line.trim().length > 0);
+    const rows = parseCSV(content).filter(row => row.some(cell => cell.trim().length > 0));
 
-    if (lines.length === 0) {
+    if (rows.length === 0) {
       return [];
     }
 
-    const headers = parseCSVLine(lines[0]).map(h => h.trim());
+    const headers = rows[0].map(h => h.trim());
 
     // Normalize header names to snake_case for consistency
     const headerMap = {
@@ -148,8 +148,7 @@ export const csvExportService = {
       'Tech_CMS': 'tech_cms',
     };
 
-    const leads = lines.slice(1).map(line => {
-      const values = parseCSVLine(line);
+    const leads = rows.slice(1).map(values => {
       const lead = {};
       headers.forEach((header, i) => {
         const key = headerMap[header] || header.toLowerCase();
@@ -177,14 +176,18 @@ function escapeCSV(value) {
   return value;
 }
 
-function parseCSVLine(line) {
-  const result = [];
+// Parsea el CSV completo respetando comillas que abarcan varias líneas —
+// un split('\n') ingenuo rompe cualquier fila cuyo campo (p.ej. gmb_description)
+// contenga un salto de línea real, generando filas fantasma con datos vacíos.
+function parseCSV(content) {
+  const rows = [];
+  let row = [];
   let current = '';
   let inQuotes = false;
 
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i];
-    const nextChar = line[i + 1];
+  for (let i = 0; i < content.length; i++) {
+    const char = content[i];
+    const nextChar = content[i + 1];
 
     if (char === '"') {
       if (inQuotes && nextChar === '"') {
@@ -194,15 +197,27 @@ function parseCSVLine(line) {
         inQuotes = !inQuotes;
       }
     } else if (char === ',' && !inQuotes) {
-      result.push(current.trim());
+      row.push(current.trim());
+      current = '';
+    } else if (char === '\r' && !inQuotes) {
+      // ignorar CR, el LF que sigue cierra la fila
+    } else if (char === '\n' && !inQuotes) {
+      row.push(current.trim());
+      rows.push(row);
+      row = [];
       current = '';
     } else {
       current += char;
     }
   }
 
-  result.push(current.trim());
-  return result;
+  // Última fila si el archivo no termina en salto de línea
+  if (current.length > 0 || row.length > 0) {
+    row.push(current.trim());
+    rows.push(row);
+  }
+
+  return rows;
 }
 
 export default csvExportService;
