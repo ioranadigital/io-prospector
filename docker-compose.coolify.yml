@@ -53,6 +53,8 @@ services:
     environment:
       - PORT=3004
       - NODE_ENV=production
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - N8N_WHATSAPP_WEBHOOK_URL=${N8N_WHATSAPP_WEBHOOK_URL:-https://pros.iorana.dev/webhook/v1/whatsapp/send}
     depends_on:
       - backend
     restart: unless-stopped
