@@ -40,18 +40,20 @@ export async function POST(req: NextRequest) {
 
     if (leadId) {
       const supabase = createAdminClient();
-      await supabase.from('io_pro_lead_activities').insert({
+      const { error: activityError } = await supabase.from('io_pro_lead_activities').insert({
         lead_id: leadId,
         type: 'whatsapp',
-        direction: 'outbound',
-        body: message,
         outcome: 'sent',
-        metadata: { template_id: templateId, template_name: templateName, channel: 'n8n_twilio' },
+        template_id: templateId || null,
+        metadata: { template_name: templateName, channel: 'n8n_twilio', body: message },
       });
-      await supabase
+      if (activityError) console.error('WhatsApp activity insert error:', activityError);
+
+      const { error: leadUpdateError } = await supabase
         .from('io_pro_leads')
         .update({ last_contact_at: new Date().toISOString(), crm_status: 'contacted' })
         .eq('id', leadId);
+      if (leadUpdateError) console.error('Lead crm_status update error:', leadUpdateError);
     }
 
     return NextResponse.json({ sent: true, to });

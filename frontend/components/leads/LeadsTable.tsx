@@ -93,6 +93,12 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
   };
 
+  const getLastContactByType = (leadId: string, type: string) => {
+    return activities
+      .filter(a => a.lead_id === leadId && a.type === type && a.outcome === 'sent')
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+  };
+
   const getActivityStatus = (activity: LeadActivity | undefined) => {
     if (!activity) return {
       statusIcon: null as React.ReactNode,
@@ -315,6 +321,17 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
                         >
                           <Copy size={12} />
                         </button>
+                        {(() => {
+                          const contacted = getLastContactByType(lead.id, 'email');
+                          return contacted ? (
+                            <span
+                              className="inline-flex shrink-0"
+                              title={`Ya contactado por email — ${new Date(contacted.created_at).toLocaleString('es-ES')}`}
+                            >
+                              <CheckCircle size={12} className="text-green-400" />
+                            </span>
+                          ) : null;
+                        })()}
                       </div>
                     ) : (
                       <span className="text-zinc-500">-</span>
@@ -331,6 +348,17 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
                         >
                           <Copy size={12} />
                         </button>
+                        {(() => {
+                          const contacted = getLastContactByType(lead.id, 'whatsapp');
+                          return contacted ? (
+                            <span
+                              className="inline-flex shrink-0"
+                              title={`Ya contactado por WhatsApp — ${new Date(contacted.created_at).toLocaleString('es-ES')}`}
+                            >
+                              <CheckCircle size={12} className="text-green-400" />
+                            </span>
+                          ) : null;
+                        })()}
                       </div>
                     ) : (
                       <span className="text-zinc-500">-</span>
