@@ -146,10 +146,18 @@ export function SendModal({
       if (type === 'email') {
         await api.sendEmail(body);
       } else {
-        await api.sendWhatsApp(body);
+        const res = await fetch('/api/whatsapp/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ leadId, phone: recipient, message: preview, templateId: selectedTemplate, templateName }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || `Error HTTP ${res.status}`);
+        }
       }
 
-      toast.success(`${type === 'email' ? 'Email' : 'WhatsApp'} enviado`);
+      toast.success(type === 'email' ? 'Email enviado' : 'Contactado por WhatsApp');
       onSent();
       onClose();
     } catch (error) {
