@@ -21,6 +21,17 @@ const HARD_DROP_DOMAINS = [
   'leroymerlin.es', 'elcorteingles.es', 'ikea.com', 'mediamarkt.es',
   'carrefour.es', 'decathlon.es', 'worten.es', 'amazon.com', 'amazon.es',
   'google.com', 'maps.google.com', 'bing.com', 'yahoo.com', 'wikipedia.org', 'reddit.com',
+  // Encontrados en pruebas reales — grandes compañías de servicios (no son
+  // pymes locales) y fundaciones/entes sectoriales.
+  'homeserve.es', 'flc.es',
+  // Portales de empleo genéricos (bolsas de trabajo, no negocios)
+  'gestionandote.com', 'trabajastur.asturias.es',
+  // Dominios oficiales de comunidades autónomas — variantes que no siguen el
+  // patrón .gob.es (cada CCAA tiene su propio dominio institucional)
+  'asturias.es', 'madrid.org', 'gencat.cat', 'xunta.gal', 'euskadi.eus',
+  'jccm.es', 'juntadeandalucia.es', 'gobiernodecanarias.org', 'larioja.org',
+  'navarra.es', 'aragon.es', 'gobex.es', 'cantabria.es', 'carm.es',
+  'gobiernodecanarias.es', 'caib.es',
 ];
 
 // SOFT_SKIP: directorios/guías de empresas — no es la web real del negocio, pero
@@ -32,7 +43,24 @@ const SOFT_SKIP_DOMAINS = [
   'qdq.com', 'qdq.es', 'habitaclia.com', 'wallapop.com', 'milanuncios.com',
   'einforma.com', 'empresite.com', 'axesor.es', 'infoisinfo.es',
   'guiadeltrabajador.com', 'cylex.es', 'europages.es',
+  // Marketplaces de servicios — encontrado en pruebas reales (habitissimo)
+  'habitissimo.es', 'habitissimo.com',
 ];
+
+// Portales de empleo — ruta con estas palabras nunca es un negocio local, es
+// una bolsa de trabajo (encontrado en pruebas reales: gestionandote.com,
+// trabajastur.asturias.es). Solo se mira el path, no el hostname completo,
+// para no descartar negocios reales cuyo nombre incluya "trabajo/trabajos"
+// (frecuente en construcción: "Trabajos Verticales", "Trabajos en Altura"...).
+const JOB_BOARD_PATTERN = /\/(ofertas?-de-empleo|ofertas?-empleo|ofertas-ptpr-de-|bolsa-de-trabajo|bolsa-trabajo)\b/i;
+
+function looksLikeJobBoard(url) {
+  try {
+    return JOB_BOARD_PATTERN.test(new URL(url).pathname);
+  } catch {
+    return false;
+  }
+}
 
 // Dominios excluidos directamente en la query de Google (-site:) — el filtro
 // más efectivo es no dejar que Google los devuelva, en vez de descartarlos
@@ -43,6 +71,7 @@ const SITE_EXCLUSIONS = [
   'milanuncios.com', 'wallapop.com',
   'facebook.com', 'instagram.com', 'youtube.com', 'linkedin.com',
   'leroymerlin.es', 'elcorteingles.es', 'ikea.com',
+  'habitissimo.es', 'homeserve.es',
 ];
 
 function buildSiteExclusionClause() {
@@ -110,7 +139,10 @@ function extractDomain(url) {
 // sectoriales, etc.). Una lista de dominios nunca cubre el long-tail de
 // asociaciones de comerciantes municipales — esto detecta la FORMA típica
 // de esas URLs en vez de intentar enumerar cada dominio.
-const DIRECTORY_URL_PATTERN = /\/(listing|ficha|directorio|perfil-empresa|empresa-id)\//i;
+// Bounded por / a cada lado pero con [a-z0-9-]* alrededor de la palabra clave,
+// para capturar segmentos compuestos como "directorio-empresas-reformas"
+// (visto en pruebas reales; el match exacto de solo "directorio" no lo pillaba).
+const DIRECTORY_URL_PATTERN = /\/[a-z0-9-]*(listing|ficha|directorio|perfil-empresa|empresa-id)[a-z0-9-]*\//i;
 const DIRECTORY_HOST_PATTERN = /(^|\.)(guia|directorio|listado|catalogo)[a-z0-9-]*\./i;
 
 function looksLikeDirectoryListing(url) {
@@ -279,9 +311,9 @@ async function fetchSerpPage({ query, city, page }) {
 }
 
 async function processResult({ result, city, category, pageResults }) {
-  // HARD_DROP: ni siquiera se guarda la fila — redes sociales, institucional
-  // o grandes cadenas nunca son un prospecto real.
-  if (result.url && HARD_DROP_DOMAINS.some(d => result.url.includes(d))) {
+  // HARD_DROP: ni siquiera se guarda la fila — redes sociales, institucional,
+  // portales de empleo o grandes cadenas nunca son un prospecto real.
+  if (result.url && (HARD_DROP_DOMAINS.some(d => result.url.includes(d)) || looksLikeJobBoard(result.url))) {
     logger.debug(`   🚫 Descartado (hard drop): ${result.url}`);
     return null;
   }
