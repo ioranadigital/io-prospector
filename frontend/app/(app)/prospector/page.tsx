@@ -1,6 +1,10 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { Search, Loader2, Play, CheckCircle, AlertCircle, Download, Eye, Clock, Save, Trash2, FileText, Globe, Check, Timer, XCircle, ClipboardList } from 'lucide-react';
+import {
+  Search, Loader2, Play, CheckCircle, AlertCircle, Download, Eye, Clock, Save, Trash2, FileText, Globe, Check, Timer, XCircle, ClipboardList,
+  Home, Stethoscope, Scale, Building2, Sparkles, GraduationCap, Waves, UtensilsCrossed, Car, Factory, PawPrint, Dumbbell, Tag,
+  type LucideIcon,
+} from 'lucide-react';
 import { api } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 import { SECTORS } from '@/lib/sectors';
@@ -13,6 +17,28 @@ import { WhatsAppSendModal } from '@/components/WhatsAppSendModal';
 import { DashboardModal } from '@/components/DashboardModal';
 import { LeadDetailModal } from '@/components/leads/LeadDetailModal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+
+// Icono por categoría principal — sustituye a los emoji que antes iban
+// embebidos en el propio nombre (el <select> nativo no puede renderizar
+// iconos dentro de las <option>, así que se muestra junto a la etiqueta).
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  'Servicios para el Hogar': Home,
+  'Profesionales & Salud': Stethoscope,
+  'Abogados': Scale,
+  'Negocios, Construcción & Retail': Building2,
+  'Estética & Belleza': Sparkles,
+  'Educación & Formación': GraduationCap,
+  'Turismo & Deportes Acuáticos': Waves,
+  'Hostelería & Restauración': UtensilsCrossed,
+  'Motor, Transporte & Logística': Car,
+  'Industria, Production & B2B': Factory,
+  'Mascotas': PawPrint,
+  'Bienestar & Deporte': Dumbbell,
+};
+
+function getCategoryIcon(categoryName: string): LucideIcon {
+  return CATEGORY_ICONS[categoryName] || Tag;
+}
 
 export default function ProspectorPage() {
   const [selectedCategoryGroup, setSelectedCategoryGroup] = useState('');
@@ -297,7 +323,10 @@ export default function ProspectorPage() {
       <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-5">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-1.5">Categoría Principal</label>
+            <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+              {(() => { const Icon = getCategoryIcon(selectedCategoryGroup); return <Icon size={13} />; })()}
+              Categoría Principal
+            </label>
             <select
               value={selectedCategoryGroup}
               onChange={e => {

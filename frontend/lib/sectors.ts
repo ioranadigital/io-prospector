@@ -12,7 +12,7 @@ export type SectorCategory = {
 
 export const SECTORS: SectorCategory[] = [
   {
-    category: '🏠 Servicios para el Hogar',
+    category: 'Servicios para el Hogar',
     subcategories: [
       { name: 'Carpintería', includeDefaults: ['carpintero', 'muebles a medida'], excludeDefaults: ['online', 'curso', 'academia'] },
       { name: 'Pintura', includeDefaults: ['pintor', 'pintura interior'], excludeDefaults: ['online', 'curso', 'academia'] },
@@ -24,10 +24,12 @@ export const SECTORS: SectorCategory[] = [
       { name: 'Tapicería', includeDefaults: ['tapicero', 'tapizado muebles'], excludeDefaults: ['online', 'curso'] },
       { name: 'Cristalería', includeDefaults: ['cristalería', 'espejo'], excludeDefaults: ['online'] },
       { name: 'Cerrajería', includeDefaults: ['cerrajero', 'llaves'], excludeDefaults: ['online'] },
+      { name: 'Climatización y Calefacción', includeDefaults: ['climatización', 'instalación calefacción', 'aire acondicionado'], excludeDefaults: ['online', 'recambios', 'fabricante'] },
+      { name: 'Control de Plagas', includeDefaults: ['control de plagas', 'fumigación', 'desratización'], excludeDefaults: ['online', 'productos'] },
     ],
   },
   {
-    category: '🏥 Profesionales & Salud',
+    category: 'Profesionales & Salud',
     subcategories: [
       { name: 'Clínica Dental', includeDefaults: ['dentista', 'odontología'], excludeDefaults: ['online', 'tour virtual'] },
       { name: 'Fisioterapia', includeDefaults: ['fisioterapeuta', 'rehabilitación'], excludeDefaults: ['online', 'tutorial'] },
@@ -37,7 +39,7 @@ export const SECTORS: SectorCategory[] = [
     ],
   },
   {
-    category: '⚖️ Abogados',
+    category: 'Abogados',
     subcategories: [
       { name: 'Abogado Familia', includeDefaults: ['abogado familia', 'divorcio', 'custodia'], excludeDefaults: ['accidentes', 'penal', 'laboral'] },
       { name: 'Abogado Penal', includeDefaults: ['abogado penal', 'defensa penal'], excludeDefaults: ['familia', 'accidentes', 'laboral'] },
@@ -48,7 +50,7 @@ export const SECTORS: SectorCategory[] = [
     ],
   },
   {
-    category: '🏢 Negocios, Construcción & Retail',
+    category: 'Negocios, Construcción & Retail',
     subcategories: [
       { name: 'Gestoría Contable', includeDefaults: ['gestor contable', 'asesoría fiscal'], excludeDefaults: ['online', 'tutorial'] },
       { name: 'Reformas Integrales', includeDefaults: ['reformas', 'construcción'], excludeDefaults: ['online'] },
@@ -60,7 +62,7 @@ export const SECTORS: SectorCategory[] = [
     ],
   },
   {
-    category: '💄 Estética & Belleza',
+    category: 'Estética & Belleza',
     subcategories: [
       { name: 'Peluquería', includeDefaults: ['peluquería', 'corte cabello'], excludeDefaults: ['online', 'curso', 'academia'] },
       { name: 'Barbería', includeDefaults: ['barbería', 'arreglo barba'], excludeDefaults: ['online', 'academia'] },
@@ -71,16 +73,18 @@ export const SECTORS: SectorCategory[] = [
     ],
   },
   {
-    category: '📚 Educación & Formación',
+    category: 'Educación & Formación',
     subcategories: [
       { name: 'Academia Idiomas', includeDefaults: ['academia idiomas', 'clases inglés'], excludeDefaults: ['online', 'gratis', 'recurso'] },
       { name: 'Autoescuela', includeDefaults: ['autoescuela', 'carnet conducir', 'permiso B'], excludeDefaults: ['online', 'teórica online'] },
       { name: 'Clases Particulares', includeDefaults: ['profesor particular', 'apoyo escolar'], excludeDefaults: ['online', 'plataforma'] },
       { name: 'Formación Profesional', includeDefaults: ['FP', 'ciclo formativo', 'formación profesional'], excludeDefaults: ['distancia', 'online'] },
+      { name: 'Academia de Baile', includeDefaults: ['academia de baile', 'clases de baile'], excludeDefaults: ['online'] },
+      { name: 'Academia de Música', includeDefaults: ['academia de música', 'clases de música', 'clases de canto'], excludeDefaults: ['online'] },
     ],
   },
   {
-    category: '🌊 Turismo & Deportes Acuáticos',
+    category: 'Turismo & Deportes Acuáticos',
     subcategories: [
       { name: 'Alquiler Apartamentos', includeDefaults: ['alquiler apartamento', 'apartamento vacaciones'], excludeDefaults: ['plataforma online'] },
       { name: 'Casas Rurales', includeDefaults: ['casa rural', 'turismo rural'], excludeDefaults: ['plataforma online'] },
@@ -91,16 +95,34 @@ export const SECTORS: SectorCategory[] = [
     ],
   },
   {
-    category: '🍽️ Hostelería & Restauración',
+    category: 'Hostelería & Restauración',
     subcategories: [
       { name: 'Restaurante', includeDefaults: ['restaurante', 'menú del día'], excludeDefaults: ['franquicia', 'cadena', 'solo delivery'] },
       { name: 'Bar & Cafetería', includeDefaults: ['bar', 'cafetería', 'desayunos'], excludeDefaults: ['franquicia', 'chain'] },
       { name: 'Catering', includeDefaults: ['catering', 'catering eventos', 'bodas'], excludeDefaults: ['online', 'industrial'] },
       { name: 'Panadería & Pastelería', includeDefaults: ['panadería', 'pan artesano', 'pastelería'], excludeDefaults: ['franquicia', 'industrial'] },
+      { name: 'Carnicería', includeDefaults: ['carnicería', 'carne fresca'], excludeDefaults: ['online', 'industrial'] },
+      { name: 'Pescadería', includeDefaults: ['pescadería', 'marisquería'], excludeDefaults: ['online', 'mayorista'] },
     ],
   },
   {
-    category: '🍴 Referencia',
+    category: 'Mascotas',
+    subcategories: [
+      { name: 'Peluquería Canina', includeDefaults: ['peluquería canina', 'peluquería para mascotas'], excludeDefaults: ['online', 'curso'] },
+      { name: 'Residencia y Guardería de Mascotas', includeDefaults: ['residencia canina', 'guardería mascotas'], excludeDefaults: ['online'] },
+      { name: 'Tienda de Animales', includeDefaults: ['tienda de animales', 'accesorios mascotas'], excludeDefaults: ['online', 'mayorista'] },
+    ],
+  },
+  {
+    category: 'Bienestar & Deporte',
+    subcategories: [
+      { name: 'Gimnasio', includeDefaults: ['gimnasio', 'centro fitness'], excludeDefaults: ['online', 'cadena', 'franquicia'] },
+      { name: 'Yoga y Pilates', includeDefaults: ['clases de yoga', 'centro pilates'], excludeDefaults: ['online', 'retiro'] },
+      { name: 'Centro de Masajes', includeDefaults: ['centro de masajes', 'masajista'], excludeDefaults: ['online', 'erótico'] },
+    ],
+  },
+  {
+    category: 'Referencia',
     subcategories: [
       { name: 'Restaurante', includeDefaults: ['restaurante'], excludeDefaults: [] },
     ],
