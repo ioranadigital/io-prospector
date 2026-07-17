@@ -479,6 +479,8 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
           leadName={leads.find(l => l.id === sendModal.leadId)?.business_name || ''}
           email={leads.find(l => l.id === sendModal.leadId)?.email || ''}
           phone={leads.find(l => l.id === sendModal.leadId)?.phone || ''}
+          city={leads.find(l => l.id === sendModal.leadId)?.city || ''}
+          category={leads.find(l => l.id === sendModal.leadId)?.category || ''}
           mainCompetitor={leads.find(l => l.id === sendModal.leadId)?.main_competitor || ''}
           missingService={leads.find(l => l.id === sendModal.leadId)?.missing_service || ''}
           seoGap={leads.find(l => l.id === sendModal.leadId)?.seo_gap || ''}

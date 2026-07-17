@@ -5,12 +5,15 @@ import { supabase, type MessageTemplate } from '@/lib/supabase';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 import { X, Loader, Mail, MessageCircle, Copy } from 'lucide-react';
+import { resolveSector } from '@/lib/sector-lookup';
 
 type SendModalProps = {
   leadId: string;
   leadName: string;
   email: string;
   phone: string;
+  city?: string;
+  category?: string;
   mainCompetitor: string;
   missingService: string;
   seoGap: string;
@@ -32,6 +35,8 @@ export function SendModal({
   leadName,
   email,
   phone,
+  city,
+  category,
   mainCompetitor,
   missingService,
   seoGap,
@@ -77,26 +82,30 @@ export function SendModal({
     }
   };
 
+  const buildVariables = () => ({
+    business_name: leadName,
+    company_name: leadName,
+    city: city || 'tu zona',
+    sector: category ? resolveSector(category).sector : 'no especificado',
+    main_competitor: mainCompetitor || 'no especificado',
+    missing_service: missingService || 'no especificado',
+    seo_gap: seoGap || 'no especificado',
+    website: website || 'no disponible',
+    issue_count: brokenLinksCount.toString(),
+    top_issue: seoGap || 'problemas SEO detectados',
+    audit_score: auditScore.toString(),
+    gmb_rating: gmbRating > 0 ? gmbRating.toString() : 'sin evaluar',
+    review_count: reviewCount.toString(),
+    gmb_claimed: gmbClaimed ? 'sí' : 'no',
+    photo_count: photoCount.toString(),
+    gmb_status: gmbClaimed ? `${gmbRating}/5 ⭐ (${reviewCount} reseñas)` : 'No reclamado en Google Maps',
+  });
+
   const generatePreview = (templateId: string, templatesData?: MessageTemplate[]) => {
     const tmpl = (templatesData || templates).find(t => t.id === templateId);
     if (!tmpl) return;
 
-    const variables = {
-      business_name: leadName,
-      company_name: leadName,
-      main_competitor: mainCompetitor || 'no especificado',
-      missing_service: missingService || 'no especificado',
-      seo_gap: seoGap || 'no especificado',
-      website: website || 'no disponible',
-      issue_count: brokenLinksCount.toString(),
-      top_issue: seoGap || 'problemas SEO detectados',
-      audit_score: auditScore.toString(),
-      gmb_rating: gmbRating > 0 ? gmbRating.toString() : 'sin evaluar',
-      review_count: reviewCount.toString(),
-      gmb_claimed: gmbClaimed ? 'sí' : 'no',
-      photo_count: photoCount.toString(),
-      gmb_status: gmbClaimed ? `${gmbRating}/5 ⭐ (${reviewCount} reseñas)` : 'No reclamado en Google Maps',
-    };
+    const variables = buildVariables();
 
     let body = tmpl.body || '';
     Object.entries(variables).forEach(([key, value]) => {
@@ -117,22 +126,7 @@ export function SendModal({
       const selectedTemplateObj = templates.find(t => t.id === selectedTemplate);
       const templateName = selectedTemplateObj?.name || '';
 
-      const variables = {
-        business_name: leadName,
-        company_name: leadName,
-        main_competitor: mainCompetitor || 'no especificado',
-        missing_service: missingService || 'no especificado',
-        seo_gap: seoGap || 'no especificado',
-        website: website || 'no disponible',
-        issue_count: brokenLinksCount.toString(),
-        top_issue: seoGap || 'problemas SEO detectados',
-        audit_score: auditScore.toString(),
-        gmb_rating: gmbRating > 0 ? gmbRating.toString() : 'sin evaluar',
-        review_count: reviewCount.toString(),
-        gmb_claimed: gmbClaimed ? 'sí' : 'no',
-        photo_count: photoCount.toString(),
-        gmb_status: gmbClaimed ? `${gmbRating}/5 ⭐ (${reviewCount} reseñas)` : 'No reclamado en Google Maps',
-      };
+      const variables = buildVariables();
 
       const recipient = type === 'email' ? email : phone;
       const body = {

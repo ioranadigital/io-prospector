@@ -82,13 +82,29 @@ router.post('/templates/render', async (req, res, next) => {
       ? Object.entries(lead.audit_data).filter(([, v]) => v).map(([k]) => `• ${k.replace(/_/g, ' ')}`).join('\n')
       : '';
 
+    // El "sector" (categoría principal amplia) no es una columna de io_pro_leads:
+    // se resuelve buscando la subcategoría (lead.category) en io_pro_sectors
+    // y devolviendo el nombre de su io_pro_categories padre.
+    let sector = 'no especificado';
+    if (lead.category) {
+      const { data: sectorRow } = await supabase
+        .from('io_pro_sectors')
+        .select('name, io_pro_categories(name)')
+        .ilike('name', lead.category)
+        .maybeSingle();
+      sector = sectorRow?.io_pro_categories?.name || 'no especificado';
+    }
+
     const rendered = {
-      subject: (tpl.subject || '').replace(/\{\{(\w+)\}\}/g, (_, key) =>
-        lead[key] ?? cfg[key] ?? issues ?? ''),
+      subject: (tpl.subject || '').replace(/\{\{(\w+)\}\}/g, (_, key) => {
+        if (key === 'sector') return sector;
+        return lead[key] ?? cfg[key] ?? issues ?? '';
+      }),
       body: tpl.body.replace(/\{\{(\w+)\}\}/g, (_, key) => {
         if (key === 'audit_issues') return issues;
         if (key === 'issue_count')  return Object.values(lead.audit_data || {}).filter(Boolean).length;
         if (key === 'top_issue')    return Object.keys(lead.audit_data || {})[0] || '';
+        if (key === 'sector')       return sector;
         return lead[key] ?? cfg[key] ?? `{{${key}}}`;
       }),
     };
