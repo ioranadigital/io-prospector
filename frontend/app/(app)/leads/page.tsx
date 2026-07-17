@@ -11,6 +11,23 @@ import { ActivitiesTable } from '@/components/activities/ActivitiesTable';
 import { resolveSector, getAllSectorNames } from '@/lib/sector-lookup';
 import type { Lead } from '@/lib/supabase';
 
+// Nombres cortos para que las 12 pestañas de sector quepan en una línea sin
+// scroll horizontal — el nombre completo sigue disponible en el title (hover).
+const SECTOR_SHORT_LABELS: Record<string, string> = {
+  'Servicios para el Hogar': 'Hogar',
+  'Profesionales & Salud': 'Salud',
+  'Abogados': 'Abogados',
+  'Negocios, Construcción & Retail': 'Negocios',
+  'Estética & Belleza': 'Estética',
+  'Educación & Formación': 'Educación',
+  'Turismo & Deportes Acuáticos': 'Turismo',
+  'Hostelería & Restauración': 'Hostelería',
+  'Motor, Transporte & Logística': 'Motor',
+  'Industria, Production & B2B': 'Industria',
+  'Mascotas': 'Mascotas',
+  'Bienestar & Deporte': 'Bienestar',
+};
+
 export default function LeadsPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [activeTab, setActiveTab] = useState<'leads' | 'activities'>('leads');
@@ -123,27 +140,45 @@ export default function LeadsPage() {
 
           {/* Pestañas de Sector (categoría principal amplia) */}
           {sectorsPresent.length > 0 && (
-            <div className="flex gap-2 border-b border-zinc-800 overflow-x-auto pb-0 flex-shrink-0">
-              <button
-                onClick={() => { setSelectedSector(null); setSelectedCategory(null); }}
-                className={`px-4 py-2.5 font-semibold border-b-2 transition-colors whitespace-nowrap text-sm ${
-                  selectedSector === null ? 'border-purple-500 text-white' : 'border-transparent text-zinc-400 hover:text-white'
-                }`}
-              >
-                Todos los sectores
-              </button>
-              {sectorsPresent.map(sector => (
+            <>
+              {/* Dropdown — pantallas estrechas, donde ni con nombres cortos caben las pestañas */}
+              <div className="sm:hidden flex-shrink-0">
+                <select
+                  value={selectedSector || ''}
+                  onChange={e => { setSelectedSector(e.target.value || null); setSelectedCategory(null); }}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white"
+                >
+                  <option value="">Todos los sectores</option>
+                  {sectorsPresent.map(sector => (
+                    <option key={sector} value={sector}>{sector}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Pestañas — pantallas normales en adelante, nombres cortos + flex-wrap para no scrollear */}
+              <div className="hidden sm:flex gap-1 flex-wrap border-b border-zinc-800 pb-0 flex-shrink-0">
                 <button
-                  key={sector}
-                  onClick={() => { setSelectedSector(sector); setSelectedCategory(null); }}
-                  className={`px-4 py-2.5 font-semibold border-b-2 transition-colors whitespace-nowrap text-sm ${
-                    selectedSector === sector ? 'border-purple-500 text-white' : 'border-transparent text-zinc-400 hover:text-white'
+                  onClick={() => { setSelectedSector(null); setSelectedCategory(null); }}
+                  className={`px-3 py-2.5 font-semibold border-b-2 transition-colors whitespace-nowrap text-sm ${
+                    selectedSector === null ? 'border-purple-500 text-white' : 'border-transparent text-zinc-400 hover:text-white'
                   }`}
                 >
-                  {sector}
+                  Todos
                 </button>
-              ))}
-            </div>
+                {sectorsPresent.map(sector => (
+                  <button
+                    key={sector}
+                    title={sector}
+                    onClick={() => { setSelectedSector(sector); setSelectedCategory(null); }}
+                    className={`px-3 py-2.5 font-semibold border-b-2 transition-colors whitespace-nowrap text-sm ${
+                      selectedSector === sector ? 'border-purple-500 text-white' : 'border-transparent text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    {SECTOR_SHORT_LABELS[sector] || sector}
+                  </button>
+                ))}
+              </div>
+            </>
           )}
 
           {/* Pestañas de subcategoría (filtradas por el sector elegido arriba) */}
