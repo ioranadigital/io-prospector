@@ -491,6 +491,7 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
           reviewCount={leads.find(l => l.id === sendModal.leadId)?.review_count || 0}
           gmbClaimed={leads.find(l => l.id === sendModal.leadId)?.gmb_claimed || false}
           photoCount={leads.find(l => l.id === sendModal.leadId)?.photo_count || 0}
+          topIssueSeverity={leads.find(l => l.id === sendModal.leadId)?.top_issue_severity || null}
           onClose={() => setSendModal({ ...sendModal, isOpen: false })}
           onSent={() => loadLeads()}
         />

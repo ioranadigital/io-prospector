@@ -7,6 +7,39 @@ import toast from 'react-hot-toast';
 import { X, Loader, Mail, MessageCircle, Copy } from 'lucide-react';
 import { resolveSector } from '@/lib/sector-lookup';
 
+// Etiqueta de score alineada con la ya usada en /audit-resultados y
+// /audit-historico, para que {{audit_label}} coincida con lo que el
+// usuario ve en el resto de la app.
+function getAuditLabel(score: number, hasWebsite: boolean): string {
+  if (!hasWebsite) return 'sin evaluar';
+  if (score >= 80) return 'Excelente';
+  if (score >= 50) return 'Mejorable';
+  return 'Crítico';
+}
+
+function getAuditDomain(website: string): string {
+  if (!website) return 'no disponible';
+  try {
+    const url = /^https?:\/\//i.test(website) ? website : `https://${website}`;
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return website;
+  }
+}
+
+// top_issue_severity ('critical'|'warning'|'success'|'error') es lo único
+// estable que devuelve la auditoría de performance — el texto de top_issue
+// es libre, así que el impacto se deriva de la severidad, no del texto.
+const TOP_ISSUE_IMPACT: Record<string, string> = {
+  critical: 'Esto puede estar impidiendo que tu web aparezca en Google, perdiendo clientes potenciales cada día.',
+  warning: 'Esto ralentiza tu web y perjudica tu posicionamiento, sobre todo en búsquedas desde el móvil.',
+  success: 'No se han detectado problemas críticos en este apartado.',
+  error: 'No hemos podido completar la auditoría de tu web — en sí mismo puede ser señal de un problema técnico.',
+};
+function getTopIssueImpact(severity?: string | null): string {
+  return (severity && TOP_ISSUE_IMPACT[severity]) || 'no evaluado';
+}
+
 type SendModalProps = {
   leadId: string;
   leadName: string;
@@ -24,6 +57,7 @@ type SendModalProps = {
   reviewCount?: number;
   gmbClaimed?: boolean;
   photoCount?: number;
+  topIssueSeverity?: string | null;
   isOpen: boolean;
   onClose: () => void;
   onSent: () => void;
@@ -47,6 +81,7 @@ export function SendModal({
   reviewCount = 0,
   gmbClaimed = false,
   photoCount = 0,
+  topIssueSeverity,
   isOpen,
   onClose,
   onSent,
@@ -99,6 +134,9 @@ export function SendModal({
     gmb_claimed: gmbClaimed ? 'sí' : 'no',
     photo_count: photoCount.toString(),
     gmb_status: gmbClaimed ? `${gmbRating}/5 ⭐ (${reviewCount} reseñas)` : 'No reclamado en Google Maps',
+    audit_domain: getAuditDomain(website),
+    audit_label: getAuditLabel(auditScore, !!website),
+    top_issue_impact: getTopIssueImpact(topIssueSeverity),
   });
 
   const generatePreview = (templateId: string, templatesData?: MessageTemplate[]) => {

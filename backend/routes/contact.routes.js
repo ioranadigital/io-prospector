@@ -7,6 +7,39 @@ import { supabase } from '../config/supabase.js';
 
 const router = Router();
 
+// Etiqueta de score alineada con la ya usada en el frontend
+// (/audit-resultados, /audit-historico, SendModal.tsx) para que
+// {{audit_label}} coincida en toda la app.
+function getAuditLabel(score, hasWebsite) {
+  if (!hasWebsite) return 'sin evaluar';
+  if (score >= 80) return 'Excelente';
+  if (score >= 50) return 'Mejorable';
+  return 'Crítico';
+}
+
+function getAuditDomain(website) {
+  if (!website) return 'no disponible';
+  try {
+    const url = /^https?:\/\//i.test(website) ? website : `https://${website}`;
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return website;
+  }
+}
+
+// top_issue_severity ('critical'|'warning'|'success'|'error') es lo único
+// estable que devuelve la auditoría de performance — el texto de top_issue
+// es libre, así que el impacto se deriva de la severidad, no del texto.
+const TOP_ISSUE_IMPACT = {
+  critical: 'Esto puede estar impidiendo que tu web aparezca en Google, perdiendo clientes potenciales cada día.',
+  warning: 'Esto ralentiza tu web y perjudica tu posicionamiento, sobre todo en búsquedas desde el móvil.',
+  success: 'No se han detectado problemas críticos en este apartado.',
+  error: 'No hemos podido completar la auditoría de tu web — en sí mismo puede ser señal de un problema técnico.',
+};
+function getTopIssueImpact(severity) {
+  return TOP_ISSUE_IMPACT[severity] || 'no evaluado';
+}
+
 // POST /api/contact/email
 router.post('/email', async (req, res, next) => {
   try {
@@ -95,9 +128,16 @@ router.post('/templates/render', async (req, res, next) => {
       sector = sectorRow?.io_pro_categories?.name || 'no especificado';
     }
 
+    const auditDomain = getAuditDomain(lead.website);
+    const auditLabel = getAuditLabel(lead.audit_score, !!lead.website);
+    const topIssueImpact = getTopIssueImpact(lead.top_issue_severity);
+
     const rendered = {
       subject: (tpl.subject || '').replace(/\{\{(\w+)\}\}/g, (_, key) => {
         if (key === 'sector') return sector;
+        if (key === 'audit_domain') return auditDomain;
+        if (key === 'audit_label') return auditLabel;
+        if (key === 'top_issue_impact') return topIssueImpact;
         return lead[key] ?? cfg[key] ?? issues ?? '';
       }),
       body: tpl.body.replace(/\{\{(\w+)\}\}/g, (_, key) => {
@@ -105,6 +145,9 @@ router.post('/templates/render', async (req, res, next) => {
         if (key === 'issue_count')  return Object.values(lead.audit_data || {}).filter(Boolean).length;
         if (key === 'top_issue')    return Object.keys(lead.audit_data || {})[0] || '';
         if (key === 'sector')       return sector;
+        if (key === 'audit_domain') return auditDomain;
+        if (key === 'audit_label') return auditLabel;
+        if (key === 'top_issue_impact') return topIssueImpact;
         return lead[key] ?? cfg[key] ?? `{{${key}}}`;
       }),
     };
