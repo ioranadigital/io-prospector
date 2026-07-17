@@ -129,26 +129,26 @@ router.post('/templates/render', async (req, res, next) => {
       sector = sectorRow?.io_pro_categories?.name || 'no especificado';
     }
 
-    const auditDomain = getAuditDomain(lead.website);
-    const auditLabel = getAuditLabel(lead.audit_score, !!lead.website);
-    const topIssueImpact = getTopIssueImpact(lead.top_issue_severity);
+    // Variables derivadas que no son columnas directas de io_pro_leads —
+    // resueltas una vez y compartidas entre subject y body.
+    const derived = {
+      company_name: lead.business_name,
+      sector,
+      audit_domain: getAuditDomain(lead.website),
+      audit_label: getAuditLabel(lead.audit_score, !!lead.website),
+      top_issue_impact: getTopIssueImpact(lead.top_issue_severity),
+    };
 
     const rendered = {
       subject: (tpl.subject || '').replace(/\{\{(\w+)\}\}/g, (_, key) => {
-        if (key === 'sector') return sector;
-        if (key === 'audit_domain') return auditDomain;
-        if (key === 'audit_label') return auditLabel;
-        if (key === 'top_issue_impact') return topIssueImpact;
+        if (key in derived) return derived[key];
         return lead[key] ?? cfg[key] ?? issues ?? '';
       }),
       body: tpl.body.replace(/\{\{(\w+)\}\}/g, (_, key) => {
         if (key === 'audit_issues') return issues;
         if (key === 'issue_count')  return Object.values(lead.audit_data || {}).filter(Boolean).length;
-        if (key === 'top_issue')    return Object.keys(lead.audit_data || {})[0] || '';
-        if (key === 'sector')       return sector;
-        if (key === 'audit_domain') return auditDomain;
-        if (key === 'audit_label') return auditLabel;
-        if (key === 'top_issue_impact') return topIssueImpact;
+        if (key === 'top_issue')    return lead.top_issue || Object.keys(lead.audit_data || {})[0] || '';
+        if (key in derived) return derived[key];
         return lead[key] ?? cfg[key] ?? `{{${key}}}`;
       }),
     };
