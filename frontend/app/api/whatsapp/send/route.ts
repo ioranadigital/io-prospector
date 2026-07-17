@@ -11,10 +11,10 @@ function normalizePhone(raw: string): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const { leadId, phone, message, templateId, templateName } = await req.json();
+    const { leadId, phone, message, templateId, templateName, contentTemplateSid, variables } = await req.json();
 
-    if (!phone || !message) {
-      return NextResponse.json({ error: 'phone y message son obligatorios' }, { status: 400 });
+    if (!phone || (!message && !contentTemplateSid)) {
+      return NextResponse.json({ error: 'phone y (message o contentTemplateSid) son obligatorios' }, { status: 400 });
     }
 
     const webhookUrl = process.env.N8N_WHATSAPP_WEBHOOK_URL;
@@ -27,10 +27,17 @@ export async function POST(req: NextRequest) {
 
     const to = normalizePhone(phone);
 
+    // contentTemplateSid: plantilla aprobada por Meta, para contacto en frío fuera
+    // de la ventana de 24h. variables mapea {{1}}, {{2}}, ... a valores reales.
     const n8nResponse = await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ to, body: message, leadId }),
+      body: JSON.stringify({
+        to,
+        body: message || '',
+        leadId,
+        ...(contentTemplateSid ? { templateSid: contentTemplateSid, variables } : {}),
+      }),
     });
 
     if (!n8nResponse.ok) {

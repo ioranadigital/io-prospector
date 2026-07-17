@@ -3,8 +3,12 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { Trash2, Plus, Eye, Pencil, Mail, MessageCircle, FolderOpen } from 'lucide-react';
+import { Trash2, Plus, Eye, Pencil, Mail, MessageCircle, FolderOpen, Copy, Settings, X, Check } from 'lucide-react';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+
+const MAX_CHARS: Record<'email' | 'whatsapp', number> = { email: 1500, whatsapp: 1000 };
+
+type TemplateCategory = { id: string; name: string };
 
 type Template = {
   id: string;
@@ -30,6 +34,13 @@ export function TemplatesAdmin() {
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
   const [confirmDelId, setConfirmDelId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  const [categories, setCategories] = useState<TemplateCategory[]>([]);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [editingCategoryName, setEditingCategoryName] = useState('');
+  const [confirmDelCategoryId, setConfirmDelCategoryId] = useState<string | null>(null);
 
   const VARIABLE_DESCRIPTIONS: Record<string, string> = {
     // Datos del negocio (prospección)
@@ -76,8 +87,6 @@ export function TemplatesAdmin() {
     ],
   };
 
-  const CATEGORIES = ['ANALISIS INICIAL', 'PROSPECCIÓN', 'SEGUIMIENTO', 'AUDITORÍA SEO', 'GENERAL'];
-
   const defaultTemplate: Partial<Template> = {
     name: '',
     type: 'email',
@@ -89,6 +98,7 @@ export function TemplatesAdmin() {
 
   useEffect(() => {
     loadTemplates();
+    loadCategories();
   }, []);
 
   const loadTemplates = async () => {
@@ -105,6 +115,103 @@ export function TemplatesAdmin() {
       toast.error('Error al cargar plantillas');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('io_pro_template_categories')
+        .select('*')
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      setCategories(data || []);
+    } catch (error) {
+      console.error(error);
+      toast.error('Error al cargar categorías');
+    }
+  };
+
+  const handleAddCategory = async () => {
+    const name = newCategoryName.trim();
+    if (!name) return;
+    if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+      toast.error('Ya existe una categoría con ese nombre');
+      return;
+    }
+    try {
+      const { error } = await supabase.from('io_pro_template_categories').insert({ name });
+      if (error) throw error;
+      setNewCategoryName('');
+      loadCategories();
+      toast.success('Categoría creada');
+    } catch (error) {
+      console.error(error);
+      toast.error('Error al crear categoría');
+    }
+  };
+
+  const handleRenameCategory = async (cat: TemplateCategory) => {
+    const name = editingCategoryName.trim();
+    if (!name || name === cat.name) {
+      setEditingCategoryId(null);
+      return;
+    }
+    try {
+      const { error } = await supabase.from('io_pro_template_categories').update({ name }).eq('id', cat.id);
+      if (error) throw error;
+      // Las plantillas guardan el nombre de categoría como texto libre, así que
+      // hay que actualizarlas para que sigan apuntando a la categoría renombrada.
+      await supabase.from('io_pro_message_templates').update({ category: name }).eq('category', cat.name);
+      setEditingCategoryId(null);
+      loadCategories();
+      loadTemplates();
+      toast.success('Categoría renombrada');
+    } catch (error) {
+      console.error(error);
+      toast.error('Error al renombrar categoría');
+    }
+  };
+
+  const handleConfirmDeleteCategory = async () => {
+    if (!confirmDelCategoryId) return;
+    const cat = categories.find(c => c.id === confirmDelCategoryId);
+    if (!cat) return;
+    const inUse = templates.filter(t => t.category === cat.name).length;
+    if (inUse > 0) {
+      toast.error(`No se puede borrar: ${inUse} plantilla(s) usan esta categoría`);
+      setConfirmDelCategoryId(null);
+      return;
+    }
+    try {
+      const { error } = await supabase.from('io_pro_template_categories').delete().eq('id', cat.id);
+      if (error) throw error;
+      loadCategories();
+      toast.success('Categoría eliminada');
+    } catch (error) {
+      console.error(error);
+      toast.error('Error al eliminar categoría');
+    } finally {
+      setConfirmDelCategoryId(null);
+    }
+  };
+
+  const handleDuplicate = async (template: Template) => {
+    try {
+      const { id, created_at, updated_at, ...rest } = template;
+      const payload = {
+        ...rest,
+        name: `${template.name} (copia)`,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      const { error } = await supabase.from('io_pro_message_templates').insert([payload]);
+      if (error) throw error;
+      loadTemplates();
+      toast.success('Plantilla duplicada');
+    } catch (error) {
+      console.error(error);
+      toast.error('Error al duplicar plantilla');
     }
   };
 
@@ -259,14 +366,24 @@ export function TemplatesAdmin() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-2">Categoría</label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs text-zinc-500 uppercase tracking-wider font-semibold">Categoría</label>
+                    <button
+                      type="button"
+                      onClick={() => setShowCategoryManager(true)}
+                      className="text-zinc-500 hover:text-blue-400 transition"
+                      title="Gestionar categorías"
+                    >
+                      <Settings size={13} />
+                    </button>
+                  </div>
                   <select
                     value={editing?.category || 'GENERAL'}
                     onChange={e => setEditing({ ...editing!, category: e.target.value })}
                     className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2.5 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
                   >
-                    {CATEGORIES.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.name}>{cat.name}</option>
                     ))}
                   </select>
                 </div>
@@ -342,6 +459,15 @@ export function TemplatesAdmin() {
                       ? "Hola {{business_name}},\n\nHemos detectado {{issue_count}} problemas SEO...\n\nProblema principal: {{top_issue}}\n\nUn saludo."
                       : "Hola {{business_name}} 👋\n\nHemos analizado tu web: {{seo_gap}}\n\nScore: {{audit_score}}/100 🚀"}
                   />
+                  <div className="flex justify-end mt-1">
+                    <span className={`text-xs ${
+                      (editing?.body?.length || 0) > MAX_CHARS[editing?.type || 'email']
+                        ? 'text-red-400 font-semibold'
+                        : 'text-zinc-500'
+                    }`}>
+                      {(editing?.body?.length || 0)} / {MAX_CHARS[editing?.type || 'email']}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Preview en paralelo - solo si activo */}
@@ -411,7 +537,7 @@ export function TemplatesAdmin() {
             <p className="text-zinc-400 text-center py-8">No hay plantillas creadas</p>
           ) : (
             <div className="space-y-8">
-              {CATEGORIES.map(category => {
+              {categories.map(({ name: category }) => {
                 const categoryTemplates = templates.filter(t => {
                   const typeMatch = filterType === 'all' || t.type === filterType;
                   return t.category === category && typeMatch;
@@ -453,6 +579,13 @@ export function TemplatesAdmin() {
                               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                             </button>
                             <button
+                              onClick={() => handleDuplicate(template)}
+                              className="p-1.5 hover:bg-zinc-600/30 text-zinc-400 hover:text-white rounded transition"
+                              title="Duplicar"
+                            >
+                              <Copy size={13} />
+                            </button>
+                            <button
                               onClick={() => setConfirmDelId(template.id)}
                               className="p-1.5 hover:bg-red-600/30 text-red-400 rounded transition"
                               title="Eliminar"
@@ -478,6 +611,98 @@ export function TemplatesAdmin() {
         message="Se eliminará esta plantilla. Esta acción no se puede deshacer."
         onConfirm={handleConfirmDelete}
         onCancel={() => { if (!deleting) setConfirmDelId(null); }}
+      />
+
+      {/* Gestión de categorías */}
+      {showCategoryManager && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4">
+          <div className="bg-zinc-900 border border-zinc-700 rounded-xl w-full max-w-md">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Settings size={15} /> Gestionar categorías
+              </h3>
+              <button
+                onClick={() => { setShowCategoryManager(false); setEditingCategoryId(null); }}
+                className="p-1 hover:bg-zinc-800 rounded text-zinc-400 hover:text-white transition"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-2 max-h-80 overflow-y-auto">
+              {categories.map(cat => (
+                <div key={cat.id} className="flex items-center gap-2 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2">
+                  {editingCategoryId === cat.id ? (
+                    <>
+                      <input
+                        value={editingCategoryName}
+                        onChange={e => setEditingCategoryName(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleRenameCategory(cat); if (e.key === 'Escape') setEditingCategoryId(null); }}
+                        autoFocus
+                        className="flex-1 bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-blue-500"
+                      />
+                      <button onClick={() => handleRenameCategory(cat)} className="p-1 text-green-400 hover:bg-green-600/20 rounded transition" title="Guardar">
+                        <Check size={14} />
+                      </button>
+                      <button onClick={() => setEditingCategoryId(null)} className="p-1 text-zinc-400 hover:bg-zinc-700 rounded transition" title="Cancelar">
+                        <X size={14} />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <span className="flex-1 text-sm text-white truncate">{cat.name}</span>
+                      <span className="text-xs text-zinc-500 flex-shrink-0">
+                        {templates.filter(t => t.category === cat.name).length} plantilla(s)
+                      </span>
+                      <button
+                        onClick={() => { setEditingCategoryId(cat.id); setEditingCategoryName(cat.name); }}
+                        className="p-1 text-blue-400 hover:bg-blue-600/20 rounded transition flex-shrink-0"
+                        title="Renombrar"
+                      >
+                        <Pencil size={13} />
+                      </button>
+                      <button
+                        onClick={() => setConfirmDelCategoryId(cat.id)}
+                        className="p-1 text-red-400 hover:bg-red-600/20 rounded transition flex-shrink-0"
+                        title="Eliminar"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </>
+                  )}
+                </div>
+              ))}
+              {categories.length === 0 && (
+                <p className="text-sm text-zinc-500 text-center py-4">No hay categorías todavía</p>
+              )}
+            </div>
+
+            <div className="px-5 py-4 border-t border-zinc-800 flex gap-2">
+              <input
+                value={newCategoryName}
+                onChange={e => setNewCategoryName(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') handleAddCategory(); }}
+                placeholder="Nueva categoría..."
+                className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-blue-500"
+              />
+              <button
+                onClick={handleAddCategory}
+                disabled={!newCategoryName.trim()}
+                className="flex items-center gap-1.5 px-3 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition"
+              >
+                <Plus size={14} /> Añadir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ConfirmDialog
+        open={confirmDelCategoryId !== null}
+        title="Eliminar categoría"
+        message="Se eliminará esta categoría. Solo se puede borrar si ninguna plantilla la está usando."
+        onConfirm={handleConfirmDeleteCategory}
+        onCancel={() => setConfirmDelCategoryId(null)}
       />
     </div>
   );
