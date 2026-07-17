@@ -8,7 +8,7 @@ import { AddLeadModal } from '@/components/leads/AddLeadModal';
 import { LeadsTable } from '@/components/leads/LeadsTable';
 import { LeadDetailModal } from '@/components/leads/LeadDetailModal';
 import { ActivitiesTable } from '@/components/activities/ActivitiesTable';
-import { resolveSector } from '@/lib/sector-lookup';
+import { resolveSector, getAllSectorNames } from '@/lib/sector-lookup';
 import type { Lead } from '@/lib/supabase';
 
 export default function LeadsPage() {
@@ -21,10 +21,10 @@ export default function LeadsPage() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [addLeadOpen, setAddLeadOpen] = useState(false);
 
-  // Sectores presentes entre las categorías con leads (para no mostrar
-  // pestañas de sectores vacíos), y subcategorías filtradas por el sector
-  // elegido (cascada Sector -> Subcategoría).
-  const sectorsPresent = Array.from(new Set(categories.map(c => resolveSector(c).sector))).sort();
+  // Siempre se muestran los 12 sectores (aunque alguno no tenga leads
+  // todavía), para que la navegación no cambie de forma según los datos.
+  // Las subcategorías sí se filtran por el sector elegido (cascada).
+  const sectorsPresent = getAllSectorNames();
   const visibleCategories = selectedSector
     ? categories.filter(c => resolveSector(c).sector === selectedSector)
     : categories;
