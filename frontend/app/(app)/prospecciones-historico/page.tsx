@@ -1,12 +1,14 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { SECTORS } from '@/lib/sectors';
 import { fixMojibake } from '@/lib/text';
 import toast from 'react-hot-toast';
 import {
-  ChevronDown, ChevronRight, MapPin, Search, Layers, Tag, Clock, Building2, FolderOpen,
+  ChevronDown, ChevronRight, MapPin, Search, Layers, Tag, Clock, Building2, FolderOpen, Trash2,
 } from 'lucide-react';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 type Session = {
   id: string;
@@ -44,13 +46,34 @@ const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
 export default function ProspeccionesHistoricoPage() {
+  const router = useRouter();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | '7days' | '30days'>('all');
   const [expandedCat, setExpandedCat] = useState<Set<string>>(new Set());
   const [expandedSub, setExpandedSub] = useState<Set<string>>(new Set());
+  const [confirmDel, setConfirmDel] = useState<{ id: string; label: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => { loadData(); }, [filter]);
+
+  const handleConfirmDelete = async () => {
+    if (!confirmDel) return;
+    setDeleting(true);
+    try {
+      await supabase.from('io_pro_leads').delete().eq('session_id', confirmDel.id);
+      const { error } = await supabase.from('io_pro_search_sessions').delete().eq('id', confirmDel.id);
+      if (error) throw error;
+      setSessions(prev => prev.filter(s => s.id !== confirmDel.id));
+      toast.success('Prospección eliminada');
+      setConfirmDel(null);
+    } catch (err) {
+      console.error(err);
+      toast.error('Error al eliminar la prospección');
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -196,7 +219,11 @@ export default function ProspeccionesHistoricoPage() {
                           {isSubOpen && (
                             <div className="bg-black/30 divide-y divide-white/5">
                               {list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).map(s => (
-                                <div key={s.id} className="px-6 py-2.5 flex items-center justify-between pl-[4.5rem]">
+                                <div
+                                  key={s.id}
+                                  onClick={() => router.push(`/prospecciones-historico/${s.id}`)}
+                                  className="px-6 py-2.5 flex items-center justify-between pl-[4.5rem] cursor-pointer hover:bg-white/5 transition"
+                                >
                                   <div className="flex items-center gap-2 min-w-0">
                                     <MapPin size={13} className="text-cyan-400 flex-shrink-0" />
                                     <span className="text-sm text-zinc-200">{fixMojibake(s.city) || '—'}</span>
@@ -207,6 +234,13 @@ export default function ProspeccionesHistoricoPage() {
                                     <span className={`font-semibold ${s.status === 'completed' ? 'text-green-400' : s.status === 'error' ? 'text-red-400' : 'text-yellow-400'}`}>
                                       {s.total_found || 0} leads
                                     </span>
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); setConfirmDel({ id: s.id, label: `${fixMojibake(s.query) || s.category || 'prospección'} — ${fixMojibake(s.city) || ''}` }); }}
+                                      className="p-1 hover:bg-red-900/30 rounded transition"
+                                      title="Eliminar prospección"
+                                    >
+                                      <Trash2 size={13} className="text-red-400" />
+                                    </button>
                                   </div>
                                 </div>
                               ))}
@@ -227,6 +261,15 @@ export default function ProspeccionesHistoricoPage() {
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmDel !== null}
+        loading={deleting}
+        title="Eliminar prospección"
+        message={`Se eliminará "${confirmDel?.label}" y todos sus leads asociados. Esta acción no se puede deshacer.`}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => { if (!deleting) setConfirmDel(null); }}
+      />
     </div>
   );
 }

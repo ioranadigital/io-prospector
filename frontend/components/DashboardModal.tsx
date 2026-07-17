@@ -1,6 +1,7 @@
 'use client';
 
 import { X, BarChart3, Mail, Phone, Calendar, Download } from 'lucide-react';
+import { api } from '@/lib/api';
 
 interface DashboardModalProps {
   prospectionId: string | null;
@@ -135,14 +136,14 @@ export function DashboardModal({ prospectionId, isOpen, onClose, leads }: Dashbo
           {/* Export Button */}
           <div className="flex gap-3">
             <a
-              href={`http://localhost:4000/api/scraping/download/${prospectionId}/csv`}
+              href={api.downloadFile(prospectionId, 'csv')}
               download
               className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold text-center"
             >
               <Download size={15} className="inline mr-1" />Descargar CSV
             </a>
             <a
-              href={`http://localhost:4000/api/scraping/view/${prospectionId}/dashboard`}
+              href={`/prospecciones-historico/${prospectionId}`}
               target="_blank"
               rel="noopener"
               className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded font-semibold text-center"

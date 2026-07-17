@@ -715,7 +715,7 @@ export default function ProspectorPage() {
                       <Download size={12} />
                     </a>
                     <a
-                      href={`http://localhost:4000/api/scraping/view/${h.id}/dashboard`}
+                      href={`/prospecciones-historico/${h.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs px-2 py-1 bg-purple-900 hover:bg-purple-800 text-purple-200 rounded transition-colors"
