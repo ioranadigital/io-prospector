@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { SECTORS } from '@/lib/sectors';
 import { fixMojibake } from '@/lib/text';
+import { resolveSector } from '@/lib/sector-lookup';
 import toast from 'react-hot-toast';
 import {
   ChevronDown, ChevronRight, MapPin, Search, Layers, Tag, Clock, Building2, FolderOpen, Trash2,
@@ -22,14 +22,6 @@ type Session = {
 
 // ── Normalización tolerante (pliega acentos, mojibake, espacios, emojis) ──
 const norm = (s: string) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-
-// subcat normalizada -> { category (padre con emoji), subName (limpio) }
-const SUBCAT_INFO = (() => {
-  const m = new Map<string, { category: string; subName: string }>();
-  SECTORS.forEach(c => c.subcategories.forEach(s => m.set(norm(s.name), { category: c.category, subName: s.name })));
-  return m;
-})();
-const OTHER_CAT = 'Otros / personalizadas';
 
 const CAT_COLORS = [
   'bg-blue-950/20 border-blue-800/40',
@@ -96,11 +88,9 @@ export default function ProspeccionesHistoricoPage() {
 
   // ── Agrupar: Categoría -> Subcategoría -> sesiones ──
   const resolve = (s: Session) => {
-    const info = SUBCAT_INFO.get(norm(fixMojibake(s.category)));
-    return {
-      category: info?.category || OTHER_CAT,
-      subName: info?.subName || (fixMojibake(s.category) || fixMojibake(s.query) || 'Sin clasificar'),
-    };
+    const category = fixMojibake(s.category);
+    const { sector, subName } = resolveSector(category || fixMojibake(s.query));
+    return { category: sector, subName };
   };
 
   const grouped = new Map<string, Map<string, Session[]>>();

@@ -36,6 +36,7 @@ export default function ProspeccionDetallePage() {
   const [selectedLeads, setSelectedLeads] = useState<any[]>([]);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [whatsappModalOpen, setWhatsappModalOpen] = useState(false);
+  const [sendingToLeads, setSendingToLeads] = useState(false);
 
   useEffect(() => { if (sessionId) loadData(); }, [sessionId]);
 
@@ -57,7 +58,40 @@ export default function ProspeccionDetallePage() {
     }
   };
 
-  const handleModalSuccess = () => loadData();
+  // Promociona candidatos a lead activo (deja de estar "solo en el histórico"
+  // y pasa a aparecer en /leads para hacerles seguimiento).
+  const promoteToActive = async (ids: string[]) => {
+    if (ids.length === 0) return;
+    try {
+      await supabase.from('io_pro_leads').update({ status: 'active' }).in('id', ids);
+    } catch (err) {
+      console.error('Error promoviendo a Leads:', err);
+    }
+  };
+
+  // Contactar a alguien ya es la señal de que es un lead real, no ruido de
+  // scraping — se promueve automáticamente al enviar email o WhatsApp.
+  const handleModalSuccess = async () => {
+    const ids = selectedLeads.map(l => l.id).filter(Boolean);
+    await promoteToActive(ids);
+    loadData();
+  };
+
+  // Promoción manual, para marcar un candidato como lead real sin tener que
+  // contactarlo todavía (ej. quieres investigarlo más antes).
+  const handleSendToLeads = async (ids: string[]) => {
+    if (ids.length === 0) return;
+    setSendingToLeads(true);
+    try {
+      await promoteToActive(ids);
+      toast.success(`${ids.length} lead${ids.length !== 1 ? 's' : ''} enviado${ids.length !== 1 ? 's' : ''} a Leads`);
+      loadData();
+    } catch (err: any) {
+      toast.error(err.message || 'Error al enviar a Leads');
+    } finally {
+      setSendingToLeads(false);
+    }
+  };
 
   if (loading) return <div className="text-zinc-500 text-center py-24">Cargando prospección...</div>;
 
@@ -109,6 +143,9 @@ export default function ProspeccionDetallePage() {
           onOpenDetail={(lead) => setDetailLead(lead)}
           onSendEmail={(lead) => { setSelectedLeads([lead]); setEmailModalOpen(true); }}
           loading={false}
+          selectable
+          onSendToLeads={handleSendToLeads}
+          sending={sendingToLeads}
         />
       </div>
 

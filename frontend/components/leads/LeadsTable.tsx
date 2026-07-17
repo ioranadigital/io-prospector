@@ -9,6 +9,7 @@ import { LeadDetailModal } from './LeadDetailModal';
 import { TierSummaryModal } from './TierSummaryModal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { fixMojibake } from '@/lib/text';
+import { resolveSector } from '@/lib/sector-lookup';
 
 type SendModalState = {
   isOpen: boolean;
@@ -27,7 +28,7 @@ type LeadActivity = {
   };
 };
 
-export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, source = 'all' }: { refreshTrigger: number; filterCategory: string | null; onSelectLead?: (lead: Lead) => void; source?: 'all' | 'prospector' | 'audit' | 'manual' }) {
+export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSelectLead, source = 'all' }: { refreshTrigger: number; filterCategory: string | null; filterSector?: string | null; onSelectLead?: (lead: Lead) => void; source?: 'all' | 'prospector' | 'audit' | 'manual' }) {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [allLeads, setAllLeads] = useState<Lead[]>([]);
   const [activities, setActivities] = useState<LeadActivity[]>([]);
@@ -54,9 +55,10 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
     else if (source === 'manual') list = list.filter(l => (l as any).source === 'manual');
     else if (source === 'audit') list = list.filter(l => (l as any).source !== 'prospector' && (l as any).source !== 'manual');
     if (filterCategory !== null) list = list.filter(lead => lead.category === filterCategory);
+    if (filterSector) list = list.filter(lead => resolveSector(lead.category).sector === filterSector);
     setLeads(list);
     setSelected(new Set()); // Limpiar selección
-  }, [filterCategory, allLeads, source]);
+  }, [filterCategory, filterSector, allLeads, source]);
 
   const loadLeads = async () => {
     try {
@@ -270,6 +272,7 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
                 </button>
               </th>
               <th className="px-3 py-3 text-left font-semibold">Negocio</th>
+              <th className="px-3 py-3 text-left font-semibold">Sector</th>
               <th className="px-3 py-3 text-left font-semibold"><Mail size={13} className="inline mr-1" />Email</th>
               <th className="px-3 py-3 text-left font-semibold"><MessageCircle size={13} className="inline mr-1" />Teléfono</th>
               <th className="px-3 py-3 text-left font-semibold">Rating SEO</th>
@@ -309,6 +312,10 @@ export function LeadsTable({ refreshTrigger, filterCategory, onSelectLead, sourc
                         {lead.website}
                       </a>
                     )}
+                  </td>
+                  <td className="px-3 py-3 text-xs max-w-[10rem]">
+                    <div className="truncate text-zinc-300" title={resolveSector(lead.category).sector}>{resolveSector(lead.category).sector}</div>
+                    <div className="truncate text-zinc-500" title={lead.category || ''}>{lead.category || '—'}</div>
                   </td>
                   <td className="px-3 py-3 text-xs">
                     {lead.email ? (

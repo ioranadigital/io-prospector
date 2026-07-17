@@ -8,6 +8,7 @@ import { AddLeadModal } from '@/components/leads/AddLeadModal';
 import { LeadsTable } from '@/components/leads/LeadsTable';
 import { LeadDetailModal } from '@/components/leads/LeadDetailModal';
 import { ActivitiesTable } from '@/components/activities/ActivitiesTable';
+import { resolveSector } from '@/lib/sector-lookup';
 import type { Lead } from '@/lib/supabase';
 
 export default function LeadsPage() {
@@ -16,8 +17,17 @@ export default function LeadsPage() {
   const [source, setSource] = useState<'all' | 'prospector' | 'audit' | 'manual'>('all');
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedSector, setSelectedSector] = useState<string | null>(null);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [addLeadOpen, setAddLeadOpen] = useState(false);
+
+  // Sectores presentes entre las categorías con leads (para no mostrar
+  // pestañas de sectores vacíos), y subcategorías filtradas por el sector
+  // elegido (cascada Sector -> Subcategoría).
+  const sectorsPresent = Array.from(new Set(categories.map(c => resolveSector(c).sector))).sort();
+  const visibleCategories = selectedSector
+    ? categories.filter(c => resolveSector(c).sector === selectedSector)
+    : categories;
 
   useEffect(() => {
     loadCategories();
@@ -111,9 +121,42 @@ export default function LeadsPage() {
             ))}
           </div>
 
-          {/* Pestañas de categorías */}
+          {/* Pestañas de Sector (categoría principal amplia) */}
+          {sectorsPresent.length > 0 && (
+            <div className="flex gap-2 border-b border-zinc-800 overflow-x-auto pb-0 flex-shrink-0">
+              <button
+                onClick={() => { setSelectedSector(null); setSelectedCategory(null); }}
+                className={`px-4 py-2.5 font-semibold border-b-2 transition-colors whitespace-nowrap text-sm ${
+                  selectedSector === null ? 'border-purple-500 text-white' : 'border-transparent text-zinc-400 hover:text-white'
+                }`}
+              >
+                Todos los sectores
+              </button>
+              {sectorsPresent.map(sector => (
+                <button
+                  key={sector}
+                  onClick={() => { setSelectedSector(sector); setSelectedCategory(null); }}
+                  className={`px-4 py-2.5 font-semibold border-b-2 transition-colors whitespace-nowrap text-sm ${
+                    selectedSector === sector ? 'border-purple-500 text-white' : 'border-transparent text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  {sector}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Pestañas de subcategoría (filtradas por el sector elegido arriba) */}
           <div className="flex gap-2 border-b border-zinc-800 overflow-x-auto pb-0 flex-shrink-0">
-            {categories.map(category => (
+            <button
+              onClick={() => setSelectedCategory(null)}
+              className={`px-4 py-3 font-medium border-b-2 transition-colors whitespace-nowrap text-sm ${
+                selectedCategory === null ? 'border-blue-500 text-white' : 'border-transparent text-zinc-400 hover:text-white'
+              }`}
+            >
+              Todas
+            </button>
+            {visibleCategories.map(category => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
@@ -138,6 +181,7 @@ export default function LeadsPage() {
               <LeadsTable
                 refreshTrigger={refreshTrigger}
                 filterCategory={selectedCategory}
+                filterSector={selectedSector}
                 source={source}
                 onSelectLead={(lead) => {
                   setSelectedLead(lead);
