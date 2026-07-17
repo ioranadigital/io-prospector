@@ -123,7 +123,7 @@ export function TemplatesAdmin() {
       const { data, error } = await supabase
         .from('io_pro_template_categories')
         .select('*')
-        .order('created_at', { ascending: true });
+        .order('name', { ascending: true });
       if (error) throw error;
       setCategories(data || []);
     } catch (error) {
