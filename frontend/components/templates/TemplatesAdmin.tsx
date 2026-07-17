@@ -3,10 +3,29 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { Trash2, Plus, Eye, Pencil, Mail, MessageCircle, FolderOpen, Copy, Settings, X, Check } from 'lucide-react';
+import { Trash2, Plus, Eye, Pencil, Mail, MessageCircle, FolderOpen, Copy, Settings, X, Check, Smile, Type } from 'lucide-react';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 const MAX_CHARS: Record<'email' | 'whatsapp', number> = { email: 1500, whatsapp: 1000 };
+
+// Emojis habituales en mensajes de prospección/venta — la lista completa de
+// unicode sería enorme e inútil aquí, esta cubre los casos reales de uso.
+const EMOJI_PICKER_LIST = [
+  '👋', '🙌', '👍', '🤝', '😊', '🙏', '💪', '✨',
+  '🚀', '🔥', '⭐', '🌟', '🏆', '🎯', '📈', '📊',
+  '💡', '✅', '❌', '⚠️', '🔍', '📍', '⏰', '📅',
+  '📞', '📧', '💬', '📱', '💰', '🎉', '👏', '⚡',
+];
+
+// Formato estilo WhatsApp (*negrita*, _cursiva_, ~tachado~, ```monoespaciado```)
+// — es la sintaxis que WhatsApp renderiza de verdad; en email se inserta igual
+// mientras el envío sea texto plano/HTML simple, pero puede no mostrarse en negrita.
+const MARKDOWN_FORMATS: { label: string; before: string; after: string; placeholder: string }[] = [
+  { label: 'Negrita', before: '*', after: '*', placeholder: 'texto' },
+  { label: 'Cursiva', before: '_', after: '_', placeholder: 'texto' },
+  { label: 'Tachado', before: '~', after: '~', placeholder: 'texto' },
+  { label: 'Monoespaciado', before: '```', after: '```', placeholder: 'texto' },
+];
 
 // Orden numérico por el prefijo del nombre ("1 PRIMER CONTACTO", "1_Sin Web...",
 // "2 SEGUNDO CONTACTO"...) en vez de alfabético — con orden alfabético "10 X"
@@ -51,6 +70,8 @@ export function TemplatesAdmin() {
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
   const [confirmDelId, setConfirmDelId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [showEmojiMenu, setShowEmojiMenu] = useState(false);
+  const [showFormatMenu, setShowFormatMenu] = useState(false);
 
   const [categories, setCategories] = useState<TemplateCategory[]>([]);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
@@ -236,6 +257,42 @@ export function TemplatesAdmin() {
       console.error(error);
       toast.error('Error al duplicar plantilla');
     }
+  };
+
+  // Inserta texto en la posición del cursor del textarea del cuerpo (usado
+  // por el picker de emojis).
+  const insertAtCursor = (insertText: string) => {
+    const textarea = document.getElementById('template-body') as HTMLTextAreaElement | null;
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = editing?.body || '';
+    const newBody = text.substring(0, start) + insertText + text.substring(end);
+    setEditing({ ...editing!, body: newBody });
+    setTimeout(() => {
+      textarea.focus();
+      const pos = start + insertText.length;
+      textarea.setSelectionRange(pos, pos);
+    }, 0);
+  };
+
+  // Envuelve el texto seleccionado con los marcadores de formato (o inserta
+  // un placeholder si no hay selección) — usado por el menú de formato .md.
+  const wrapSelection = (before: string, after: string, placeholder: string) => {
+    const textarea = document.getElementById('template-body') as HTMLTextAreaElement | null;
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = editing?.body || '';
+    const selected = text.substring(start, end) || placeholder;
+    const newBody = text.substring(0, start) + before + selected + after + text.substring(end);
+    setEditing({ ...editing!, body: newBody });
+    setTimeout(() => {
+      textarea.focus();
+      const selStart = start + before.length;
+      const selEnd = selStart + selected.length;
+      textarea.setSelectionRange(selStart, selEnd);
+    }, 0);
   };
 
   const handleSave = async () => {
@@ -472,7 +529,69 @@ export function TemplatesAdmin() {
 
                 {/* Textarea - siempre visible */}
                 <div className="flex flex-col min-h-0 flex-1">
-                  <label className="block text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-2">Cuerpo del Mensaje</label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs text-zinc-500 uppercase tracking-wider font-semibold">Cuerpo del Mensaje</label>
+                    <div className="flex items-center gap-1.5">
+                      {/* Emojis — desplegable, no ocupa espacio hasta que se abre */}
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => { setShowEmojiMenu(v => !v); setShowFormatMenu(false); }}
+                          className="p-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-400 hover:text-white transition"
+                          title="Insertar emoji"
+                        >
+                          <Smile size={14} />
+                        </button>
+                        {showEmojiMenu && (
+                          <>
+                            <div className="fixed inset-0 z-40" onClick={() => setShowEmojiMenu(false)} />
+                            <div className="absolute right-0 top-full mt-1 z-50 w-64 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl p-2 grid grid-cols-8 gap-0.5">
+                              {EMOJI_PICKER_LIST.map(emoji => (
+                                <button
+                                  key={emoji}
+                                  type="button"
+                                  onClick={() => { insertAtCursor(emoji); setShowEmojiMenu(false); }}
+                                  className="text-base hover:bg-zinc-700 rounded p-1 transition"
+                                >
+                                  {emoji}
+                                </button>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Formato .md — desplegable, mismo criterio */}
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => { setShowFormatMenu(v => !v); setShowEmojiMenu(false); }}
+                          className="p-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-400 hover:text-white transition"
+                          title="Formato de texto"
+                        >
+                          <Type size={14} />
+                        </button>
+                        {showFormatMenu && (
+                          <>
+                            <div className="fixed inset-0 z-40" onClick={() => setShowFormatMenu(false)} />
+                            <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl p-1.5">
+                              {MARKDOWN_FORMATS.map(f => (
+                                <button
+                                  key={f.label}
+                                  type="button"
+                                  onClick={() => { wrapSelection(f.before, f.after, f.placeholder); setShowFormatMenu(false); }}
+                                  className="w-full flex items-center justify-between px-2 py-1.5 hover:bg-zinc-700 rounded text-sm text-zinc-200 transition"
+                                >
+                                  <span>{f.label}</span>
+                                  <span className="text-xs text-zinc-500 font-mono">{f.before}{f.placeholder}{f.after}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                   <textarea
                     id="template-body"
                     value={editing?.body || ''}
