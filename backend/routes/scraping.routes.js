@@ -26,8 +26,8 @@ const ProspectionSchema = z.object({
   provincia: emptyToUndef(z.string().min(1).max(50).optional()),
   municipio: emptyToUndef(z.string().min(1).max(80).optional()),
   category: emptyToUndef(z.string().min(2).max(80).optional()),
-  pagesFrom: z.coerce.number().int().min(2).max(10).default(2),
-  pagesTo: z.coerce.number().int().min(2).max(15).default(4),
+  pagesFrom: z.coerce.number().int().min(1).max(10).default(2),
+  pagesTo: z.coerce.number().int().min(1).max(15).default(4),
 });
 
 // POST /api/scraping/start — Inicia prospección completa (scraping + dashboard + emails)

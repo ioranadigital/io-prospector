@@ -496,18 +496,22 @@ export default function ProspectorPage() {
         <div>
           <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-2">
             Páginas de Google: {form.pagesFrom} → {form.pagesTo}
-            <span className="normal-case font-normal text-zinc-600 ml-1">(siempre salta la pág. 1)</span>
           </label>
+          {form.pagesFrom === 1 && (
+            <p className="text-xs text-amber-400/80 mb-2">
+              Incluyendo la página 1: más volumen, pero mezcla negocios ya bien posicionados (útil para propuestas de conversión/CRO, no solo "sin web").
+            </p>
+          )}
           <div className="flex items-center gap-6">
             <div className="flex-1">
               <p className="text-xs text-zinc-600 mb-1">Desde página</p>
-              <input type="range" min="2" max="10" value={form.pagesFrom}
+              <input type="range" min="1" max="10" value={form.pagesFrom}
                 onChange={e => setForm(f => ({ ...f, pagesFrom: Number(e.target.value) }))} className="w-full" />
               <p className="text-xs text-zinc-400 mt-1">Página {form.pagesFrom}</p>
             </div>
             <div className="flex-1">
               <p className="text-xs text-zinc-600 mb-1">Hasta página</p>
-              <input type="range" min="2" max="15" value={form.pagesTo}
+              <input type="range" min="1" max="15" value={form.pagesTo}
                 onChange={e => setForm(f => ({ ...f, pagesTo: Number(e.target.value) }))} className="w-full" />
               <p className="text-xs text-zinc-400 mt-1">Página {form.pagesTo}</p>
             </div>

@@ -11,28 +11,90 @@ import { fetchWithRetry } from '../utils/fetch-with-retry.js';
 import { supabase } from '../config/supabase.js';
 import { logger } from '../utils/logger.js';
 
-// Dominios a saltar — directorios/redes sociales/plataformas/institucionales
-const SKIP_DOMAINS = [
-  'google.com', 'facebook.com', 'yelp.com', 'tripadvisor.com',
-  'instagram.com', 'twitter.com', 'x.com', 'linkedin.com', 'youtube.com',
-  'wikipedia.org', 'amazon.com', 'maps.google.com', 'reddit.com',
-  'bing.com', 'yahoo.com', 'booking.com', 'idealista.com', 'fotocasa.es',
-  'infojobs.net', 'indeed.com', 'paginas-amarillas.com', 'paginasamarillas.es',
-  'habitaclia.com', 'wallapop.com', 'milanuncios.com',
-  // Directorios institucionales/sectoriales — no son la web del negocio
-  'einforma.com', 'empresite.com', 'axesor.es', 'infoisinfo.es',
-  'guiadeltrabajador.com', 'cylex.es', 'europages.es',
+// HARD_DROP: nunca son un prospecto real (redes sociales, institucional, grandes
+// cadenas nacionales) — la fila se descarta por completo, no se guarda ni como
+// "negocio sin web".
+const HARD_DROP_DOMAINS = [
+  'facebook.com', 'instagram.com', 'twitter.com', 'x.com', 'linkedin.com',
+  'youtube.com', 'tiktok.com', 'pinterest.com',
   '.gob.es', '.gub.es', 'sede.', 'ayuntamiento',
+  'leroymerlin.es', 'elcorteingles.es', 'ikea.com', 'mediamarkt.es',
+  'carrefour.es', 'decathlon.es', 'worten.es', 'amazon.com', 'amazon.es',
+  'google.com', 'maps.google.com', 'bing.com', 'yahoo.com', 'wikipedia.org', 'reddit.com',
 ];
 
-// Variaciones de query por página para ampliar resultados y evitar duplicados
-const QUERY_VARIATIONS = [
-  (q, c) => `${q} ${c}`,
-  (q, c) => `${q} en ${c}`,
-  (q, c) => `empresa ${q} ${c}`,
-  (q, c) => `servicio ${q} ${c}`,
-  (q, c) => `${q} profesional ${c}`,
+// SOFT_SKIP: directorios/guías de empresas — no es la web real del negocio, pero
+// la entidad detrás puede seguir siendo un prospecto válido ("no tiene web
+// propia" es en sí mismo un ángulo de venta ya usado en el icebreaker).
+const SOFT_SKIP_DOMAINS = [
+  'yelp.com', 'tripadvisor.com', 'booking.com', 'idealista.com', 'fotocasa.es',
+  'infojobs.net', 'indeed.com', 'paginas-amarillas.com', 'paginasamarillas.es',
+  'qdq.com', 'qdq.es', 'habitaclia.com', 'wallapop.com', 'milanuncios.com',
+  'einforma.com', 'empresite.com', 'axesor.es', 'infoisinfo.es',
+  'guiadeltrabajador.com', 'cylex.es', 'europages.es',
 ];
+
+// Dominios excluidos directamente en la query de Google (-site:) — el filtro
+// más efectivo es no dejar que Google los devuelva, en vez de descartarlos
+// después de recibirlos. Subconjunto de HARD_DROP/SOFT_SKIP más frecuentes.
+const SITE_EXCLUSIONS = [
+  'paginasamarillas.es', 'paginas-amarillas.com', 'qdq.com', 'qdq.es',
+  'cylex.es', 'europages.es', 'einforma.com', 'empresite.com',
+  'milanuncios.com', 'wallapop.com',
+  'facebook.com', 'instagram.com', 'youtube.com', 'linkedin.com',
+  'leroymerlin.es', 'elcorteingles.es', 'ikea.com',
+];
+
+function buildSiteExclusionClause() {
+  return SITE_EXCLUSIONS.map(d => `-site:${d}`).join(' ');
+}
+
+// Modificadores de intención comercial local por tipo de categoría — se
+// combinan en las variaciones de query para que Google priorice negocios
+// reales ("empresa de fontanería en Gijón") sobre listados genéricos.
+const INTENT_MODIFIERS_BY_KEYWORD = [
+  { match: /hogar|construcci[oó]n|reformas|fontaner|electric|carpinter|cerrajer|jardin/i,
+    modifiers: ['empresa de', 'servicio de', 'instaladores de'] },
+  { match: /salud|cl[ií]nica|dentista|fisioterap|m[eé]dic|veterinari|psicolog/i,
+    modifiers: ['clínica de', 'consulta de', 'centro de'] },
+  { match: /abogad|legal|jur[ií]dic/i,
+    modifiers: ['despacho de', 'bufete de', 'abogados de'] },
+  { match: /belleza|est[eé]tica|peluquer|barber|manicura|depilaci[oó]n/i,
+    modifiers: ['salón de', 'centro de', 'estudio de'] },
+  { match: /retail|negocio|comercio|tienda|taller|mec[aá]nico|inmobiliari/i,
+    modifiers: ['tienda de', 'taller de', 'comercio de'] },
+  { match: /hosteler[ií]a|restaurant|bar|catering|panader/i,
+    modifiers: ['restaurante de', 'servicio de', 'especialistas en'] },
+  { match: /educaci[oó]n|formaci[oó]n|academia|autoescuela/i,
+    modifiers: ['academia de', 'centro de', 'escuela de'] },
+  { match: /turismo|surf|alquiler|vacacion/i,
+    modifiers: ['empresa de', 'servicio de', 'alquiler de'] },
+];
+const DEFAULT_INTENT_MODIFIERS = ['empresa de', 'servicio de', 'profesional de'];
+
+function getIntentModifiers(category) {
+  if (!category) return DEFAULT_INTENT_MODIFIERS;
+  const found = INTENT_MODIFIERS_BY_KEYWORD.find(({ match }) => match.test(category));
+  return found ? found.modifiers : DEFAULT_INTENT_MODIFIERS;
+}
+
+// Variaciones de query por página para ampliar resultados y evitar duplicados,
+// con modificador de intención comercial adaptado a la categoría.
+function buildQueryVariations(category) {
+  const [mod1, mod2, mod3] = getIntentModifiers(category);
+  return [
+    (q, c) => `${q} ${c}`,
+    (q, c) => `${q} en ${c}`,
+    (q, c) => `${mod1} ${q} ${c}`,
+    (q, c) => `${mod2} ${q} ${c}`,
+    (q, c) => `${q} ${mod3} ${c}`,
+  ];
+}
+
+// Si una búsqueda en el municipio devuelve muy pocos resultados, es probable
+// que sea demasiado pequeño para que Google tenga inventario local suficiente
+// — se amplía a la provincia para esa página.
+const MIN_RESULTS_BEFORE_WIDENING = 3;
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -62,11 +124,11 @@ function looksLikeDirectoryListing(url) {
 
 // Competidor principal: reutiliza el SERP ya obtenido (coste de red cero) — el
 // resultado mejor posicionado de la misma página que no sea el propio lead ni
-// un dominio de SKIP_DOMAINS.
+// un dominio de HARD_DROP_DOMAINS/SOFT_SKIP_DOMAINS.
 function pickMainCompetitor(pageResults, currentResult) {
   const rival = (pageResults || []).find(r =>
     r.position !== currentResult.position &&
-    r.url && !SKIP_DOMAINS.some(d => r.url.includes(d))
+    r.url && !HARD_DROP_DOMAINS.some(d => r.url.includes(d)) && !SOFT_SKIP_DOMAINS.some(d => r.url.includes(d))
   );
   if (!rival) return null;
   return rival.title.replace(/\s*[-|–]\s*.*$/, '').trim() || null;
@@ -91,10 +153,11 @@ async function isDuplicate(url, sessionId) {
   }
 }
 
-export async function startProspectionV2({ query, city, category, pagesFrom = 2, pagesTo = 4, sessionId }) {
+export async function startProspectionV2({ query, city, provincia, category, pagesFrom = 2, pagesTo = 4, sessionId }) {
   const leads = [];
   const seenDomains = new Set(); // dedup dentro de la misma sesión
   const startTime = Date.now();
+  const queryVariations = buildQueryVariations(category);
 
   logger.info(`🚀 Iniciando prospección v3: "${query}" en ${city} (pág ${pagesFrom}-${pagesTo})`);
   logger.info(`   Google Places API: ${process.env.GOOGLE_PLACES_API_KEY ? '✅ activa' : '⚠️ no configurada (usando scraper)'}`);
@@ -102,12 +165,23 @@ export async function startProspectionV2({ query, city, category, pagesFrom = 2,
   try {
     for (let page = pagesFrom; page <= pagesTo; page++) {
       // Rotar variación de query por página para diversificar resultados
-      const variationFn = QUERY_VARIATIONS[(page - pagesFrom) % QUERY_VARIATIONS.length];
+      const variationFn = queryVariations[(page - pagesFrom) % queryVariations.length];
       const queryVariant = variationFn(query, city);
 
       logger.info(`📖 Buscando página ${page} con query: "${queryVariant}"`);
-      const results = await fetchSerpPage({ query: queryVariant, city, page });
+      let results = await fetchSerpPage({ query: queryVariant, city, page });
       logger.info(`   Resultados: ${results.length}`);
+
+      // Municipio probablemente demasiado pequeño para inventario local de
+      // Google — ampliar a la provincia para esta página.
+      if (results.length < MIN_RESULTS_BEFORE_WIDENING && provincia && provincia !== city) {
+        logger.info(`   🔎 Pocos resultados en "${city}", ampliando a provincia "${provincia}"`);
+        const widerResults = await fetchSerpPage({ query: variationFn(query, provincia), city: provincia, page });
+        if (widerResults.length > results.length) {
+          results = widerResults;
+          logger.info(`   Resultados tras ampliar: ${results.length}`);
+        }
+      }
 
       if (results.length === 0) {
         logger.warn(`   ⚠️  Sin resultados en página ${page}`);
@@ -172,7 +246,7 @@ export async function startProspectionV2({ query, city, category, pagesFrom = 2,
 async function fetchSerpPage({ query, city, page }) {
   const start = (page - 1) * 10;
   const url = new URL('https://serpapi.com/search.json');
-  url.searchParams.set('q', query);
+  url.searchParams.set('q', `${query} ${buildSiteExclusionClause()}`);
   url.searchParams.set('hl', 'es');
   url.searchParams.set('gl', 'es');
   // Parámetro location mejora resultados locales vs. mezclar en el texto
@@ -205,8 +279,15 @@ async function fetchSerpPage({ query, city, page }) {
 }
 
 async function processResult({ result, city, category, pageResults }) {
+  // HARD_DROP: ni siquiera se guarda la fila — redes sociales, institucional
+  // o grandes cadenas nunca son un prospecto real.
+  if (result.url && HARD_DROP_DOMAINS.some(d => result.url.includes(d))) {
+    logger.debug(`   🚫 Descartado (hard drop): ${result.url}`);
+    return null;
+  }
+
   const isSkipped = !result.url
-    || SKIP_DOMAINS.some(d => result.url.includes(d))
+    || SOFT_SKIP_DOMAINS.some(d => result.url.includes(d))
     || looksLikeDirectoryListing(result.url);
 
   const lead = {
