@@ -107,17 +107,27 @@ function getIntentModifiers(category) {
   return found ? found.modifiers : DEFAULT_INTENT_MODIFIERS;
 }
 
-// Variaciones de query por página para ampliar resultados y evitar duplicados,
-// con modificador de intención comercial adaptado a la categoría.
-function buildQueryVariations(category) {
+// Variaciones de query por página, con modificador de intención comercial
+// adaptado a la categoría. IMPORTANTE: cada variación usa UN solo término de
+// `terms`, rotando — no se concatenan todos los términos en la misma query.
+// Google trata las palabras separadas por espacio como AND implícito, así que
+// pedir "Carpintería carpintero muebles a medida" a la vez sobre-restringe la
+// búsqueda (una web real rara vez tiene las tres frases literalmente). Rotar
+// un término por página cubre el mismo terreno sin diluir cada búsqueda.
+function buildQueryVariations(category, terms, excludeTerms = []) {
   const [mod1, mod2, mod3] = getIntentModifiers(category);
-  return [
+  const excludeClause = excludeTerms.map(t => `-${t}`).join(' ');
+  const templates = [
     (q, c) => `${q} ${c}`,
     (q, c) => `${q} en ${c}`,
     (q, c) => `${mod1} ${q} ${c}`,
     (q, c) => `${mod2} ${q} ${c}`,
     (q, c) => `${q} ${mod3} ${c}`,
   ];
+  return templates.map((tpl, i) => {
+    const term = terms[i % terms.length];
+    return (city) => [tpl(term, city), excludeClause].filter(Boolean).join(' ');
+  });
 }
 
 // Si una búsqueda en el municipio devuelve muy pocos resultados, es probable
@@ -185,20 +195,24 @@ async function isDuplicate(url, sessionId) {
   }
 }
 
-export async function startProspectionV2({ query, city, provincia, category, pagesFrom = 2, pagesTo = 4, sessionId }) {
+export async function startProspectionV2({ query, includeTerms, excludeTerms, city, provincia, category, pagesFrom = 2, pagesTo = 4, sessionId }) {
   const leads = [];
   const seenDomains = new Set(); // dedup dentro de la misma sesión
   const startTime = Date.now();
-  const queryVariations = buildQueryVariations(category);
+  // Fallback a [query] para llamadas antiguas (CLI, scripts) que no mandan
+  // includeTerms — mantiene el comportamiento previo para esos casos.
+  const terms = (includeTerms && includeTerms.length > 0) ? includeTerms : [query];
+  const queryVariations = buildQueryVariations(category, terms, excludeTerms || []);
 
   logger.info(`🚀 Iniciando prospección v3: "${query}" en ${city} (pág ${pagesFrom}-${pagesTo})`);
+  logger.info(`   Términos a rotar: ${terms.join(' · ')}`);
   logger.info(`   Google Places API: ${process.env.GOOGLE_PLACES_API_KEY ? '✅ activa' : '⚠️ no configurada (usando scraper)'}`);
 
   try {
     for (let page = pagesFrom; page <= pagesTo; page++) {
       // Rotar variación de query por página para diversificar resultados
       const variationFn = queryVariations[(page - pagesFrom) % queryVariations.length];
-      const queryVariant = variationFn(query, city);
+      const queryVariant = variationFn(city);
 
       logger.info(`📖 Buscando página ${page} con query: "${queryVariant}"`);
       let results = await fetchSerpPage({ query: queryVariant, city, page });
@@ -208,7 +222,7 @@ export async function startProspectionV2({ query, city, provincia, category, pag
       // Google — ampliar a la provincia para esta página.
       if (results.length < MIN_RESULTS_BEFORE_WIDENING && provincia && provincia !== city) {
         logger.info(`   🔎 Pocos resultados en "${city}", ampliando a provincia "${provincia}"`);
-        const widerResults = await fetchSerpPage({ query: variationFn(query, provincia), city: provincia, page });
+        const widerResults = await fetchSerpPage({ query: variationFn(provincia), city: provincia, page });
         if (widerResults.length > results.length) {
           results = widerResults;
           logger.info(`   Resultados tras ampliar: ${results.length}`);

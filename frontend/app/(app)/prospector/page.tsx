@@ -195,18 +195,19 @@ export default function ProspectorPage() {
     setLeads([]);
     setSelectedLeads([]);
 
-    // Construir query con tags (incluir + excluir)
-    const builtQuery = [
-      ...includeTags,
-      ...excludeTags.map(t => `-${t}`)
-    ].join(' ').trim();
-
-    const finalQuery = builtQuery || form.category;
+    // Los términos de incluir ya NO se pegan en una sola query — se mandan
+    // sueltos y el backend rota uno por página (ver prospector-v2.service.js).
+    // Las exclusiones sí se aplican todas a la vez en cada página (globales +
+    // específicas del sector).
+    const labelQuery = includeTags[0] || form.category;
+    const allExcludeTerms = [...excludeTags, ...globalExcludes];
 
     setLoading(true);
     try {
       const result = (await api.startProspection({
-        query: finalQuery,
+        query: labelQuery,
+        includeTerms: includeTags,
+        excludeTerms: allExcludeTerms,
         city: form.municipio,
         ccaa: form.ccaa,
         provincia: form.provincia,
@@ -451,12 +452,17 @@ export default function ProspectorPage() {
               </div>
             </div>
 
-            {/* Preview del query final */}
-            <div className="mt-3 p-3 bg-zinc-800 border border-zinc-700 rounded-lg">
-              <p className="text-xs text-zinc-500 mb-1 flex items-center gap-1"><Search size={12} /> Query final:</p>
+            {/* Preview: cada término rota en una página distinta, no se combinan */}
+            <div className="mt-3 p-3 bg-zinc-800 border border-zinc-700 rounded-lg space-y-1.5">
+              <p className="text-xs text-zinc-500 flex items-center gap-1"><Search size={12} /> Se rotará un término distinto por página en {form.municipio || '...'}:</p>
               <p className="text-sm text-zinc-200 font-mono break-words">
-                {[...includeTags, ...excludeTags.map(t => `-${t}`)].join(' ')} {form.municipio}
+                {includeTags.length > 0 ? includeTags.join('  ·  ') : <span className="text-zinc-600 italic">sin términos aún</span>}
               </p>
+              {[...excludeTags, ...globalExcludes].length > 0 && (
+                <p className="text-xs text-red-300/80 font-mono break-words">
+                  siempre excluye: {[...excludeTags, ...globalExcludes].map(t => `-${t}`).join(' ')}
+                </p>
+              )}
             </div>
           </div>
         </div>

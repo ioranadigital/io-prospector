@@ -21,6 +21,13 @@ const emptyToUndef = (schema) => z.preprocess(v => (v === '' || v === null ? und
 
 const ProspectionSchema = z.object({
   query: z.string().min(2).max(100),
+  // Términos de "incluir" tal cual los edita el usuario (sin concatenar) —
+  // se rotan uno por página en vez de exigirlos todos a la vez en una sola
+  // query (eso sobre-restringe el AND implícito de Google). `query` se sigue
+  // usando como etiqueta legible (CSV, sesión) y como fallback si no llega
+  // includeTerms (CLI, llamadas antiguas).
+  includeTerms: z.array(z.string().min(1)).optional(),
+  excludeTerms: z.array(z.string().min(1)).optional(),
   city: z.string().min(2).max(80),
   ccaa: emptyToUndef(z.string().min(1).max(50).optional()),
   provincia: emptyToUndef(z.string().min(1).max(50).optional()),
