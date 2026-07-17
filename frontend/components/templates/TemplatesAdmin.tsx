@@ -8,6 +8,23 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 const MAX_CHARS: Record<'email' | 'whatsapp', number> = { email: 1500, whatsapp: 1000 };
 
+// Orden numérico por el prefijo del nombre ("1 PRIMER CONTACTO", "1_Sin Web...",
+// "2 SEGUNDO CONTACTO"...) en vez de alfabético — con orden alfabético "10 X"
+// se cuela antes que "2 Y". Sin número al inicio, va al final y se ordena
+// alfabéticamente entre sí.
+function naturalCompare(a: string, b: string): number {
+  const leadingNumber = (s: string) => {
+    const m = s.trim().match(/^(\d+)/);
+    return m ? parseInt(m[1], 10) : null;
+  };
+  const na = leadingNumber(a);
+  const nb = leadingNumber(b);
+  if (na !== null && nb !== null && na !== nb) return na - nb;
+  if (na !== null && nb === null) return -1;
+  if (na === null && nb !== null) return 1;
+  return a.localeCompare(b, 'es', { numeric: true, sensitivity: 'base' });
+}
+
 type TemplateCategory = { id: string; name: string };
 
 type Template = {
@@ -125,10 +142,9 @@ export function TemplatesAdmin() {
     try {
       const { data, error } = await supabase
         .from('io_pro_template_categories')
-        .select('*')
-        .order('name', { ascending: true });
+        .select('*');
       if (error) throw error;
-      setCategories(data || []);
+      setCategories((data || []).slice().sort((a, b) => naturalCompare(a.name, b.name)));
     } catch (error) {
       console.error(error);
       toast.error('Error al cargar categorías');
@@ -545,10 +561,12 @@ export function TemplatesAdmin() {
           ) : (
             <div className="space-y-8">
               {categories.map(({ name: category }) => {
-                const categoryTemplates = templates.filter(t => {
-                  const typeMatch = filterType === 'all' || t.type === filterType;
-                  return t.category === category && typeMatch;
-                });
+                const categoryTemplates = templates
+                  .filter(t => {
+                    const typeMatch = filterType === 'all' || t.type === filterType;
+                    return t.category === category && typeMatch;
+                  })
+                  .sort((a, b) => naturalCompare(a.name, b.name));
 
                 if (categoryTemplates.length === 0) return null;
 
