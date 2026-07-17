@@ -162,7 +162,11 @@ export function TemplatesAdmin() {
       if (error) throw error;
       // Las plantillas guardan el nombre de categoría como texto libre, así que
       // hay que actualizarlas para que sigan apuntando a la categoría renombrada.
-      await supabase.from('io_pro_message_templates').update({ category: name }).eq('category', cat.name);
+      const { error: cascadeError } = await supabase
+        .from('io_pro_message_templates')
+        .update({ category: name })
+        .eq('category', cat.name);
+      if (cascadeError) throw cascadeError;
       setEditingCategoryId(null);
       loadCategories();
       loadTemplates();
