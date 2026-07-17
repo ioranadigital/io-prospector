@@ -103,12 +103,13 @@ router.get('/templates', async (req, res, next) => {
 router.post('/templates/render', async (req, res, next) => {
   try {
     const { template_id, lead_id } = req.body;
-    const [{ data: tpl }, { data: lead }, { data: config }] = await Promise.all([
+    const [{ data: tpl }, { data: lead }, { data: config, error: configError }] = await Promise.all([
       supabase.from('io_pro_message_templates').select('*').eq('id', template_id).single(),
       supabase.from('io_pro_leads').select('*').eq('id', lead_id).single(),
       supabase.from('app_config').select('*'),
     ]);
-    const cfg = Object.fromEntries(config.map(c => [c.key, c.value]));
+    if (configError) console.warn('config load warning:', configError.message);
+    const cfg = Object.fromEntries((config || []).map(c => [c.key, c.value]));
 
     // Extraer issues del audit_data para el template
     const issues = lead.audit_data
