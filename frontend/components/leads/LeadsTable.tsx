@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase, type Lead } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { BarChart3, CheckCircle2, Circle, Trash2, CheckCircle, XCircle, Clock, Mail, MessageCircle, Star, Copy, ClipboardList } from 'lucide-react';
+import { BarChart3, CheckCircle2, Circle, Trash2, CheckCircle, XCircle, Clock, Mail, MessageCircle, Star, Copy, ClipboardList, Facebook, Instagram, Music2 } from 'lucide-react';
 import { SendModal } from './SendModal';
 import { LeadDetailModal } from './LeadDetailModal';
 import { TierSummaryModal } from './TierSummaryModal';
@@ -16,6 +16,20 @@ type SendModalState = {
   leadId: string | null;
   type: 'email' | 'whatsapp';
 };
+
+function getSocialPlatform(url: string): 'facebook' | 'instagram' | 'tiktok' | null {
+  try {
+    const hostname = new URL(url).hostname.replace(/^www\./, '');
+    if (hostname === 'facebook.com') return 'facebook';
+    if (hostname === 'instagram.com') return 'instagram';
+    if (hostname === 'tiktok.com') return 'tiktok';
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+const SOCIAL_ICON = { facebook: Facebook, instagram: Instagram, tiktok: Music2 };
 
 type LeadActivity = {
   id: string;
@@ -307,11 +321,25 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
                   </td>
                   <td className="px-3 py-3 font-semibold text-white max-w-sm">
                     <div className="truncate">{fixMojibake(lead.business_name) || 'Sin nombre'}</div>
-                    {lead.website && (
-                      <a href={lead.website} target="_blank" rel="noopener" className="text-xs text-blue-400 hover:underline truncate block">
-                        {lead.website}
-                      </a>
-                    )}
+                    {(() => {
+                      const social = !lead.has_website && lead.website ? getSocialPlatform(lead.website) : null;
+                      if (social) {
+                        const Icon = SOCIAL_ICON[social];
+                        return (
+                          <a href={lead.website!} target="_blank" rel="noopener" className="text-xs text-purple-400 hover:underline truncate flex items-center gap-1">
+                            <Icon size={12} /> Sin web (RRSS)
+                          </a>
+                        );
+                      }
+                      if (lead.website) {
+                        return (
+                          <a href={lead.website} target="_blank" rel="noopener" className="text-xs text-blue-400 hover:underline truncate block">
+                            {lead.website}
+                          </a>
+                        );
+                      }
+                      return <span className="text-xs text-zinc-600">Sin web</span>;
+                    })()}
                   </td>
                   <td className="px-3 py-3 text-xs max-w-[10rem]">
                     <div className="truncate text-zinc-300" title={resolveSector(lead.category).sector}>{resolveSector(lead.category).sector}</div>

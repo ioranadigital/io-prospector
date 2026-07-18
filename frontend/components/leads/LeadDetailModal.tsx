@@ -3,7 +3,21 @@
 import { useState, useEffect } from 'react';
 import { supabase, type Lead } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { X, Save, Mail, MessageCircle, MapPin, Phone, Search, Map, Target, Trophy, Wrench, FileText, Pencil, AlertTriangle, CheckCircle, XCircle, Star } from 'lucide-react';
+import { X, Save, Mail, MessageCircle, MapPin, Phone, Search, Map, Target, Trophy, Wrench, FileText, Pencil, AlertTriangle, CheckCircle, XCircle, Star, Facebook, Instagram, Music2 } from 'lucide-react';
+
+function getSocialPlatform(url: string): 'facebook' | 'instagram' | 'tiktok' | null {
+  try {
+    const hostname = new URL(url).hostname.replace(/^www\./, '');
+    if (hostname === 'facebook.com') return 'facebook';
+    if (hostname === 'instagram.com') return 'instagram';
+    if (hostname === 'tiktok.com') return 'tiktok';
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+const SOCIAL_ICON = { facebook: Facebook, instagram: Instagram, tiktok: Music2 };
 
 type LeadDetailModalProps = {
   lead: Lead;
@@ -101,13 +115,25 @@ export function LeadDetailModal({
             <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-2 text-sm">
               <div>
                 <span className="text-zinc-400">Sitio web:</span>{' '}
-                {lead.website ? (
-                  <a href={lead.website} target="_blank" rel="noopener" className="text-blue-400 hover:underline">
-                    {lead.website}
-                  </a>
-                ) : (
-                  <span className="text-zinc-600">-</span>
-                )}
+                {(() => {
+                  const social = !lead.has_website && lead.website ? getSocialPlatform(lead.website) : null;
+                  if (social) {
+                    const Icon = SOCIAL_ICON[social];
+                    return (
+                      <a href={lead.website!} target="_blank" rel="noopener" className="text-purple-400 hover:underline inline-flex items-center gap-1">
+                        <Icon size={14} /> Sin web propia (tiene RRSS)
+                      </a>
+                    );
+                  }
+                  if (lead.website) {
+                    return (
+                      <a href={lead.website} target="_blank" rel="noopener" className="text-blue-400 hover:underline">
+                        {lead.website}
+                      </a>
+                    );
+                  }
+                  return <span className="text-zinc-600">-</span>;
+                })()}
               </div>
               <div>
                 <span className="text-zinc-400">Ciudad:</span> <span className="text-white">{lead.city || '-'}</span>

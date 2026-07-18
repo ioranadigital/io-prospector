@@ -10,6 +10,7 @@ export type Lead = {
   session_id: string | null;
   business_name: string;
   website: string | null;
+  has_website: boolean;
   email: string | null;
   phone: string | null;
   city: string | null;

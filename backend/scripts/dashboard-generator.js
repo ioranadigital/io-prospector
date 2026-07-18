@@ -6,6 +6,23 @@ import path from 'path';
 import { summarizeIssues } from './lead-analyzer.js';
 import { paths } from '../config/paths.js';
 
+const SOCIAL_ICONS = { facebook: '📘', instagram: '📷', tiktok: '🎵' };
+
+function renderWebsiteCell(l) {
+  if (l.has_website && l.website) {
+    return `<a href="${l.website}" target="_blank" style="color:#3b82f6;">🌐 Web</a>`;
+  }
+  if (!l.has_website && l.website) {
+    let hostname = '';
+    try { hostname = new URL(l.website).hostname.replace(/^www\./, ''); } catch { /* noop */ }
+    const platform = hostname === 'facebook.com' ? 'facebook' : hostname === 'instagram.com' ? 'instagram' : hostname === 'tiktok.com' ? 'tiktok' : null;
+    if (platform) {
+      return `<a href="${l.website}" target="_blank" style="color:#a855f7;">${SOCIAL_ICONS[platform]} Sin web (RRSS)</a>`;
+    }
+  }
+  return '❌';
+}
+
 export function generateDashboard(leads, outputDir = null, prospectionId = null) {
   outputDir = outputDir || paths.dashboardsDir;
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
@@ -77,7 +94,7 @@ ${highPriority.slice(0, 20).map(l => `
 <td style="padding:10px;border:1px solid #27272a;font-weight:600;">${l.company_name}</td>
 <td style="padding:10px;border:1px solid #27272a;">${l.email || '—'}</td>
 <td style="padding:10px;border:1px solid #27272a;">${l.phone || '—'}</td>
-<td style="padding:10px;border:1px solid #27272a;">${l.website ? `<a href="${l.website}" target="_blank" style="color:#3b82f6;">🌐 Web</a>` : '❌'}</td>
+<td style="padding:10px;border:1px solid #27272a;">${renderWebsiteCell(l)}</td>
 <td style="padding:10px;border:1px solid #27272a;">${getIssuesDescription(l.issues)}</td>
 <td style="padding:10px;border:1px solid #27272a;font-weight:600;">${l.urgency_score}/100</td>
 </tr>
@@ -106,7 +123,7 @@ ${mediumPriority.slice(0, 15).map(l => `
 <td style="padding:10px;border:1px solid #27272a;font-weight:600;">${l.company_name}</td>
 <td style="padding:10px;border:1px solid #27272a;">${l.email || '—'}</td>
 <td style="padding:10px;border:1px solid #27272a;">${l.phone || '—'}</td>
-<td style="padding:10px;border:1px solid #27272a;">${l.website ? `<a href="${l.website}" target="_blank" style="color:#3b82f6;">🌐 Web</a>` : '❌'}</td>
+<td style="padding:10px;border:1px solid #27272a;">${renderWebsiteCell(l)}</td>
 <td style="padding:10px;border:1px solid #27272a;">${getIssuesDescription(l.issues)}</td>
 </tr>
 `).join('')}

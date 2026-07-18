@@ -15,8 +15,11 @@ import { logger } from '../utils/logger.js';
 // cadenas nacionales) — la fila se descarta por completo, no se guarda ni como
 // "negocio sin web".
 const HARD_DROP_DOMAINS = [
-  'facebook.com', 'instagram.com', 'twitter.com', 'x.com', 'linkedin.com',
-  'youtube.com', 'tiktok.com', 'pinterest.com',
+  // facebook.com/instagram.com/tiktok.com salieron de esta lista: un perfil
+  // de negocio en esas redes es un prospecto válido ("sin web pero con RRSS")
+  // — ver SOCIAL_PLATFORMS y getSocialProfile() más abajo.
+  'twitter.com', 'x.com', 'linkedin.com',
+  'youtube.com', 'pinterest.com',
   '.gob.es', '.gub.es', 'sede.', 'ayuntamiento',
   'leroymerlin.es', 'elcorteingles.es', 'ikea.com', 'mediamarkt.es',
   'carrefour.es', 'decathlon.es', 'worten.es', 'amazon.com', 'amazon.es',
@@ -45,6 +48,10 @@ const SOFT_SKIP_DOMAINS = [
   'guiadeltrabajador.com', 'cylex.es', 'europages.es',
   // Marketplaces de servicios — encontrado en pruebas reales (habitissimo)
   'habitissimo.es', 'habitissimo.com',
+  // Red social pero URL que NO es un perfil de negocio reconocible (un post,
+  // un reel, un vídeo suelto) — no se descarta la fila, pero tampoco se trata
+  // como perfil social ni se le pasa por Playwright.
+  'facebook.com', 'instagram.com', 'tiktok.com',
 ];
 
 // Portales de empleo — ruta con estas palabras nunca es un negocio local, es
@@ -69,7 +76,9 @@ const SITE_EXCLUSIONS = [
   'paginasamarillas.es', 'paginas-amarillas.com', 'qdq.com', 'qdq.es',
   'cylex.es', 'europages.es', 'einforma.com', 'empresite.com',
   'milanuncios.com', 'wallapop.com',
-  'facebook.com', 'instagram.com', 'youtube.com', 'linkedin.com',
+  // facebook.com/instagram.com ya NO se excluyen de la query: un perfil de
+  // negocio en esas redes es un prospecto válido ("sin web pero con RRSS").
+  'youtube.com', 'linkedin.com',
   'leroymerlin.es', 'elcorteingles.es', 'ikea.com',
   'habitissimo.es', 'homeserve.es',
 ];
@@ -184,6 +193,50 @@ function looksLikeNonHtmlFile(url) {
   } catch {
     return false;
   }
+}
+
+// Perfiles de negocio en redes sociales — muchas pymes pequeñas no tienen web
+// propia y solo tienen una página de Facebook/Instagram/TikTok. Se trata como
+// un lead "sin web propia" válido (icebreaker específico), no se descarta.
+// Solo se reconoce como perfil si la ruta tiene forma de página/usuario, no
+// de post/reel/vídeo suelto (eso sigue cayendo en SOFT_SKIP_DOMAINS, sin URL
+// social asociada, para no enviarlo por error a un post ajeno al negocio).
+const SOCIAL_LABELS = { facebook: 'Facebook', instagram: 'Instagram', tiktok: 'TikTok' };
+
+const SOCIAL_NON_PROFILE_SEGMENTS = {
+  facebook: ['posts', 'photos', 'videos', 'watch', 'groups', 'events', 'reel',
+    'reels', 'marketplace', 'permalink.php', 'story.php', 'photo.php',
+    'plugins', 'sharer', 'sharer.php', 'dialog', 'tr', 'help', 'policies',
+    'l.php', 'ads', 'businesssuite', 'login.php', 'profile.php'],
+  instagram: ['p', 'reel', 'reels', 'tv', 'stories', 'explore', 'accounts', 'directory'],
+};
+
+function getSocialProfile(url) {
+  let hostname, pathname;
+  try {
+    ({ hostname, pathname } = new URL(url));
+  } catch {
+    return null;
+  }
+  hostname = hostname.replace(/^www\./, '').replace(/^m\./, '');
+
+  let platform;
+  if (hostname === 'facebook.com') platform = 'facebook';
+  else if (hostname === 'instagram.com') platform = 'instagram';
+  else if (hostname === 'tiktok.com') platform = 'tiktok';
+  else return null;
+
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments.length === 0) return null; // dominio raíz, no es una página de negocio
+
+  if (platform === 'tiktok') {
+    // Perfil real: solo /@handle — /@handle/video/123 es un vídeo suelto.
+    if (!segments[0].startsWith('@') || segments.length > 1) return null;
+  } else if (segments.some(s => SOCIAL_NON_PROFILE_SEGMENTS[platform].includes(s.toLowerCase()))) {
+    return null;
+  }
+
+  return { platform, url };
 }
 
 // Google trata `location`/`gl` como una preferencia de ranking, no un filtro
@@ -395,15 +448,21 @@ async function processResult({ result, city, provincia, category, pageResults })
     return null;
   }
 
+  const social = getSocialProfile(result.url);
+
   const isSkipped = !result.url
     || SOFT_SKIP_DOMAINS.some(d => result.url.includes(d))
     || looksLikeDirectoryListing(result.url)
-    || looksLikeNonHtmlFile(result.url);
+    || looksLikeNonHtmlFile(result.url)
+    || !!social;
 
   const lead = {
     company_name: result.title,
     first_name: 'propietario',
-    website: isSkipped ? null : result.url,
+    // Un perfil social reconocido conserva su URL (útil como enlace en el
+    // dashboard) aunque cuente como "sin web propia" — el resto de casos
+    // omitidos (directorios, PDFs, posts sueltos) se quedan sin URL.
+    website: social ? social.url : (isSkipped ? null : result.url),
     google_position: result.position,
     serp_page: result.page,
     serp_snippet: result.snippet,
@@ -424,9 +483,11 @@ async function processResult({ result, city, provincia, category, pageResults })
     lead.email = null;
     lead.phone = null;
     lead.main_competitor = pickMainCompetitor(pageResults, result);
-    lead.icebreaker = lead.main_competitor
-      ? `He visto que ${lead.main_competitor} te está ganando en Google en ${city} — y tú ni siquiera tienes web propia todavía.`
-      : null;
+    lead.icebreaker = social
+      ? `He visto que estáis activos en ${SOCIAL_LABELS[social.platform]} en ${city}, pero no tenéis web propia — quien os busca en Google antes ve a la competencia.`
+      : (lead.main_competitor
+        ? `He visto que ${lead.main_competitor} te está ganando en Google en ${city} — y tú ni siquiera tienes web propia todavía.`
+        : null);
     return lead;
   }
 
