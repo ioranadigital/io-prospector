@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import {
-  Search, Loader2, Play, CheckCircle, AlertCircle, Download, Eye, Clock, Save, Trash2, FileText, Globe, Check, Timer, XCircle, ClipboardList,
+  Search, Loader2, Play, CheckCircle, AlertCircle, Download, Eye, Clock, Save, Trash2, FileText, Globe, Check, Timer, XCircle, ClipboardList, MapPin,
   Home, Stethoscope, Scale, Building2, Sparkles, GraduationCap, Waves, UtensilsCrossed, Car, Factory, PawPrint, Dumbbell, Tag,
   type LucideIcon,
 } from 'lucide-react';
@@ -321,246 +321,259 @@ export default function ProspectorPage() {
       </div>
 
       {/* Formulario de búsqueda */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-5">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-              {(() => { const Icon = getCategoryIcon(selectedCategoryGroup); return <Icon size={13} />; })()}
-              Categoría Principal
-            </label>
-            <select
-              value={selectedCategoryGroup}
-              onChange={e => {
-                const categoryValue = e.target.value;
-                setSelectedCategoryGroup(categoryValue);
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6">
 
-                // Recopilar todos los términos de TODAS las subcategorías
-                const category = sectors.find(s => s.category === categoryValue);
-                const allInclude: string[] = [];
-                const allExclude: string[] = [];
+          {/* ===== Columna Principal: flujo directo de la prospección ===== */}
+          <div className="space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  {(() => { const Icon = getCategoryIcon(selectedCategoryGroup); return <Icon size={13} />; })()}
+                  Categoría Principal
+                </label>
+                <select
+                  value={selectedCategoryGroup}
+                  onChange={e => {
+                    const categoryValue = e.target.value;
+                    setSelectedCategoryGroup(categoryValue);
 
-                category?.subcategories.forEach((sub: any) => {
-                  allInclude.push(...sub.includeDefaults);
-                  allExclude.push(...sub.excludeDefaults);
-                });
+                    // Recopilar todos los términos de TODAS las subcategorías
+                    const category = sectors.find(s => s.category === categoryValue);
+                    const allInclude: string[] = [];
+                    const allExclude: string[] = [];
 
-                setIncludeTags(allInclude);
-                setExcludeTags(allExclude);
-                setForm(f => ({ ...f, category: '', query: '' }));
-              }}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500"
-            >
-              <option value="">Seleccionar categoría...</option>
-              {sectors.map((sector: any) => (
-                <option key={sector.category} value={sector.category}>{sector.category}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-1.5">Subcategoría / Sector</label>
-            <select
-              value={form.category}
-              onChange={e => {
-                const subName = e.target.value;
-                const sub = selectedCategory?.subcategories.find((s: any) => s.name === subName);
-                setForm(f => ({ ...f, category: subName, query: '' }));
-                // Incluir el nombre de la subcategoría + todos sus términos
-                const allTerms = sub?.includeDefaults ?? [];
-                setIncludeTags([subName, ...allTerms]);
-                setExcludeTags(sub?.excludeDefaults ?? []);
-              }}
-              disabled={!selectedCategory}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <option value="">Seleccionar sector...</option>
-              {selectedCategory?.subcategories.map((sub: any) => (
-                <option key={sub.name} value={sub.name}>{sub.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
+                    category?.subcategories.forEach((sub: any) => {
+                      allInclude.push(...sub.includeDefaults);
+                      allExclude.push(...sub.excludeDefaults);
+                    });
 
-        {/* Constructor de términos de búsqueda con tags */}
-        <div className="space-y-3">
-          <div>
-            <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-2 flex items-center gap-1.5"><FileText size={14} /> Términos de Búsqueda</label>
-
-            {/* Tags para incluir */}
-            <div className="mb-3">
-              <p className="text-xs text-zinc-500 mb-1.5">Incluir en búsqueda:</p>
-              <div className="flex flex-wrap gap-2 p-2 bg-zinc-800 border border-zinc-700 rounded-lg min-h-10 items-center">
-                {includeTags.map((tag, idx) => (
-                  <div key={idx} className="bg-blue-900/50 border border-blue-700 text-blue-300 text-xs px-2.5 py-1 rounded-lg flex items-center gap-1.5">
-                    <span>{tag}</span>
-                    <button
-                      onClick={() => setIncludeTags(includeTags.filter((_, i) => i !== idx))}
-                      className="text-blue-400 hover:text-blue-200 font-bold"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-                <input
-                  type="text"
-                  id="includeTagInput"
-                  placeholder="Escribir y presionar Enter..."
-                  ref={includeInputRef}
-                  onKeyDown={e => {
-                    if ((e.key === 'Enter' || e.key === ',') && includeInputRef.current?.value.trim()) {
-                      e.preventDefault();
-                      setIncludeTags([...includeTags, includeInputRef.current.value.trim()]);
-                      includeInputRef.current.value = '';
-                    }
+                    setIncludeTags(allInclude);
+                    setExcludeTags(allExclude);
+                    setForm(f => ({ ...f, category: '', query: '' }));
                   }}
-                  className="bg-transparent border-none text-sm text-zinc-200 focus:outline-none px-2 flex-1 min-w-32"
-                />
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500"
+                >
+                  <option value="">Seleccionar categoría...</option>
+                  {sectors.map((sector: any) => (
+                    <option key={sector.category} value={sector.category}>{sector.category}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-1.5">Subcategoría / Sector</label>
+                <select
+                  value={form.category}
+                  onChange={e => {
+                    const subName = e.target.value;
+                    const sub = selectedCategory?.subcategories.find((s: any) => s.name === subName);
+                    setForm(f => ({ ...f, category: subName, query: '' }));
+                    // Incluir el nombre de la subcategoría + todos sus términos
+                    const allTerms = sub?.includeDefaults ?? [];
+                    setIncludeTags([subName, ...allTerms]);
+                    setExcludeTags(sub?.excludeDefaults ?? []);
+                  }}
+                  disabled={!selectedCategory}
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <option value="">Seleccionar sector...</option>
+                  {selectedCategory?.subcategories.map((sub: any) => (
+                    <option key={sub.name} value={sub.name}>{sub.name}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
-            {/* Tags para excluir */}
             <div>
-              <p className="text-xs text-zinc-500 mb-1.5">Excluir de búsqueda:</p>
-              <div className="flex flex-wrap gap-2 p-2 bg-zinc-800 border border-zinc-700 rounded-lg min-h-10 items-center">
-                {excludeTags.map((tag, idx) => (
-                  <div key={idx} className="bg-red-900/50 border border-red-700 text-red-300 text-xs px-2.5 py-1 rounded-lg flex items-center gap-1.5">
-                    <span>-{tag}</span>
-                    <button
-                      onClick={() => setExcludeTags(excludeTags.filter((_, i) => i !== idx))}
-                      className="text-red-400 hover:text-red-200 font-bold"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-                <input
-                  type="text"
-                  id="excludeTagInput"
-                  placeholder="Escribir y presionar Enter..."
-                  ref={excludeInputRef}
-                  onKeyDown={e => {
-                    const val = (e.currentTarget as HTMLInputElement).value.trim();
-                    console.log('Exclude onKeyDown fired:', e.key, 'Value:', val);
-                    if ((e.key === 'Enter' || e.key === ',') && val) {
-                      e.preventDefault();
-                      console.log('Adding exclude tag:', val);
-                      setExcludeTags([...excludeTags, val]);
-                      (e.currentTarget as HTMLInputElement).value = '';
-                    }
-                  }}
-                  className="bg-transparent border-none text-sm text-zinc-200 focus:outline-none px-2 flex-1 min-w-32"
-                />
+              <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <MapPin size={13} /> Ubicación Geográfica
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <p className="text-xs text-zinc-600 mb-1.5">Comunidad Autónoma</p>
+                  <select
+                    value={form.ccaa}
+                    onChange={e => setForm(f => ({ ...f, ccaa: e.target.value, provincia: '', municipio: '' }))}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="">Seleccionar CCAA...</option>
+                    {getComunidadesAutonomas().map((ccaa: string) => (
+                      <option key={ccaa} value={ccaa}>{ccaa}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <p className="text-xs text-zinc-600 mb-1.5">Provincia</p>
+                  <select
+                    value={form.provincia}
+                    onChange={e => setForm(f => ({ ...f, provincia: e.target.value, municipio: '' }))}
+                    disabled={!form.ccaa}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <option value="">Seleccionar provincia...</option>
+                    {form.ccaa && getProvincias(form.ccaa).map((provincia: string) => (
+                      <option key={provincia} value={provincia}>{provincia}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <p className="text-xs text-zinc-600 mb-1.5">Municipio</p>
+                  <select
+                    value={form.municipio}
+                    onChange={e => setForm(f => ({ ...f, municipio: e.target.value }))}
+                    disabled={!form.provincia}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <option value="">Seleccionar municipio...</option>
+                    {form.provincia && getMunicipios(form.ccaa, form.provincia).map((municipio: string) => (
+                      <option key={municipio} value={municipio}>{municipio}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 
-            {/* Preview: cada término rota en una página distinta, no se combinan */}
-            <div className="mt-3 p-3 bg-zinc-800 border border-zinc-700 rounded-lg space-y-1.5">
-              <p className="text-xs text-zinc-500 flex items-center gap-1"><Search size={12} /> Se rotará un término distinto por página en {form.municipio || '...'}:</p>
-              <p className="text-sm text-zinc-200 font-mono break-words">
-                {includeTags.length > 0 ? includeTags.join('  ·  ') : <span className="text-zinc-600 italic">sin términos aún</span>}
-              </p>
-              {[...excludeTags, ...globalExcludes].length > 0 && (
-                <p className="text-xs text-red-300/80 font-mono break-words">
-                  siempre excluye: {[...excludeTags, ...globalExcludes].map(t => `-${t}`).join(' ')}
+            <div>
+              <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-2">
+                Páginas de Google: {form.pagesFrom} → {form.pagesTo}
+              </label>
+              {form.pagesFrom === 1 && (
+                <p className="text-xs text-amber-400/80 mb-2">
+                  Incluyendo la página 1: más volumen, pero mezcla negocios ya bien posicionados (útil para propuestas de conversión/CRO, no solo "sin web").
                 </p>
               )}
-            </div>
-          </div>
-        </div>
-
-        {/* Exclusiones Globales */}
-        {globalExcludes.length > 0 && (
-          <div className="p-4 bg-red-900/20 border border-red-800 rounded-lg">
-            <p className="text-xs font-semibold text-red-300 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Globe size={12} /> Exclusiones Globales (Aplicadas a todas las búsquedas)</p>
-            <div className="flex flex-wrap gap-2">
-              {globalExcludes.map((term, idx) => (
-                <div key={idx} className="bg-red-900/40 border border-red-700 text-red-200 text-xs px-2.5 py-1 rounded-full">
-                  -{term}
+              <div className="flex items-center gap-6">
+                <div className="flex-1">
+                  <p className="text-xs text-zinc-600 mb-1">Desde página</p>
+                  <input type="range" min="1" max="10" value={form.pagesFrom}
+                    onChange={e => setForm(f => ({ ...f, pagesFrom: Number(e.target.value) }))} className="w-full" />
+                  <p className="text-xs text-zinc-400 mt-1">Página {form.pagesFrom}</p>
                 </div>
-              ))}
+                <div className="flex-1">
+                  <p className="text-xs text-zinc-600 mb-1">Hasta página</p>
+                  <input type="range" min="1" max="15" value={form.pagesTo}
+                    onChange={e => setForm(f => ({ ...f, pagesTo: Number(e.target.value) }))} className="w-full" />
+                  <p className="text-xs text-zinc-400 mt-1">Página {form.pagesTo}</p>
+                </div>
+              </div>
+              <p className="text-xs text-zinc-600 mt-2">
+                ~{(form.pagesTo - form.pagesFrom + 1) * 10} resultados a analizar (<Timer size={12} className="inline align-middle" /> ~{(form.pagesTo - form.pagesFrom + 1) * 2}-3 minutos)
+              </p>
             </div>
-            <p className="text-xs text-red-300 mt-2 flex items-center gap-1"><Check size={12} /> {globalExcludes.length} término(s) excluido(s) globalmente</p>
-          </div>
-        )}
 
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-1.5">Comunidad Autónoma</label>
-            <select
-              value={form.ccaa}
-              onChange={e => setForm(f => ({ ...f, ccaa: e.target.value, provincia: '', municipio: '' }))}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500"
-            >
-              <option value="">Seleccionar CCAA...</option>
-              {getComunidadesAutonomas().map((ccaa: string) => (
-                <option key={ccaa} value={ccaa}>{ccaa}</option>
-              ))}
-            </select>
+            <button onClick={handleSearch} disabled={loading}
+              className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold rounded-xl transition-colors">
+              {loading ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
+              {loading ? `Buscando... ${prospectionStatus?.progress || 0}%` : 'Iniciar prospección'}
+            </button>
           </div>
 
-          <div>
-            <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-1.5">Provincia</label>
-            <select
-              value={form.provincia}
-              onChange={e => setForm(f => ({ ...f, provincia: e.target.value, municipio: '' }))}
-              disabled={!form.ccaa}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <option value="">Seleccionar provincia...</option>
-              {form.ccaa && getProvincias(form.ccaa).map((provincia: string) => (
-                <option key={provincia} value={provincia}>{provincia}</option>
-              ))}
-            </select>
+          {/* ===== Columna Secundaria: personalización avanzada de la búsqueda ===== */}
+          <div className="space-y-4 lg:border-l lg:border-zinc-800 lg:pl-6">
+            {/* Constructor de términos de búsqueda con tags */}
+            <div>
+              <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-2 flex items-center gap-1.5"><FileText size={14} /> Términos de Búsqueda</label>
+
+              {/* Tags para incluir */}
+              <div className="mb-3">
+                <p className="text-xs text-zinc-500 mb-1.5">Incluir en búsqueda:</p>
+                <div className="flex flex-wrap gap-1.5 p-2 bg-zinc-800 border border-zinc-700 rounded-lg min-h-10 items-center">
+                  {includeTags.map((tag, idx) => (
+                    <div key={idx} className="bg-blue-900/50 border border-blue-700 text-blue-300 text-xs px-2 py-1 rounded-lg flex items-center gap-1.5">
+                      <span>{tag}</span>
+                      <button
+                        onClick={() => setIncludeTags(includeTags.filter((_, i) => i !== idx))}
+                        className="text-blue-400 hover:text-blue-200 font-bold"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  <input
+                    type="text"
+                    id="includeTagInput"
+                    placeholder="Escribir y presionar Enter..."
+                    ref={includeInputRef}
+                    onKeyDown={e => {
+                      if ((e.key === 'Enter' || e.key === ',') && includeInputRef.current?.value.trim()) {
+                        e.preventDefault();
+                        setIncludeTags([...includeTags, includeInputRef.current.value.trim()]);
+                        includeInputRef.current.value = '';
+                      }
+                    }}
+                    className="bg-transparent border-none text-sm text-zinc-200 focus:outline-none px-2 flex-1 min-w-24"
+                  />
+                </div>
+              </div>
+
+              {/* Tags para excluir */}
+              <div>
+                <p className="text-xs text-zinc-500 mb-1.5">Excluir de búsqueda:</p>
+                <div className="flex flex-wrap gap-1.5 p-2 bg-zinc-800 border border-zinc-700 rounded-lg min-h-10 items-center">
+                  {excludeTags.map((tag, idx) => (
+                    <div key={idx} className="bg-red-900/50 border border-red-700 text-red-300 text-xs px-2 py-1 rounded-lg flex items-center gap-1.5">
+                      <span>-{tag}</span>
+                      <button
+                        onClick={() => setExcludeTags(excludeTags.filter((_, i) => i !== idx))}
+                        className="text-red-400 hover:text-red-200 font-bold"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  <input
+                    type="text"
+                    id="excludeTagInput"
+                    placeholder="Escribir y presionar Enter..."
+                    ref={excludeInputRef}
+                    onKeyDown={e => {
+                      const val = (e.currentTarget as HTMLInputElement).value.trim();
+                      console.log('Exclude onKeyDown fired:', e.key, 'Value:', val);
+                      if ((e.key === 'Enter' || e.key === ',') && val) {
+                        e.preventDefault();
+                        console.log('Adding exclude tag:', val);
+                        setExcludeTags([...excludeTags, val]);
+                        (e.currentTarget as HTMLInputElement).value = '';
+                      }
+                    }}
+                    className="bg-transparent border-none text-sm text-zinc-200 focus:outline-none px-2 flex-1 min-w-24"
+                  />
+                </div>
+              </div>
+
+              {/* Preview: cada término rota en una página distinta, no se combinan */}
+              <div className="mt-3 p-3 bg-zinc-800 border border-zinc-700 rounded-lg space-y-1.5">
+                <p className="text-xs text-zinc-500 flex items-center gap-1"><Search size={12} /> Se rotará un término distinto por página en {form.municipio || '...'}:</p>
+                <p className="text-sm text-zinc-200 font-mono break-words">
+                  {includeTags.length > 0 ? includeTags.join('  ·  ') : <span className="text-zinc-600 italic">sin términos aún</span>}
+                </p>
+                {[...excludeTags, ...globalExcludes].length > 0 && (
+                  <p className="text-xs text-red-300/80 font-mono break-words">
+                    siempre excluye: {[...excludeTags, ...globalExcludes].map(t => `-${t}`).join(' ')}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Exclusiones Globales */}
+            {globalExcludes.length > 0 && (
+              <div className="p-4 bg-red-900/20 border border-red-800 rounded-lg">
+                <p className="text-xs font-semibold text-red-300 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Globe size={12} /> Exclusiones Globales (Aplicadas a todas las búsquedas)</p>
+                <div className="flex flex-wrap gap-2">
+                  {globalExcludes.map((term, idx) => (
+                    <div key={idx} className="bg-red-900/40 border border-red-700 text-red-200 text-xs px-2.5 py-1 rounded-full">
+                      -{term}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-red-300 mt-2 flex items-center gap-1"><Check size={12} /> {globalExcludes.length} término(s) excluido(s) globalmente</p>
+              </div>
+            )}
           </div>
 
-          <div>
-            <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-1.5">Municipio</label>
-            <select
-              value={form.municipio}
-              onChange={e => setForm(f => ({ ...f, municipio: e.target.value }))}
-              disabled={!form.provincia}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <option value="">Seleccionar municipio...</option>
-              {form.provincia && getMunicipios(form.ccaa, form.provincia).map((municipio: string) => (
-                <option key={municipio} value={municipio}>{municipio}</option>
-              ))}
-            </select>
-          </div>
         </div>
-
-        <div>
-          <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-2">
-            Páginas de Google: {form.pagesFrom} → {form.pagesTo}
-          </label>
-          {form.pagesFrom === 1 && (
-            <p className="text-xs text-amber-400/80 mb-2">
-              Incluyendo la página 1: más volumen, pero mezcla negocios ya bien posicionados (útil para propuestas de conversión/CRO, no solo "sin web").
-            </p>
-          )}
-          <div className="flex items-center gap-6">
-            <div className="flex-1">
-              <p className="text-xs text-zinc-600 mb-1">Desde página</p>
-              <input type="range" min="1" max="10" value={form.pagesFrom}
-                onChange={e => setForm(f => ({ ...f, pagesFrom: Number(e.target.value) }))} className="w-full" />
-              <p className="text-xs text-zinc-400 mt-1">Página {form.pagesFrom}</p>
-            </div>
-            <div className="flex-1">
-              <p className="text-xs text-zinc-600 mb-1">Hasta página</p>
-              <input type="range" min="1" max="15" value={form.pagesTo}
-                onChange={e => setForm(f => ({ ...f, pagesTo: Number(e.target.value) }))} className="w-full" />
-              <p className="text-xs text-zinc-400 mt-1">Página {form.pagesTo}</p>
-            </div>
-          </div>
-          <p className="text-xs text-zinc-600 mt-2">
-            ~{(form.pagesTo - form.pagesFrom + 1) * 10} resultados a analizar (<Timer size={12} className="inline align-middle" /> ~{(form.pagesTo - form.pagesFrom + 1) * 2}-3 minutos)
-          </p>
-        </div>
-
-        <button onClick={handleSearch} disabled={loading}
-          className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold rounded-xl transition-colors">
-          {loading ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
-          {loading ? `Buscando... ${prospectionStatus?.progress || 0}%` : 'Iniciar prospección'}
-        </button>
       </div>
 
       {/* Estado de prospección en progreso */}
