@@ -121,10 +121,4 @@ export const SECTORS: SectorCategory[] = [
       { name: 'Centro de Masajes', includeDefaults: ['centro de masajes', 'masajista'], excludeDefaults: ['online', 'erótico'] },
     ],
   },
-  {
-    category: 'Referencia',
-    subcategories: [
-      { name: 'Restaurante', includeDefaults: ['restaurante'], excludeDefaults: [] },
-    ],
-  },
 ];
