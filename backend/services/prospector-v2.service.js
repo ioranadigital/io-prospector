@@ -164,6 +164,23 @@ function looksLikeDirectoryListing(url) {
   }
 }
 
+// Ficheros descargables (PDF, Office, comprimidos...) que Google a veces
+// indexa y devuelve como "resultado" — no son una web de negocio y Playwright
+// los maneja mal (el visor de PDF de Chromium no dispara 'domcontentloaded'
+// con normalidad), así que contact-extractor y performance-audit se quedan
+// agotando sus timeouts uno tras otro en vez de fallar rápido. Encontrado en
+// pruebas reales: un PDF de un repositorio institucional cubano añadió más de
+// 3 minutos de bloqueo silencioso a una sola prospección.
+const NON_HTML_FILE_PATTERN = /\.(pdf|docx?|xlsx?|pptx?|zip|rar|7z|mp3|mp4|avi|mov)(\?|#|$)/i;
+
+function looksLikeNonHtmlFile(url) {
+  try {
+    return NON_HTML_FILE_PATTERN.test(new URL(url).pathname);
+  } catch {
+    return false;
+  }
+}
+
 // Competidor principal: reutiliza el SERP ya obtenido (coste de red cero) — el
 // resultado mejor posicionado de la misma página que no sea el propio lead ni
 // un dominio de HARD_DROP_DOMAINS/SOFT_SKIP_DOMAINS.
@@ -334,7 +351,8 @@ async function processResult({ result, city, category, pageResults }) {
 
   const isSkipped = !result.url
     || SOFT_SKIP_DOMAINS.some(d => result.url.includes(d))
-    || looksLikeDirectoryListing(result.url);
+    || looksLikeDirectoryListing(result.url)
+    || looksLikeNonHtmlFile(result.url);
 
   const lead = {
     company_name: result.title,

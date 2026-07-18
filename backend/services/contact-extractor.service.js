@@ -182,7 +182,14 @@ export const contactExtractorService = {
       // Extracción en la página principal
       let { emails, phones } = await extractContactFromPage(page);
 
-      // Si faltan datos, rastrear páginas de contacto
+      // Si faltan datos, rastrear páginas de contacto — con presupuesto de
+      // tiempo total, no solo timeout por intento. Sin esto, un dominio que
+      // falla los 10 paths (ninguno existe de verdad) puede acumular hasta
+      // CONTACT_PATHS.length * CONTACT_PAGE_TIMEOUT (~80s) de bloqueo
+      // silencioso — encontrado en pruebas reales, sumado al timeout inicial
+      // de la página principal se sintió como una prospección "congelada".
+      const CONTACT_PATHS_BUDGET_MS = 20000;
+      const contactPathsStart = Date.now();
       if (!emails.length || !phones.length) {
         let baseUrl;
         try { baseUrl = new URL(url).origin; } catch { baseUrl = null; }
@@ -190,6 +197,7 @@ export const contactExtractorService = {
         if (baseUrl) {
           for (const contactPath of CONTACT_PATHS) {
             if (emails.length && phones.length) break;
+            if (Date.now() - contactPathsStart > CONTACT_PATHS_BUDGET_MS) break;
             try {
               await page.goto(baseUrl + contactPath, {
                 waitUntil: 'domcontentloaded',
