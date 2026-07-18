@@ -186,6 +186,42 @@ function looksLikeNonHtmlFile(url) {
   }
 }
 
+// Google trata `location`/`gl` como una preferencia de ranking, no un filtro
+// duro — para un municipio pequeño con poco inventario real, páginas de
+// autoridad nacional sobre una ciudad grande distinta pueden colarse igual
+// (encontrado en pruebas reales: "Restaurante Coque en Madrid", "Restaurante
+// O'Grelo - Madrid" aparecieron buscando restaurantes en Azuqueca de
+// Henares). Si el título/snippet nombra explícitamente una ciudad grande
+// española que NO es la buscada, es casi seguro que el negocio está en esa
+// otra ciudad, no en el municipio objetivo — se descarta.
+const MAJOR_SPANISH_CITIES = [
+  'madrid', 'barcelona', 'valencia', 'sevilla', 'zaragoza', 'malaga', 'murcia',
+  'palma', 'las palmas', 'bilbao', 'alicante', 'cordoba', 'valladolid', 'vigo',
+  'gijon', 'granada', 'elche', 'oviedo', 'santander', 'pamplona', 'almeria',
+  'san sebastian', 'donostia', 'burgos', 'castellon', 'salamanca', 'huelva',
+  'logrono', 'badajoz', 'lleida', 'tarragona', 'leon', 'cadiz', 'jaen',
+  'toledo', 'girona', 'caceres', 'guadalajara', 'santiago de compostela',
+  'a coruna', 'ourense', 'lugo', 'ferrol', 'reus', 'mataro', 'sabadell',
+  'terrassa', 'badalona', 'cartagena', 'jerez', 'mostoles', 'alcala de henares',
+  'fuenlabrada', 'leganes', 'getafe', 'alcorcon', 'albacete',
+];
+
+function normalizeForCityMatch(text) {
+  return (text || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '');
+}
+
+function mentionsWrongCity(text, targetCity, targetProvincia) {
+  const norm = normalizeForCityMatch(text);
+  const targets = [normalizeForCityMatch(targetCity), normalizeForCityMatch(targetProvincia)].filter(Boolean);
+  return MAJOR_SPANISH_CITIES.some(bigCity => {
+    if (targets.some(t => t.includes(bigCity) || bigCity.includes(t))) return false;
+    return new RegExp(`\\b${bigCity}\\b`).test(norm);
+  });
+}
+
 // Competidor principal: reutiliza el SERP ya obtenido (coste de red cero) — el
 // resultado mejor posicionado de la misma página que no sea el propio lead ni
 // un dominio de HARD_DROP_DOMAINS/SOFT_SKIP_DOMAINS.
@@ -271,7 +307,7 @@ export async function startProspectionV2({ query, includeTerms, excludeTerms, ci
           }
           if (domain) seenDomains.add(domain);
 
-          const lead = await processResult({ result, city, category, pageResults: results });
+          const lead = await processResult({ result, city, provincia, category, pageResults: results });
           if (lead) {
             leads.push(lead);
             logger.info(`   ✅ ${lead.company_name}${lead.email ? ` — ${lead.email}` : ''}${lead.gmb_rating ? ` ⭐${lead.gmb_rating}` : ''}`);
@@ -346,11 +382,16 @@ async function fetchSerpPage({ query, city, page }) {
   }
 }
 
-async function processResult({ result, city, category, pageResults }) {
+async function processResult({ result, city, provincia, category, pageResults }) {
   // HARD_DROP: ni siquiera se guarda la fila — redes sociales, institucional,
   // portales de empleo o grandes cadenas nunca son un prospecto real.
   if (result.url && (HARD_DROP_DOMAINS.some(d => result.url.includes(d)) || looksLikeJobBoard(result.url))) {
     logger.debug(`   🚫 Descartado (hard drop): ${result.url}`);
+    return null;
+  }
+
+  if (mentionsWrongCity(`${result.title} ${result.snippet || ''}`, city, provincia)) {
+    logger.debug(`   🚫 Descartado (otra ciudad): ${result.title}`);
     return null;
   }
 
