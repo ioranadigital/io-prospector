@@ -116,7 +116,12 @@ function getIntentModifiers(category) {
 // un término por página cubre el mismo terreno sin diluir cada búsqueda.
 function buildQueryVariations(category, terms, excludeTerms = []) {
   const [mod1, mod2, mod3] = getIntentModifiers(category);
-  const excludeClause = excludeTerms.map(t => `-${t}`).join(' ');
+  // Comillas obligatorias: sin ellas, "-paginas amarillas" solo excluye
+  // "paginas" y deja "amarillas" como palabra clave normal, arrastrando la
+  // búsqueda hacia páginas que hablen de "amarillo/a" en cualquier país
+  // (encontrado en pruebas reales: derivó en resultados de Lima y México para
+  // una búsqueda de restaurantes en Guadalajara, España).
+  const excludeClause = excludeTerms.map(t => `-"${t}"`).join(' ');
   const templates = [
     (q, c) => `${q} ${c}`,
     (q, c) => `${q} en ${c}`,
