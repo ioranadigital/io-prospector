@@ -659,10 +659,10 @@ export function TemplatesAdmin() {
           {/* Pestañas de navegación tipo Chrome */}
           <div className="flex gap-2 border-b border-zinc-700 mb-6">
             {[
-              { value: 'all', label: 'Todas', icon: null, count: templates.length },
-              { value: 'email', label: 'Email', icon: <Mail size={13} />, count: templates.filter(t => t.type === 'email').length },
               { value: 'whatsapp', label: 'WhatsApp', icon: <MessageCircle size={13} />, count: templates.filter(t => t.type === 'whatsapp').length },
+              { value: 'email', label: 'Email', icon: <Mail size={13} />, count: templates.filter(t => t.type === 'email').length },
               { value: 'whatsapp-frio', label: 'WhatsApp en Frío', icon: <Lock size={13} />, count: WHATSAPP_TEMPLATES.length },
+              { value: 'all', label: 'Todas', icon: null, count: templates.length },
             ].map(tab => (
               <button
                 key={tab.value}
