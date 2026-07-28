@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { Trash2, Plus, Eye, Pencil, Mail, MessageCircle, FolderOpen, Copy, Settings, X, Check, Smile, Type } from 'lucide-react';
+import { Trash2, Plus, Eye, Pencil, Mail, MessageCircle, FolderOpen, Copy, Settings, X, Check, Smile, Type, AlertTriangle, Lock } from 'lucide-react';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { WHATSAPP_TEMPLATES } from '@/components/leads/SendModal';
 
 const MAX_CHARS: Record<'email' | 'whatsapp', number> = { email: 1500, whatsapp: 1000 };
 
@@ -64,7 +65,7 @@ export function TemplatesAdmin() {
   const [editing, setEditing] = useState<Template | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [preview, setPreview] = useState(false);
-  const [filterType, setFilterType] = useState<'email' | 'whatsapp' | 'all'>('all');
+  const [filterType, setFilterType] = useState<'email' | 'whatsapp' | 'all' | 'whatsapp-frio'>('all');
 
   const [templateType, setTemplateType] = useState<'email' | 'whatsapp'>('email');
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
@@ -367,7 +368,7 @@ export function TemplatesAdmin() {
 
   return (
     <div className="space-y-6">
-      {!showForm && (
+      {!showForm && filterType !== 'whatsapp-frio' && (
         <button
           onClick={() => {
             setEditing(defaultTemplate as Template);
@@ -649,7 +650,11 @@ export function TemplatesAdmin() {
 
       <div className="space-y-6">
         <div>
-          <h3 className="text-lg font-semibold mb-4">Plantillas ({templates.filter(t => t.is_active).length} activas)</h3>
+          <h3 className="text-lg font-semibold mb-4">
+            {filterType === 'whatsapp-frio'
+              ? `Plantillas WhatsApp en frío (${WHATSAPP_TEMPLATES.filter(t => t.sid).length} de ${WHATSAPP_TEMPLATES.length} activas)`
+              : `Plantillas (${templates.filter(t => t.is_active).length} activas)`}
+          </h3>
 
           {/* Pestañas de navegación tipo Chrome */}
           <div className="flex gap-2 border-b border-zinc-700 mb-6">
@@ -657,6 +662,7 @@ export function TemplatesAdmin() {
               { value: 'all', label: 'Todas', icon: null, count: templates.length },
               { value: 'email', label: 'Email', icon: <Mail size={13} />, count: templates.filter(t => t.type === 'email').length },
               { value: 'whatsapp', label: 'WhatsApp', icon: <MessageCircle size={13} />, count: templates.filter(t => t.type === 'whatsapp').length },
+              { value: 'whatsapp-frio', label: 'WhatsApp en Frío', icon: <Lock size={13} />, count: WHATSAPP_TEMPLATES.length },
             ].map(tab => (
               <button
                 key={tab.value}
@@ -675,7 +681,33 @@ export function TemplatesAdmin() {
             ))}
           </div>
 
-          {templates.length === 0 ? (
+          {filterType === 'whatsapp-frio' ? (
+            <div className="space-y-4">
+              <div className="flex items-start gap-2 bg-blue-950/30 border border-blue-900/50 rounded-lg px-4 py-3 text-sm text-blue-200">
+                <Lock size={15} className="flex-shrink-0 mt-0.5" />
+                <p>
+                  Estas plantillas están fijadas en el código (<code className="bg-zinc-800 px-1 rounded">SendModal.tsx</code>), no en esta base de datos, porque su texto debe coincidir exactamente con lo aprobado por Meta en Twilio. No son editables desde aquí — para cambiarlas hay que tocar el código y volver a desplegar.
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {WHATSAPP_TEMPLATES.map((tmpl, i) => (
+                  <div key={tmpl.sid || i} className="rounded-lg border border-zinc-700 bg-zinc-800 p-4 space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-medium text-white">{tmpl.name}</p>
+                      <span className={`text-xs px-1.5 py-0.5 rounded font-mono flex-shrink-0 ${
+                        tmpl.sid ? 'bg-green-600/30 text-green-300' : 'bg-zinc-700 text-zinc-400'
+                      }`}>
+                        {tmpl.sid || 'pendiente de aprobación'}
+                      </span>
+                    </div>
+                    <p className="text-xs whitespace-pre-wrap text-zinc-400 font-mono leading-relaxed max-h-40 overflow-y-auto">
+                      {tmpl.body}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : templates.length === 0 ? (
             <p className="text-zinc-400 text-center py-8">No hay plantillas creadas</p>
           ) : (
             <div className="space-y-8">
@@ -698,10 +730,19 @@ export function TemplatesAdmin() {
                       {categoryTemplates.map(template => (
                         <div
                           key={template.id}
+                          title={
+                            template.type === 'whatsapp'
+                              ? 'Se usa solo en el envío masivo (WhatsApp Web). El envío individual de primer contacto usa una plantilla aprobada por Meta con texto fijo en el código — editar esto no la cambia.'
+                              : undefined
+                          }
                           className={`rounded-lg border px-3 py-2.5 flex items-center justify-between gap-2 transition-all ${
-                            template.is_active
-                              ? 'bg-zinc-800 border-zinc-700 hover:border-blue-500'
-                              : 'bg-zinc-900 border-zinc-800 opacity-50'
+                            template.type === 'whatsapp'
+                              ? template.is_active
+                                ? 'bg-red-950/30 border-red-900/60 hover:border-red-500'
+                                : 'bg-red-950/10 border-red-900/30 opacity-50'
+                              : template.is_active
+                                ? 'bg-zinc-800 border-zinc-700 hover:border-blue-500'
+                                : 'bg-zinc-900 border-zinc-800 opacity-50'
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -712,6 +753,9 @@ export function TemplatesAdmin() {
                             }`}>
                               {template.type === 'email' ? <Mail size={11} /> : <MessageCircle size={11} />}
                             </span>
+                            {template.type === 'whatsapp' && (
+                              <AlertTriangle size={12} className="text-red-400 flex-shrink-0" />
+                            )}
                             <p className="text-sm font-medium text-white truncate">{template.name}</p>
                           </div>
                           <div className="flex items-center gap-1 flex-shrink-0">

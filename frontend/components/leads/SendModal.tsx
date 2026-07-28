@@ -40,14 +40,14 @@ function getTopIssueImpact(severity?: string | null): string {
   return (severity && TOP_ISSUE_IMPACT[severity]) || 'no evaluado';
 }
 
-type WhatsappTemplateContext = {
+export type WhatsappTemplateContext = {
   leadName: string;
   city?: string;
   category?: string;
   mainCompetitor: string;
 };
 
-type WhatsappTemplate = {
+export type WhatsappTemplate = {
   sid: string | null; // null = pendiente de aprobación Meta, se excluye del selector
   name: string;
   body: string; // texto aprobado, con placeholders {{1}}..{{n}}
@@ -61,7 +61,7 @@ type WhatsappTemplate = {
 // de las 24h posteriores a una respuesta real del lead). Cuando se apruebe
 // una plantilla nueva en Twilio Content Editor, basta con añadirla aquí con
 // su `sid` para que aparezca en el selector — no hace falta tocar nada más.
-const WHATSAPP_TEMPLATES: WhatsappTemplate[] = [
+export const WHATSAPP_TEMPLATES: WhatsappTemplate[] = [
   {
     sid: 'HXf45c24e945a71837990de0a4aabbb5e5',
     name: '1. Sin web / sin ficha en Google',
