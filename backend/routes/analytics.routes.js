@@ -101,12 +101,27 @@ router.get('/summary', async (req, res, next) => {
     // ── Actividad de contacto ──────────────────────────────
     const { data: activitiesData } = await supabase
       .from('io_pro_lead_activities')
-      .select('type, created_at');
+      .select('type, direction, created_at, lead_id');
     const activities = activitiesData || [];
     const since7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+    // direction solo existe de forma fiable para whatsapp (email/call son
+    // siempre salientes) — 'inbound' es una respuesta real del lead.
+    const whatsappSent = activities.filter(a => a.type === 'whatsapp' && a.direction !== 'inbound');
+    const whatsappReceived = activities.filter(a => a.type === 'whatsapp' && a.direction === 'inbound');
+    const whatsappContactedLeads = new Set(whatsappSent.map(a => a.lead_id));
+    const whatsappRepliedLeads = new Set(whatsappReceived.map(a => a.lead_id));
+
     const activityCounts = {
       total_emails: activities.filter(a => a.type === 'email').length,
       total_whatsapp: activities.filter(a => a.type === 'whatsapp').length,
+      total_whatsapp_sent: whatsappSent.length,
+      total_whatsapp_received: whatsappReceived.length,
+      whatsapp_contacted_leads: whatsappContactedLeads.size,
+      whatsapp_replied_leads: whatsappRepliedLeads.size,
+      whatsapp_response_rate: whatsappContactedLeads.size > 0
+        ? Math.round((whatsappRepliedLeads.size / whatsappContactedLeads.size) * 100)
+        : 0,
       total_calls: activities.filter(a => a.type === 'call').length,
       total_notes: activities.filter(a => a.type === 'note').length,
       recent_7d: activities.filter(a =>

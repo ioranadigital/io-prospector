@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import {
   RefreshCw, TrendingUp, CheckCircle, BarChart3, Mail, Search,
   Globe, ShieldCheck, Smartphone, Code2, MapPin, Link2, Phone,
-  MessageCircle, Users, Activity, Gauge, Star, AlertTriangle,
+  MessageCircle, Users, Activity, Gauge, Star, AlertTriangle, ArrowDownLeft,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -273,10 +273,18 @@ export default function DashboardPage() {
           </div>
 
           <SectionCard title="Actividad de Contacto" accent="pink">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
               <MiniStat icon={Mail} label="Emails enviados" value={data.activity?.total_emails || 0} color="text-blue-400" />
-              <MiniStat icon={MessageCircle} label="WhatsApps enviados" value={data.activity?.total_whatsapp || 0} color="text-green-400" />
+              <MiniStat icon={MessageCircle} label="WhatsApps enviados" value={data.activity?.total_whatsapp_sent || 0} color="text-green-400" />
               <MiniStat icon={Phone} label="Llamadas" value={data.activity?.total_calls || 0} color="text-amber-400" />
+              <MiniStat icon={ArrowDownLeft} label="Respuestas WhatsApp" value={data.activity?.total_whatsapp_received || 0} color="text-amber-400" />
+              <MiniStat
+                icon={TrendingUp}
+                label="Tasa de respuesta WhatsApp"
+                value={`${data.activity?.whatsapp_response_rate || 0}%`}
+                sub={`${data.activity?.whatsapp_replied_leads || 0} de ${data.activity?.whatsapp_contacted_leads || 0} leads contactados`}
+                color="text-emerald-400"
+              />
               <MiniStat icon={Activity} label="Últimos 7 días" value={data.activity?.recent_7d || 0} color="text-purple-400" />
             </div>
           </SectionCard>
@@ -340,14 +348,15 @@ function PriorityList({ priority }: { priority?: Record<string, number> }) {
   );
 }
 
-function MiniStat({ icon: Icon, label, value, color }:
-  { icon?: React.FC<any>; label: string; value: React.ReactNode; color: string }) {
+function MiniStat({ icon: Icon, label, value, color, sub }:
+  { icon?: React.FC<any>; label: string; value: React.ReactNode; color: string; sub?: string }) {
   return (
     <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
       <div className="text-xs font-semibold text-zinc-400 uppercase mb-2 flex items-center gap-1.5">
         {Icon && <Icon size={13} />} {label}
       </div>
       <p className={`text-3xl font-bold ${color}`}>{value}</p>
+      {sub && <p className="text-xs text-zinc-500 mt-1">{sub}</p>}
     </div>
   );
 }
