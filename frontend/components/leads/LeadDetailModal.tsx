@@ -1,9 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase, type Lead } from '@/lib/supabase';
+import { supabase, type Lead, type LeadActivity } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { X, Save, Mail, MessageCircle, MapPin, Phone, Search, Map, Target, Trophy, Wrench, FileText, Pencil, AlertTriangle, CheckCircle, XCircle, Star, Facebook, Instagram, Music2 } from 'lucide-react';
+import { X, Save, Mail, MessageCircle, MapPin, Phone, Search, Map, Target, Trophy, Wrench, FileText, Pencil, AlertTriangle, CheckCircle, XCircle, Star, Facebook, Instagram, Music2, History, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+
+function timeAgo(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+  if (diffMins < 1) return 'Hace momentos';
+  if (diffMins < 60) return `Hace ${diffMins}m`;
+  if (diffHours < 24) return `Hace ${diffHours}h`;
+  return `Hace ${diffDays}d`;
+}
 
 function getSocialPlatform(url: string): 'facebook' | 'instagram' | 'tiktok' | null {
   try {
@@ -38,6 +49,7 @@ export function LeadDetailModal({
 }: LeadDetailModalProps) {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [activities, setActivities] = useState<LeadActivity[]>([]);
   const [formData, setFormData] = useState({
     email: lead.email || '',
     phone: lead.phone || '',
@@ -60,6 +72,23 @@ export function LeadDetailModal({
     });
     setEditing(false);
   }, [lead.id]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    supabase
+      .from('io_pro_lead_activities')
+      .select('*')
+      .eq('lead_id', lead.id)
+      .order('created_at', { ascending: false })
+      .limit(20)
+      .then(({ data, error }) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        setActivities(data || []);
+      });
+  }, [lead.id, isOpen]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -175,6 +204,37 @@ export function LeadDetailModal({
                   placeholder="agregar teléfono..."
                 />
               </div>
+            </div>
+          </section>
+
+          {/* Historial de Contacto */}
+          <section className="space-y-3">
+            <h3 className="text-sm font-semibold text-zinc-400 uppercase flex items-center gap-1.5"><History size={14} /> Historial de Contacto</h3>
+            <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
+              {activities.length === 0 ? (
+                <p className="text-sm text-zinc-500">Sin contacto registrado todavía.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {activities.map(activity => {
+                    const isInbound = activity.direction === 'inbound';
+                    const label = isInbound
+                      ? (activity.metadata?.body || activity.body || 'Respuesta recibida')
+                      : (activity.metadata?.template_name || activity.body || 'Contacto');
+                    return (
+                      <li key={activity.id} className="flex items-start gap-2 text-sm">
+                        {isInbound ? (
+                          <ArrowDownLeft size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                        ) : (
+                          <ArrowUpRight size={14} className="text-blue-400 flex-shrink-0 mt-0.5" />
+                        )}
+                        {activity.type === 'email' ? <Mail size={12} className="text-zinc-500 flex-shrink-0 mt-1" /> : <MessageCircle size={12} className="text-zinc-500 flex-shrink-0 mt-1" />}
+                        <span className="text-zinc-200 truncate flex-1">{label}</span>
+                        <span className="text-xs text-zinc-500 flex-shrink-0">{timeAgo(activity.created_at)}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
             </div>
           </section>
 

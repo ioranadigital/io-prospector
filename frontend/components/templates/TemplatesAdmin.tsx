@@ -727,16 +727,18 @@ export function TemplatesAdmin() {
                       <FolderOpen size={13} /> {category}
                     </h4>
                     <div className="grid grid-cols-4 gap-2">
-                      {categoryTemplates.map(template => (
+                      {categoryTemplates.map(template => {
+                        const isLegacyBulkOnly = template.type === 'whatsapp' && template.category === '1 PRIMER CONTACTO';
+                        return (
                         <div
                           key={template.id}
                           title={
-                            template.type === 'whatsapp'
+                            isLegacyBulkOnly
                               ? 'Se usa solo en el envío masivo (WhatsApp Web). El envío individual de primer contacto usa una plantilla aprobada por Meta con texto fijo en el código — editar esto no la cambia.'
                               : undefined
                           }
                           className={`rounded-lg border px-3 py-2.5 flex items-center justify-between gap-2 transition-all ${
-                            template.type === 'whatsapp'
+                            isLegacyBulkOnly
                               ? template.is_active
                                 ? 'bg-red-950/30 border-red-900/60 hover:border-red-500'
                                 : 'bg-red-950/10 border-red-900/30 opacity-50'
@@ -753,7 +755,7 @@ export function TemplatesAdmin() {
                             }`}>
                               {template.type === 'email' ? <Mail size={11} /> : <MessageCircle size={11} />}
                             </span>
-                            {template.type === 'whatsapp' && (
+                            {isLegacyBulkOnly && (
                               <AlertTriangle size={12} className="text-red-400 flex-shrink-0" />
                             )}
                             <p className="text-sm font-medium text-white truncate">{template.name}</p>
@@ -782,7 +784,8 @@ export function TemplatesAdmin() {
                             </button>
                           </div>
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 );

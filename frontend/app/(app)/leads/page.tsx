@@ -6,10 +6,8 @@ import { supabase } from '@/lib/supabase';
 import { CsvUploader } from '@/components/leads/CsvUploader';
 import { AddLeadModal } from '@/components/leads/AddLeadModal';
 import { LeadsTable } from '@/components/leads/LeadsTable';
-import { LeadDetailModal } from '@/components/leads/LeadDetailModal';
 import { ActivitiesTable } from '@/components/activities/ActivitiesTable';
 import { resolveSector, getAllSectorNames } from '@/lib/sector-lookup';
-import type { Lead } from '@/lib/supabase';
 
 // Nombres cortos para que las 12 pestañas de sector quepan en una línea sin
 // scroll horizontal — el nombre completo sigue disponible en el title (hover).
@@ -35,7 +33,6 @@ export default function LeadsPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSector, setSelectedSector] = useState<string | null>(null);
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [addLeadOpen, setAddLeadOpen] = useState(false);
 
   // Siempre se muestran los 12 sectores (aunque alguno no tenga leads
@@ -218,9 +215,6 @@ export default function LeadsPage() {
                 filterCategory={selectedCategory}
                 filterSector={selectedSector}
                 source={source}
-                onSelectLead={(lead) => {
-                  setSelectedLead(lead);
-                }}
               />
             </div>
           </div>
@@ -232,18 +226,6 @@ export default function LeadsPage() {
         onClose={() => setAddLeadOpen(false)}
         onCreated={() => setRefreshTrigger(prev => prev + 1)}
       />
-
-      {/* Modal de detalle */}
-      {selectedLead && (
-        <LeadDetailModal
-          lead={selectedLead}
-          isOpen={true}
-          onClose={() => setSelectedLead(null)}
-          onSendEmail={() => {}}
-          onSendWhatsApp={() => {}}
-          onUpdate={() => setRefreshTrigger(prev => prev + 1)}
-        />
-      )}
 
       {activeTab === 'activities' && (
         <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">

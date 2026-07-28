@@ -1,0 +1,11 @@
+-- io_pro_lead_activities tiene RLS activado sin ninguna política definida,
+-- lo que bloquea toda lectura desde el cliente del navegador (anon/authenticated
+-- reciben siempre []; solo service_role, que ignora RLS, ve las filas). Por eso
+-- la columna "Estado" de LeadsTable y el nuevo historial de LeadDetailModal no
+-- pueden mostrar nada aunque la tabla tenga datos.
+--
+-- Las tablas hermanas io_pro_leads y io_pro_message_templates ya tienen RLS
+-- desactivado — el control de acceso de esta app vive en el middleware de
+-- Next.js (login de sesión), no en políticas de Postgres. Se alinea esta tabla
+-- con ese mismo modelo.
+ALTER TABLE io_pro_lead_activities DISABLE ROW LEVEL SECURITY;

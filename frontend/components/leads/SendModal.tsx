@@ -168,6 +168,8 @@ export function SendModal({
     if (type === 'whatsapp') {
       if (isFreeTextWindow) {
         setFreeText('');
+        setSelectedTemplate('');
+        loadFollowupTemplates();
       } else if (availableWhatsappTemplates.length) {
         setSelectedWhatsappSid(availableWhatsappTemplates[0].sid!);
         setPreview(renderWhatsappPreview(availableWhatsappTemplates[0]));
@@ -207,6 +209,44 @@ export function SendModal({
       toast.error('Error al cargar plantillas');
     }
   };
+
+  // Plantillas de seguimiento (segundo/tercer contacto...) para arrancar el
+  // texto libre de la ventana de 24h — nunca la categoría de primer contacto
+  // en frío, esa vive solo en WHATSAPP_TEMPLATES arriba.
+  const loadFollowupTemplates = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('io_pro_message_templates')
+        .select('*')
+        .eq('type', 'whatsapp')
+        .eq('is_active', true)
+        .neq('category', '1 PRIMER CONTACTO')
+        .order('category', { ascending: true });
+
+      if (error) throw error;
+      setTemplates(data || []);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const applyFollowupTemplate = (templateId: string) => {
+    setSelectedTemplate(templateId);
+    if (!templateId) return;
+    const tmpl = templates.find(t => t.id === templateId);
+    if (!tmpl) return;
+    const variables = buildVariables();
+    let body = tmpl.body || '';
+    Object.entries(variables).forEach(([key, value]) => {
+      body = body.replace(new RegExp(`{{${key}}}`, 'g'), value || '');
+    });
+    setFreeText(body);
+  };
+
+  const templatesByCategory = templates.reduce<Record<string, MessageTemplate[]>>((acc, t) => {
+    (acc[t.category] ||= []).push(t);
+    return acc;
+  }, {});
 
   const buildVariables = () => ({
     business_name: leadName,
@@ -384,18 +424,41 @@ export function SendModal({
         )}
 
         {type === 'whatsapp' && isFreeTextWindow && (
-          <div>
-            <p className="text-xs text-emerald-400 mb-2">
+          <div className="space-y-3">
+            <p className="text-xs text-emerald-400">
               El lead respondió por WhatsApp — modo texto libre disponible durante 24h desde su última respuesta.
             </p>
-            <label className="block text-sm font-medium mb-2">Mensaje</label>
-            <textarea
-              value={freeText}
-              onChange={e => setFreeText(e.target.value)}
-              rows={6}
-              placeholder="Escribe el mensaje..."
-              className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2 rounded text-white text-sm"
-            />
+            {templates.length > 0 && (
+              <div>
+                <label className="block text-sm font-medium mb-2">Plantilla de seguimiento (opcional)</label>
+                <select
+                  value={selectedTemplate}
+                  onChange={e => applyFollowupTemplate(e.target.value)}
+                  className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2 rounded text-white"
+                >
+                  <option value="">Texto libre (sin plantilla)</option>
+                  {Object.entries(templatesByCategory).map(([cat, items]) => (
+                    <optgroup key={cat} label={cat}>
+                      {items.map(t => (
+                        <option key={t.id} value={t.id}>
+                          {t.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </div>
+            )}
+            <div>
+              <label className="block text-sm font-medium mb-2">Mensaje</label>
+              <textarea
+                value={freeText}
+                onChange={e => setFreeText(e.target.value)}
+                rows={6}
+                placeholder="Escribe el mensaje..."
+                className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2 rounded text-white text-sm"
+              />
+            </div>
           </div>
         )}
 
@@ -423,7 +486,7 @@ export function SendModal({
           </div>
         )}
 
-        {(template || (type === 'whatsapp' && !isFreeTextWindow)) && (
+        {((type === 'email' && template) || (type === 'whatsapp' && !isFreeTextWindow)) && (
           <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-3">
             <p className="text-xs font-semibold text-zinc-400 uppercase">Vista previa</p>
             {type === 'email' && template?.subject && (

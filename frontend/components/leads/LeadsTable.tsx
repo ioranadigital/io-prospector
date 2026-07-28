@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { supabase, type Lead } from '@/lib/supabase';
+import { supabase, type Lead, type LeadActivity } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import { BarChart3, CheckCircle2, Circle, Trash2, CheckCircle, XCircle, Clock, Mail, MessageCircle, Star, Copy, ClipboardList, Facebook, Instagram, Music2 } from 'lucide-react';
 import { SendModal } from './SendModal';
@@ -30,17 +30,6 @@ function getSocialPlatform(url: string): 'facebook' | 'instagram' | 'tiktok' | n
 }
 
 const SOCIAL_ICON = { facebook: Facebook, instagram: Instagram, tiktok: Music2 };
-
-type LeadActivity = {
-  id: string;
-  lead_id: string;
-  type: string;
-  outcome: string;
-  created_at: string;
-  metadata?: {
-    template_name?: string;
-  };
-};
 
 export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSelectLead, source = 'all' }: { refreshTrigger: number; filterCategory: string | null; filterSector?: string | null; onSelectLead?: (lead: Lead) => void; source?: 'all' | 'prospector' | 'audit' | 'manual' }) {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -129,7 +118,10 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
 
     const typeIcon = activity.type === 'email' ? <Mail size={12} /> : <MessageCircle size={12} />;
     const typeDesc = activity.type === 'email' ? 'Email enviado' : 'WhatsApp enviado';
-    const template = activity.metadata?.template_name || 'Contacto';
+    const template =
+      activity.direction === 'inbound'
+        ? (activity.metadata?.body || activity.body || 'Respuesta recibida').slice(0, 40)
+        : activity.metadata?.template_name || 'Contacto';
     const date = new Date(activity.created_at);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
@@ -147,7 +139,11 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
     let statusDesc = '';
     let statusColor = '';
 
-    if (activity.outcome === 'sent') {
+    if (activity.direction === 'inbound') {
+      statusIcon = <MessageCircle size={12} className="text-amber-400" />;
+      statusDesc = 'El lead respondió — pendiente de contestar';
+      statusColor = 'text-amber-400';
+    } else if (activity.outcome === 'sent') {
       statusIcon = <CheckCircle size={12} className="text-green-400" />;
       statusDesc = 'Enviado correctamente';
       statusColor = 'text-green-400';
@@ -301,11 +297,15 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
               const lastActivity = getLastActivity(lead.id);
               const status = getActivityStatus(lastActivity);
 
+              const hasPendingReply = lastActivity?.direction === 'inbound';
+
               return (
                 <tr
                   key={lead.id}
-                  className="border-b border-zinc-800 hover:bg-zinc-800/50 transition cursor-pointer"
-                  onClick={() => onSelectLead?.(lead)}
+                  className={`border-b border-zinc-800 hover:bg-zinc-800/50 transition cursor-pointer ${
+                    hasPendingReply ? 'bg-amber-950/20' : ''
+                  }`}
+                  onClick={() => { onSelectLead?.(lead); setDetailLead(lead); }}
                 >
                   <td className="px-3 py-3">
                     <button
