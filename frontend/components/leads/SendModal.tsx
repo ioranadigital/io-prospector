@@ -292,7 +292,6 @@ export function SendModal({
             message: preview,
             contentTemplateSid: tmpl.sid,
             variables,
-            templateId: tmpl.sid,
             templateName: tmpl.name,
           }),
         });
