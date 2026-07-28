@@ -40,13 +40,32 @@ function getTopIssueImpact(severity?: string | null): string {
   return (severity && TOP_ISSUE_IMPACT[severity]) || 'no evaluado';
 }
 
-// Plantilla de WhatsApp aprobada por Meta para primer contacto en frío.
-// WhatsApp exige plantilla aprobada (máx. 4 variables cortas) para el primer
-// mensaje a un lead que nunca ha escrito — un texto libre se rechaza siempre,
-// así que WhatsApp no puede usar el sistema de plantillas libres de email.
-const WHATSAPP_TEMPLATE_SID = 'HXf45c24e945a71837990de0a4aabbb5e5';
-const WHATSAPP_TEMPLATE_NAME = '1_pros_sin_web_sin_local_primer';
-const WHATSAPP_TEMPLATE_BODY = `Hola {{1}} 👋
+type WhatsappTemplateContext = {
+  leadName: string;
+  city?: string;
+  category?: string;
+  mainCompetitor: string;
+};
+
+type WhatsappTemplate = {
+  sid: string | null; // null = pendiente de aprobación Meta, se excluye del selector
+  name: string;
+  body: string; // texto aprobado, con placeholders {{1}}..{{n}}
+  buildVariables: (ctx: WhatsappTemplateContext) => Record<string, string>;
+};
+
+// Plantillas de WhatsApp aprobadas por Meta para primer contacto en frío.
+// WhatsApp exige plantilla aprobada (texto fijo, variables cortas) para el
+// primer mensaje a un lead que nunca ha escrito — un texto libre se rechaza
+// siempre en esa situación (ver isFreeTextWindow más abajo para la excepción
+// de las 24h posteriores a una respuesta real del lead). Cuando se apruebe
+// una plantilla nueva en Twilio Content Editor, basta con añadirla aquí con
+// su `sid` para que aparezca en el selector — no hace falta tocar nada más.
+const WHATSAPP_TEMPLATES: WhatsappTemplate[] = [
+  {
+    sid: 'HXf45c24e945a71837990de0a4aabbb5e5',
+    name: '1. Sin web / sin ficha en Google',
+    body: `Hola {{1}} 👋
 
 ¿Tienes tu negocio dado de alta en Google? Estuve buscando {{2}} en {{3}} y no te encontré por ningún lado. Hoy la mayoría de la gente busca ahí antes de llamar o visitar un negocio, por tanto Google le acaba mostrando a tus competidores como {{4}}, que se llevan clientes que deberían ser vuestros.
 
@@ -55,13 +74,38 @@ Somos una agencia de la Zona (Guadalajara) y ayudamos a pymes locales a crear un
 Si quieres, te explico cómo solucionarlo rápido y gratis, sin pagar por la consulta 🚀.
 
 Un saludo, Ricardo
-www.ioranaseo.com`;
+www.ioranaseo.com`,
+    buildVariables: (ctx) => ({
+      '1': ctx.leadName,
+      '2': ctx.category ? resolveSector(ctx.category).sector : 'tu sector',
+      '3': ctx.city || 'tu zona',
+      '4': ctx.mainCompetitor || 'la competencia',
+    }),
+  },
+  {
+    sid: 'HX5ccd63d96910b7a58382ec1b33c278f1',
+    name: '2. Creamos tu web y ficha en Maps',
+    body: `Hola, {{1}}👋
+
+¿Tienes web y ficha en Google Maps para tu negocio?
+
+Si la respuesta es no, tengo algo que puede interesarte: en www.ioranaseo.com (Guadalajara) te creamos la página web y te damos de alta en Maps en un solo paquete, para que dejes de depender solo del boca a boca.
+
+¿Te interesa que te cuente cómo funciona? 🌐📍
+
+Un saludo,
+Ricardo`,
+    buildVariables: (ctx) => ({ '1': ctx.leadName }),
+  },
+  // 3-5: añadir aquí cuando Meta las apruebe.
+];
 
 type SendModalProps = {
   leadId: string;
   leadName: string;
   email: string;
   phone: string;
+  lastInboundAt?: string | null;
   city?: string;
   category?: string;
   mainCompetitor: string;
@@ -86,6 +130,7 @@ export function SendModal({
   leadName,
   email,
   phone,
+  lastInboundAt,
   city,
   category,
   mainCompetitor,
@@ -106,29 +151,36 @@ export function SendModal({
 }: SendModalProps) {
   const [templates, setTemplates] = useState<MessageTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [selectedWhatsappSid, setSelectedWhatsappSid] = useState('');
+  const [freeText, setFreeText] = useState('');
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState('');
+
+  const availableWhatsappTemplates = WHATSAPP_TEMPLATES.filter(t => t.sid);
+
+  // Meta permite texto libre sin plantilla durante 24h desde la última
+  // respuesta real del lead — pasada esa ventana, vuelve a exigir plantilla.
+  const isFreeTextWindow =
+    type === 'whatsapp' && !!lastInboundAt && Date.now() - new Date(lastInboundAt).getTime() < 24 * 60 * 60 * 1000;
 
   useEffect(() => {
     if (!isOpen) return;
     if (type === 'whatsapp') {
-      setPreview(renderWhatsappPreview());
+      if (isFreeTextWindow) {
+        setFreeText('');
+      } else if (availableWhatsappTemplates.length) {
+        setSelectedWhatsappSid(availableWhatsappTemplates[0].sid!);
+        setPreview(renderWhatsappPreview(availableWhatsappTemplates[0]));
+      }
     } else {
       loadTemplates();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, type]);
+  }, [isOpen, type, isFreeTextWindow]);
 
-  const buildWhatsappVariables = () => ({
-    '1': leadName,
-    '2': category ? resolveSector(category).sector : 'tu sector',
-    '3': city || 'tu zona',
-    '4': mainCompetitor || 'la competencia',
-  });
-
-  const renderWhatsappPreview = () => {
-    const vars = buildWhatsappVariables();
-    let body = WHATSAPP_TEMPLATE_BODY;
+  const renderWhatsappPreview = (tmpl: WhatsappTemplate) => {
+    const vars = tmpl.buildVariables({ leadName, city, category, mainCompetitor });
+    let body = tmpl.body;
     Object.entries(vars).forEach(([key, value]) => {
       body = body.replace(new RegExp(`{{${key}}}`, 'g'), value || '');
     });
@@ -197,6 +249,14 @@ export function SendModal({
       toast.error('Selecciona una plantilla');
       return;
     }
+    if (type === 'whatsapp' && !isFreeTextWindow && !selectedWhatsappSid) {
+      toast.error('Selecciona una plantilla');
+      return;
+    }
+    if (type === 'whatsapp' && isFreeTextWindow && !freeText.trim()) {
+      toast.error('Escribe un mensaje');
+      return;
+    }
 
     setLoading(true);
     try {
@@ -204,11 +264,25 @@ export function SendModal({
         const selectedTemplateObj = templates.find(t => t.id === selectedTemplate);
         const templateName = selectedTemplateObj?.name || '';
         await api.sendEmail({ leadId, email, templateId: selectedTemplate, templateName, variables: buildVariables() });
+      } else if (isFreeTextWindow) {
+        // Dentro de la ventana de 24h tras la última respuesta del lead, Meta
+        // permite texto libre sin plantilla.
+        const res = await fetch('/api/whatsapp/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ leadId, phone, message: freeText }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || `Error HTTP ${res.status}`);
+        }
       } else {
-        // WhatsApp de primer contacto va siempre por la plantilla aprobada por
-        // Meta (no admite texto libre) — se envían las 4 variables cortas, no
-        // el párrafo renderizado.
-        const variables = buildWhatsappVariables();
+        // Primer contacto en frío: va siempre por la plantilla aprobada por
+        // Meta seleccionada — se envían sus variables cortas, no el párrafo
+        // renderizado.
+        const tmpl = availableWhatsappTemplates.find(t => t.sid === selectedWhatsappSid);
+        if (!tmpl) throw new Error('Plantilla no encontrada');
+        const variables = tmpl.buildVariables({ leadName, city, category, mainCompetitor });
         const res = await fetch('/api/whatsapp/send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -216,10 +290,10 @@ export function SendModal({
             leadId,
             phone,
             message: preview,
-            contentTemplateSid: WHATSAPP_TEMPLATE_SID,
+            contentTemplateSid: tmpl.sid,
             variables,
-            templateId: WHATSAPP_TEMPLATE_SID,
-            templateName: WHATSAPP_TEMPLATE_NAME,
+            templateId: tmpl.sid,
+            templateName: tmpl.name,
           }),
         });
         if (!res.ok) {
@@ -290,7 +364,7 @@ export function SendModal({
           )}
         </div>
 
-        {type === 'email' ? (
+        {type === 'email' && (
           <div>
             <label className="block text-sm font-medium mb-2">Plantilla</label>
             <select
@@ -308,13 +382,49 @@ export function SendModal({
               ))}
             </select>
           </div>
-        ) : (
-          <p className="text-xs text-zinc-400">
-            Plantilla de WhatsApp aprobada por Meta para primer contacto — solo se rellenan nombre, sector, ciudad y competidor; el resto del texto es fijo.
-          </p>
         )}
 
-        {(template || type === 'whatsapp') && (
+        {type === 'whatsapp' && isFreeTextWindow && (
+          <div>
+            <p className="text-xs text-emerald-400 mb-2">
+              El lead respondió por WhatsApp — modo texto libre disponible durante 24h desde su última respuesta.
+            </p>
+            <label className="block text-sm font-medium mb-2">Mensaje</label>
+            <textarea
+              value={freeText}
+              onChange={e => setFreeText(e.target.value)}
+              rows={6}
+              placeholder="Escribe el mensaje..."
+              className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2 rounded text-white text-sm"
+            />
+          </div>
+        )}
+
+        {type === 'whatsapp' && !isFreeTextWindow && (
+          <div>
+            <label className="block text-sm font-medium mb-2">Plantilla (aprobada por Meta)</label>
+            <select
+              value={selectedWhatsappSid}
+              onChange={e => {
+                setSelectedWhatsappSid(e.target.value);
+                const tmpl = availableWhatsappTemplates.find(t => t.sid === e.target.value);
+                if (tmpl) setPreview(renderWhatsappPreview(tmpl));
+              }}
+              className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2 rounded text-white"
+            >
+              {availableWhatsappTemplates.map(t => (
+                <option key={t.sid} value={t.sid!}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-zinc-400 mt-2">
+              Primer contacto — solo se rellenan las variables cortas; el resto del texto es fijo y aprobado por Meta.
+            </p>
+          </div>
+        )}
+
+        {(template || (type === 'whatsapp' && !isFreeTextWindow)) && (
           <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-3">
             <p className="text-xs font-semibold text-zinc-400 uppercase">Vista previa</p>
             {type === 'email' && template?.subject && (
@@ -335,7 +445,12 @@ export function SendModal({
         <div className="flex gap-3 pt-2">
           <button
             onClick={handleSend}
-            disabled={loading || (type === 'email' && !selectedTemplate)}
+            disabled={
+              loading ||
+              (type === 'email' && !selectedTemplate) ||
+              (type === 'whatsapp' && !isFreeTextWindow && !selectedWhatsappSid) ||
+              (type === 'whatsapp' && isFreeTextWindow && !freeText.trim())
+            }
             className={`flex-1 px-4 py-2.5 rounded-lg font-semibold transition-colors ${
               type === 'email'
                 ? 'bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50'

@@ -507,6 +507,7 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
           leadName={leads.find(l => l.id === sendModal.leadId)?.business_name || ''}
           email={leads.find(l => l.id === sendModal.leadId)?.email || ''}
           phone={leads.find(l => l.id === sendModal.leadId)?.phone || ''}
+          lastInboundAt={leads.find(l => l.id === sendModal.leadId)?.last_inbound_at || null}
           city={leads.find(l => l.id === sendModal.leadId)?.city || ''}
           category={leads.find(l => l.id === sendModal.leadId)?.category || ''}
           mainCompetitor={leads.find(l => l.id === sendModal.leadId)?.main_competitor || ''}

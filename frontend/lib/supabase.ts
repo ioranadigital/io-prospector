@@ -32,6 +32,7 @@ export type Lead = {
   crm_status: string;
   priority: string;
   last_contact_at: string | null;
+  last_inbound_at: string | null;
   created_at: string;
   updated_at: string;
   seo_rating: number | null;

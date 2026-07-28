@@ -52,6 +52,7 @@ services:
       - PORT=3004
       - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
       - N8N_WHATSAPP_WEBHOOK_URL=${N8N_WHATSAPP_WEBHOOK_URL:-https://n8n.iorana.dev/webhook/twilio-whatsapp-envio}
+      - N8N_WEBHOOK_SECRET=${N8N_WEBHOOK_SECRET}
     depends_on:
       - backend
     restart: unless-stopped

@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-
-// Añade +34 cuando el número viene sin prefijo internacional (scraping ES).
-function normalizePhone(raw: string): string {
-  const digits = raw.replace(/[^\d+]/g, '');
-  if (digits.startsWith('+')) return digits;
-  if (digits.startsWith('34')) return `+${digits}`;
-  return `+34${digits}`;
-}
+import { normalizePhone } from '@/lib/phone';
 
 export async function POST(req: NextRequest) {
   try {
@@ -50,6 +43,7 @@ export async function POST(req: NextRequest) {
       const { error: activityError } = await supabase.from('io_pro_lead_activities').insert({
         lead_id: leadId,
         type: 'whatsapp',
+        direction: 'outbound',
         outcome: 'sent',
         template_id: templateId || null,
         metadata: { template_name: templateName, channel: 'n8n_twilio', body: message },
