@@ -40,6 +40,23 @@ function getTopIssueImpact(severity?: string | null): string {
   return (severity && TOP_ISSUE_IMPACT[severity]) || 'no evaluado';
 }
 
+// Plantilla de WhatsApp aprobada por Meta para primer contacto en frío.
+// WhatsApp exige plantilla aprobada (máx. 4 variables cortas) para el primer
+// mensaje a un lead que nunca ha escrito — un texto libre se rechaza siempre,
+// así que WhatsApp no puede usar el sistema de plantillas libres de email.
+const WHATSAPP_TEMPLATE_SID = 'HXf45c24e945a71837990de0a4aabbb5e5';
+const WHATSAPP_TEMPLATE_NAME = '1_pros_sin_web_sin_local_primer';
+const WHATSAPP_TEMPLATE_BODY = `Hola {{1}} 👋
+
+¿Tienes tu negocio dado de alta en Google? Estuve buscando {{2}} en {{3}} y no te encontré por ningún lado. Hoy la mayoría de la gente busca ahí antes de llamar o visitar un negocio, por tanto Google le acaba mostrando a tus competidores como {{4}}, que se llevan clientes que deberían ser vuestros.
+
+Somos una agencia de la Zona (Guadalajara) y ayudamos a pymes locales a crear un escaparate sencillo en internet (una web rápida y directa) y a posicionarlos en los mapas de Google para que el teléfono empiece a sonar.
+
+Si quieres, te explico cómo solucionarlo rápido y gratis, sin pagar por la consulta 🚀.
+
+Un saludo, Ricardo
+www.ioranaseo.com`;
+
 type SendModalProps = {
   leadId: string;
   leadName: string;
@@ -93,8 +110,30 @@ export function SendModal({
   const [preview, setPreview] = useState('');
 
   useEffect(() => {
-    if (isOpen) loadTemplates();
+    if (!isOpen) return;
+    if (type === 'whatsapp') {
+      setPreview(renderWhatsappPreview());
+    } else {
+      loadTemplates();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, type]);
+
+  const buildWhatsappVariables = () => ({
+    '1': leadName,
+    '2': category ? resolveSector(category).sector : 'tu sector',
+    '3': city || 'tu zona',
+    '4': mainCompetitor || 'la competencia',
+  });
+
+  const renderWhatsappPreview = () => {
+    const vars = buildWhatsappVariables();
+    let body = WHATSAPP_TEMPLATE_BODY;
+    Object.entries(vars).forEach(([key, value]) => {
+      body = body.replace(new RegExp(`{{${key}}}`, 'g'), value || '');
+    });
+    return body;
+  };
 
   const loadTemplates = async () => {
     try {
@@ -154,34 +193,34 @@ export function SendModal({
   };
 
   const handleSend = async () => {
-    if (!selectedTemplate) {
+    if (type === 'email' && !selectedTemplate) {
       toast.error('Selecciona una plantilla');
       return;
     }
 
     setLoading(true);
     try {
-      const selectedTemplateObj = templates.find(t => t.id === selectedTemplate);
-      const templateName = selectedTemplateObj?.name || '';
-
-      const variables = buildVariables();
-
-      const recipient = type === 'email' ? email : phone;
-      const body = {
-        leadId,
-        [type === 'email' ? 'email' : 'phone']: recipient,
-        templateId: selectedTemplate,
-        templateName,
-        variables,
-      };
-
       if (type === 'email') {
-        await api.sendEmail(body);
+        const selectedTemplateObj = templates.find(t => t.id === selectedTemplate);
+        const templateName = selectedTemplateObj?.name || '';
+        await api.sendEmail({ leadId, email, templateId: selectedTemplate, templateName, variables: buildVariables() });
       } else {
+        // WhatsApp de primer contacto va siempre por la plantilla aprobada por
+        // Meta (no admite texto libre) — se envían las 4 variables cortas, no
+        // el párrafo renderizado.
+        const variables = buildWhatsappVariables();
         const res = await fetch('/api/whatsapp/send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ leadId, phone: recipient, message: preview, templateId: selectedTemplate, templateName }),
+          body: JSON.stringify({
+            leadId,
+            phone,
+            message: preview,
+            contentTemplateSid: WHATSAPP_TEMPLATE_SID,
+            variables,
+            templateId: WHATSAPP_TEMPLATE_SID,
+            templateName: WHATSAPP_TEMPLATE_NAME,
+          }),
         });
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
@@ -251,28 +290,34 @@ export function SendModal({
           )}
         </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-2">Plantilla</label>
-          <select
-            value={selectedTemplate}
-            onChange={e => {
-              setSelectedTemplate(e.target.value);
-              generatePreview(e.target.value);
-            }}
-            className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2 rounded text-white"
-          >
-            {templates.map(t => (
-              <option key={t.id} value={t.id}>
-                {t.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        {type === 'email' ? (
+          <div>
+            <label className="block text-sm font-medium mb-2">Plantilla</label>
+            <select
+              value={selectedTemplate}
+              onChange={e => {
+                setSelectedTemplate(e.target.value);
+                generatePreview(e.target.value);
+              }}
+              className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2 rounded text-white"
+            >
+              {templates.map(t => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : (
+          <p className="text-xs text-zinc-400">
+            Plantilla de WhatsApp aprobada por Meta para primer contacto — solo se rellenan nombre, sector, ciudad y competidor; el resto del texto es fijo.
+          </p>
+        )}
 
-        {template && (
+        {(template || type === 'whatsapp') && (
           <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-3">
             <p className="text-xs font-semibold text-zinc-400 uppercase">Vista previa</p>
-            {type === 'email' && template.subject && (
+            {type === 'email' && template?.subject && (
               <div className="bg-zinc-900 p-3 rounded border border-zinc-700">
                 <p className="text-xs font-semibold text-zinc-400 mb-1">Asunto:</p>
                 <p className="text-sm text-white">{preview.split('\n')[0] || template.subject}</p>
@@ -281,7 +326,7 @@ export function SendModal({
             <div className="bg-zinc-900 p-3 rounded border border-zinc-700 max-h-48 overflow-y-auto">
               <p className="text-xs font-semibold text-zinc-400 mb-2">Contenido:</p>
               <p className="text-xs text-zinc-200 whitespace-pre-wrap leading-relaxed">
-                {preview || template.body || 'Sin contenido'}
+                {preview || template?.body || 'Sin contenido'}
               </p>
             </div>
           </div>
@@ -290,7 +335,7 @@ export function SendModal({
         <div className="flex gap-3 pt-2">
           <button
             onClick={handleSend}
-            disabled={loading || !selectedTemplate}
+            disabled={loading || (type === 'email' && !selectedTemplate)}
             className={`flex-1 px-4 py-2.5 rounded-lg font-semibold transition-colors ${
               type === 'email'
                 ? 'bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50'
