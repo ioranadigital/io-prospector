@@ -157,6 +157,8 @@ export default function ProspeccionDetallePage() {
           onSendEmail={() => { setSelectedLeads([detailLead]); setEmailModalOpen(true); }}
           onSendWhatsApp={() => { setSelectedLeads([detailLead]); setWhatsappModalOpen(true); }}
           onUpdate={handleModalSuccess}
+          onSendToLeads={async () => { await handleSendToLeads([detailLead.id]); setDetailLead(null); }}
+          sendingToLeads={sendingToLeads}
         />
       )}
       <EmailSendModal

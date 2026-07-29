@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Send, CheckSquare, Square, ClipboardList, Mail } from 'lucide-react';
+import { Send, CheckSquare, Square, ClipboardList, Mail, CheckCircle2 } from 'lucide-react';
 import { fixMojibake } from '@/lib/text';
 
 interface Lead {
@@ -12,6 +12,7 @@ interface Lead {
   audit_score: number;
   crm_status: string;
   category?: string;
+  status?: string;
 }
 
 interface LeadsTableProps {
@@ -105,10 +106,11 @@ export function LeadsTable({ leads, onOpenDetail, onSendEmail, loading, selectab
         <tbody>
           {leads.map((lead) => {
             const isSel = selected.has(lead.id);
+            const isSent = !!lead.status && lead.status !== 'candidate';
             return (
             <tr
               key={lead.id}
-              className={`border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors ${isSel ? 'bg-blue-900/15' : ''}`}
+              className={`border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors ${isSel ? 'bg-blue-900/15' : isSent ? 'bg-emerald-900/10' : ''}`}
             >
               {selectable && (
                 <td className="px-3 py-3 text-center">
@@ -121,6 +123,11 @@ export function LeadsTable({ leads, onOpenDetail, onSendEmail, loading, selectab
                 <span className="text-white font-medium">
                   {fixMojibake(lead.business_name).substring(0, 35)}
                 </span>
+                {isSent && (
+                  <span title="Enviado a Leads" className="ml-2 inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400">
+                    <CheckCircle2 size={11} /> Enviado
+                  </span>
+                )}
               </td>
               <td className="px-4 py-3 text-zinc-400">{fixMojibake(lead.city) || '—'}</td>
               <td className="px-4 py-3 text-zinc-400 truncate text-xs">

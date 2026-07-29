@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase, type Lead, type LeadActivity } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { X, Save, Mail, MessageCircle, MapPin, Phone, Search, Map, Target, Trophy, Wrench, FileText, Pencil, AlertTriangle, CheckCircle, XCircle, Star, Facebook, Instagram, Music2, History, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { X, Save, Mail, MessageCircle, MapPin, Phone, Search, Map, Target, Trophy, Wrench, FileText, Pencil, AlertTriangle, CheckCircle, XCircle, Star, Facebook, Instagram, Music2, History, ArrowUpRight, ArrowDownLeft, UserPlus, Copy, Check } from 'lucide-react';
 
 function timeAgo(iso: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
@@ -37,6 +37,8 @@ type LeadDetailModalProps = {
   onSendEmail: () => void;
   onSendWhatsApp: () => void;
   onUpdate: () => void;
+  onSendToLeads?: () => void;
+  sendingToLeads?: boolean;
 };
 
 export function LeadDetailModal({
@@ -46,9 +48,12 @@ export function LeadDetailModal({
   onSendEmail,
   onSendWhatsApp,
   onUpdate,
+  onSendToLeads,
+  sendingToLeads,
 }: LeadDetailModalProps) {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [activities, setActivities] = useState<LeadActivity[]>([]);
   const [formData, setFormData] = useState({
     email: lead.email || '',
@@ -129,7 +134,21 @@ export function LeadDetailModal({
         <div className="sticky top-0 bg-zinc-900 border-b border-zinc-700 p-6 flex justify-between items-start">
           <div>
             <h2 className="text-2xl font-bold text-white">{lead.business_name || 'Sin nombre'}</h2>
-            <p className="text-xs text-zinc-400 mt-1">ID: {lead.id.slice(0, 8)}...</p>
+            <div className="flex items-center gap-1.5 mt-1">
+              <p className="text-xs text-zinc-400 font-mono">ID: {lead.id.slice(0, 8)}...</p>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(lead.id);
+                  setCopied(true);
+                  toast.success('ID copiado al portapapeles');
+                  setTimeout(() => setCopied(false), 1500);
+                }}
+                className="p-1 hover:bg-zinc-700 rounded text-zinc-500 hover:text-white transition-colors"
+                title="Copiar ID completo"
+              >
+                {copied ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
+              </button>
+            </div>
           </div>
           <button onClick={onClose} className="p-1 hover:bg-zinc-700 rounded">
             <X size={24} />
@@ -348,7 +367,18 @@ export function LeadDetailModal({
           </section>
 
           {/* Acciones */}
-          <div className="flex gap-2 pt-4 border-t border-zinc-700">
+          <div className="pt-4 border-t border-zinc-700 space-y-2">
+            {!editing && onSendToLeads && lead.status === 'candidate' && (
+              <button
+                onClick={onSendToLeads}
+                disabled={sendingToLeads}
+                className="w-full px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold rounded-lg transition flex items-center justify-center gap-2"
+              >
+                <UserPlus size={16} />
+                {sendingToLeads ? 'Enviando...' : 'Enviar a Leads'}
+              </button>
+            )}
+            <div className="flex gap-2">
             {editing ? (
               <>
                 <button
@@ -390,6 +420,7 @@ export function LeadDetailModal({
                 </button>
               </>
             )}
+            </div>
           </div>
         </div>
       </div>

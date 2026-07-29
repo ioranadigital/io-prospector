@@ -768,6 +768,8 @@ export default function ProspectorPage() {
           onSendEmail={() => handleOpenEmailModal([detailLead])}
           onSendWhatsApp={() => handleOpenWhatsAppModal([detailLead])}
           onUpdate={handleModalSuccess}
+          onSendToLeads={async () => { await handleSendToLeads([detailLead.id]); setDetailLead(null); }}
+          sendingToLeads={sendingToLeads}
         />
       )}
       <EmailSendModal
