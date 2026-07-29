@@ -367,18 +367,7 @@ export function LeadDetailModal({
           </section>
 
           {/* Acciones */}
-          <div className="pt-4 border-t border-zinc-700 space-y-2">
-            {!editing && onSendToLeads && lead.status === 'candidate' && (
-              <button
-                onClick={onSendToLeads}
-                disabled={sendingToLeads}
-                className="w-full px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold rounded-lg transition flex items-center justify-center gap-2"
-              >
-                <UserPlus size={16} />
-                {sendingToLeads ? 'Enviando...' : 'Enviar a Leads'}
-              </button>
-            )}
-            <div className="flex gap-2">
+          <div className="flex gap-2 pt-4 border-t border-zinc-700">
             {editing ? (
               <>
                 <button
@@ -394,6 +383,23 @@ export function LeadDetailModal({
                   className="flex-1 px-4 py-2.5 bg-zinc-700 hover:bg-zinc-600 text-white font-semibold rounded-lg transition"
                 >
                   Cancelar
+                </button>
+              </>
+            ) : lead.status === 'candidate' && onSendToLeads ? (
+              <>
+                <button
+                  onClick={() => setEditing(true)}
+                  className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
+                >
+                  <Pencil size={14} className="mr-1" /> Editar
+                </button>
+                <button
+                  onClick={onSendToLeads}
+                  disabled={sendingToLeads}
+                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold rounded-lg transition flex items-center justify-center gap-2"
+                >
+                  <UserPlus size={16} />
+                  {sendingToLeads ? 'Enviando...' : 'Enviar a Leads'}
                 </button>
               </>
             ) : (
@@ -420,7 +426,6 @@ export function LeadDetailModal({
                 </button>
               </>
             )}
-            </div>
           </div>
         </div>
       </div>
