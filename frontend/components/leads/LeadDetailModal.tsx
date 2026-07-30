@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase, type Lead, type LeadActivity } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import { X, Save, Mail, MessageCircle, MapPin, Phone, Search, Map, Target, Trophy, Wrench, FileText, Pencil, AlertTriangle, CheckCircle, XCircle, Star, Facebook, Instagram, Music2, History, ArrowUpRight, ArrowDownLeft, UserPlus, Copy, Check } from 'lucide-react';
+import { X, Save, Mail, MessageCircle, MapPin, Phone, Search, Map, Target, Trophy, Wrench, FileText, Pencil, AlertTriangle, CheckCircle, XCircle, Star, Facebook, Instagram, Music2, History, ArrowUpRight, ArrowDownLeft, UserPlus, Copy, Check, Globe } from 'lucide-react';
 
 function timeAgo(iso: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
@@ -63,6 +63,7 @@ export function LeadDetailModal({
     seo_gap: lead.seo_gap || '',
     icebreaker: lead.icebreaker || '',
     notes: lead.notes || '',
+    website_new: lead.website_new || '',
   });
 
   useEffect(() => {
@@ -74,6 +75,7 @@ export function LeadDetailModal({
       seo_gap: lead.seo_gap || '',
       icebreaker: lead.icebreaker || '',
       notes: lead.notes || '',
+      website_new: lead.website_new || '',
     });
     setEditing(false);
   }, [lead.id]);
@@ -108,6 +110,7 @@ export function LeadDetailModal({
           seo_gap: formData.seo_gap || null,
           icebreaker: formData.icebreaker || null,
           notes: formData.notes || null,
+          website_new: formData.website_new || null,
           updated_at: new Date().toISOString(),
         })
         .eq('id', lead.id);
@@ -331,6 +334,18 @@ export function LeadDetailModal({
                   className="w-full bg-zinc-700 disabled:bg-zinc-800 border border-zinc-600 px-3 py-2 rounded text-sm text-white placeholder-zinc-500 disabled:cursor-not-allowed"
                   placeholder="ej: Competencia Directa SL"
                 />
+              </div>
+              <div>
+                <label className="text-xs text-zinc-400 block mb-1 flex items-center gap-1"><Globe size={12} /> Web de Ejemplo / Demo</label>
+                <input
+                  type="text"
+                  value={formData.website_new}
+                  onChange={e => setFormData({ ...formData, website_new: e.target.value })}
+                  disabled={!editing}
+                  className="w-full bg-zinc-700 disabled:bg-zinc-800 border border-zinc-600 px-3 py-2 rounded text-sm text-white placeholder-zinc-500 disabled:cursor-not-allowed"
+                  placeholder="ej: https://ejemplo-sector.ioranaseo.com"
+                />
+                <p className="text-xs text-zinc-500 mt-1">Usada como {'{{'}website_new{'}}'} en plantillas — demo del sector para mostrar al prospecto.</p>
               </div>
               <div>
                 <label className="text-xs text-zinc-400 block mb-1 flex items-center gap-1"><Wrench size={12} /> Servicio Faltante</label>

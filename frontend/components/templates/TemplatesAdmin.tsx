@@ -86,6 +86,7 @@ export function TemplatesAdmin() {
     business_name:    'Nombre de la empresa/negocio',
     company_name:     'Alias del nombre de la empresa',
     website:          'URL del sitio web',
+    website_new:      'Web de ejemplo/demo (según sector, se rellena a mano en la ficha)',
     city:             'Ciudad/localidad del negocio',
     sector:           'Sector/rubro amplio del negocio (ej: Servicios para el Hogar)',
     main_competitor:  'Competidor directo (datos manuales)',
@@ -114,7 +115,7 @@ export function TemplatesAdmin() {
   const AVAILABLE_VARIABLES: Record<string, string[]> = {
     email: [
       // Negocio
-      'business_name', 'company_name', 'website', 'city', 'sector', 'main_competitor', 'missing_service', 'seo_gap',
+      'business_name', 'company_name', 'website', 'website_new', 'city', 'sector', 'main_competitor', 'missing_service', 'seo_gap',
       'gmb_rating', 'review_count', 'gmb_claimed', 'photo_count', 'gmb_status',
       // Auditoría
       'audit_domain', 'audit_score', 'audit_label', 'issue_count', 'warn_count', 'pass_count',
@@ -122,7 +123,7 @@ export function TemplatesAdmin() {
     ],
     whatsapp: [
       // Negocio
-      'business_name', 'company_name', 'website', 'city', 'sector', 'main_competitor', 'missing_service',
+      'business_name', 'company_name', 'website', 'website_new', 'city', 'sector', 'main_competitor', 'missing_service',
       'seo_gap', 'gmb_rating', 'review_count', 'gmb_status',
       // Auditoría
       'audit_domain', 'audit_score', 'audit_label', 'issue_count', 'top_issue', 'top_issue_impact',

@@ -112,6 +112,7 @@ type SendModalProps = {
   missingService: string;
   seoGap: string;
   website: string;
+  websiteNew?: string;
   auditScore?: number;
   brokenLinksCount?: number;
   gmbRating?: number;
@@ -137,6 +138,7 @@ export function SendModal({
   missingService,
   seoGap,
   website,
+  websiteNew,
   auditScore = 0,
   brokenLinksCount = 0,
   gmbRating = 0,
@@ -257,6 +259,7 @@ export function SendModal({
     missing_service: missingService || 'no especificado',
     seo_gap: seoGap || 'no especificado',
     website: website || 'no disponible',
+    website_new: websiteNew || 'no disponible',
     issue_count: brokenLinksCount.toString(),
     top_issue: seoGap || 'problemas SEO detectados',
     audit_score: auditScore.toString(),

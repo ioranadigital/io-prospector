@@ -514,6 +514,7 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
           missingService={leads.find(l => l.id === sendModal.leadId)?.missing_service || ''}
           seoGap={leads.find(l => l.id === sendModal.leadId)?.seo_gap || ''}
           website={leads.find(l => l.id === sendModal.leadId)?.website || ''}
+          websiteNew={leads.find(l => l.id === sendModal.leadId)?.website_new || ''}
           auditScore={leads.find(l => l.id === sendModal.leadId)?.audit_score || 0}
           brokenLinksCount={leads.find(l => l.id === sendModal.leadId)?.broken_links_count || 0}
           gmbRating={leads.find(l => l.id === sendModal.leadId)?.gmb_rating || 0}
