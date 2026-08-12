@@ -474,17 +474,17 @@ function AuditResultadosContent() {
           <p className="text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-4">Core Web Vitals</p>
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: 'TTFB', value: result.performance?.ttfb, unit: 'ms', good: 800 },
-              { label: 'FCP',  value: result.performance?.fcp,  unit: 's',  good: 1.8 },
-              { label: 'LCP',  value: result.performance?.lcp,  unit: 's',  good: 2.5 },
-              { label: 'CLS',  value: result.performance?.cls,  unit: '',   good: 0.1 },
-            ].map(({ label, value, unit, good }) => {
+              { label: 'TTFB', full: 'Time to First Byte',        value: result.performance?.ttfb, unit: 'ms', good: 800 },
+              { label: 'FCP',  full: 'First Contentful Paint',    value: result.performance?.fcp,  unit: 's',  good: 1.8 },
+              { label: 'LCP',  full: 'Largest Contentful Paint',  value: result.performance?.lcp,  unit: 's',  good: 2.5 },
+              { label: 'CLS',  full: 'Cumulative Layout Shift',   value: result.performance?.cls,  unit: '',   good: 0.1 },
+            ].map(({ label, full, value, unit, good }) => {
               const isGood = value !== null && value !== undefined && value <= good;
               const color = value == null ? 'text-zinc-600' : isGood ? 'text-green-400' : 'text-red-400';
               return (
-                <div key={label} className="bg-zinc-800/50 rounded-lg px-4 py-3 flex items-center justify-between">
-                  <span className="text-xs text-zinc-500 font-mono font-semibold">{label}</span>
-                  <span className={`text-lg font-bold ${color}`}>
+                <div key={label} className="bg-zinc-800/50 rounded-lg px-4 py-3 flex items-center justify-between gap-2">
+                  <span className="text-xs text-zinc-500 font-mono font-semibold">{label} <span className="text-zinc-600 font-normal">({full})</span></span>
+                  <span className={`text-lg font-bold flex-shrink-0 ${color}`}>
                     {value != null ? `${value}${unit}` : '—'}
                   </span>
                 </div>

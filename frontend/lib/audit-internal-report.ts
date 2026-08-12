@@ -214,7 +214,7 @@ export function internalReportToMarkdown(report: InternalReport): string {
   lines.push(`URL: ${report.url}`);
   lines.push(`Score SEO: ${report.score}/100 · ${scoreMeta.label}${report.duration !== null ? ` · ${report.duration}ms` : ''}`);
   lines.push(`Correctos: ${report.summary.pass} · Avisos: ${report.summary.warn} · Errores: ${report.summary.fail}`);
-  lines.push(`Core Web Vitals: TTFB ${report.performance?.ttfb ?? '—'}ms · FCP ${report.performance?.fcp ?? '—'}s · LCP ${report.performance?.lcp ?? '—'}s · CLS ${report.performance?.cls ?? '—'}`);
+  lines.push(`Core Web Vitals: TTFB (Time to First Byte) ${report.performance?.ttfb ?? '—'}ms · FCP (First Contentful Paint) ${report.performance?.fcp ?? '—'}s · LCP (Largest Contentful Paint) ${report.performance?.lcp ?? '—'}s · CLS (Cumulative Layout Shift) ${report.performance?.cls ?? '—'}`);
   lines.push('');
 
   for (const cat of report.categories) {
@@ -245,10 +245,10 @@ export function internalReportToHtml(report: InternalReport): string {
   };
   const scoreMeta = getScoreLabel(report.score);
   const vitals = [
-    { label: 'TTFB', value: report.performance?.ttfb, unit: 'ms' },
-    { label: 'FCP',  value: report.performance?.fcp,  unit: 's' },
-    { label: 'LCP',  value: report.performance?.lcp,  unit: 's' },
-    { label: 'CLS',  value: report.performance?.cls,  unit: '' },
+    { label: 'TTFB', full: 'Time to First Byte',       value: report.performance?.ttfb, unit: 'ms' },
+    { label: 'FCP',  full: 'First Contentful Paint',   value: report.performance?.fcp,  unit: 's' },
+    { label: 'LCP',  full: 'Largest Contentful Paint', value: report.performance?.lcp,  unit: 's' },
+    { label: 'CLS',  full: 'Cumulative Layout Shift',  value: report.performance?.cls,  unit: '' },
   ];
   const STATUS_COLOR: Record<string, string> = { fail: '#dc2626', warn: '#ca8a04', info: '#2563eb', pass: '#16a34a' };
   const STATUS_BG: Record<string, string> = { fail: '#fef2f2', warn: '#fefce8', info: '#eff6ff', pass: '#f0fdf4' };
@@ -316,7 +316,7 @@ export function internalReportToHtml(report: InternalReport): string {
 
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
       <tr>
-        <td width="33%" valign="top" style="padding-right:8px;">
+        <td width="25%" valign="top" style="padding-right:8px;">
           <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e4e4e7;border-radius:8px;height:100%;">
             <tr><td align="center" style="padding:20px 12px;">
               <p style="margin:0;font-size:34px;font-weight:700;color:${scoreMeta.color};">${report.score}<span style="font-size:14px;color:#a1a1aa;">/100</span></p>
@@ -325,7 +325,7 @@ export function internalReportToHtml(report: InternalReport): string {
             </td></tr>
           </table>
         </td>
-        <td width="33%" valign="top" style="padding:0 4px;">
+        <td width="25%" valign="top" style="padding:0 4px;">
           <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e4e4e7;border-radius:8px;height:100%;">
             <tr><td style="padding:16px 18px;">
               <p style="margin:0 0 10px;font-size:11px;font-weight:700;color:#71717a;text-transform:uppercase;letter-spacing:0.5px;">Resultados</p>
@@ -337,23 +337,16 @@ export function internalReportToHtml(report: InternalReport): string {
             </td></tr>
           </table>
         </td>
-        <td width="34%" valign="top" style="padding-left:8px;">
+        <td width="50%" valign="top" style="padding-left:8px;">
           <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e4e4e7;border-radius:8px;height:100%;">
             <tr><td style="padding:16px 18px;">
               <p style="margin:0 0 10px;font-size:11px;font-weight:700;color:#71717a;text-transform:uppercase;letter-spacing:0.5px;">Core Web Vitals</p>
               <table width="100%" cellpadding="0" cellspacing="0">
+                ${vitals.map(v => `
                 <tr>
-                  <td style="padding:2px 10px 2px 0;font-size:12px;color:#3f3f46;">${vitals[0].label}</td>
-                  <td style="padding:2px 0;font-size:13px;font-weight:700;color:#18181b;text-align:right;">${vitals[0].value !== null && vitals[0].value !== undefined ? `${vitals[0].value}${vitals[0].unit}` : '—'}</td>
-                  <td style="padding:2px 10px 2px 16px;font-size:12px;color:#3f3f46;">${vitals[1].label}</td>
-                  <td style="padding:2px 0;font-size:13px;font-weight:700;color:#18181b;text-align:right;">${vitals[1].value !== null && vitals[1].value !== undefined ? `${vitals[1].value}${vitals[1].unit}` : '—'}</td>
-                </tr>
-                <tr>
-                  <td style="padding:2px 10px 2px 0;font-size:12px;color:#3f3f46;">${vitals[2].label}</td>
-                  <td style="padding:2px 0;font-size:13px;font-weight:700;color:#18181b;text-align:right;">${vitals[2].value !== null && vitals[2].value !== undefined ? `${vitals[2].value}${vitals[2].unit}` : '—'}</td>
-                  <td style="padding:2px 10px 2px 16px;font-size:12px;color:#3f3f46;">${vitals[3].label}</td>
-                  <td style="padding:2px 0;font-size:13px;font-weight:700;color:#18181b;text-align:right;">${vitals[3].value !== null && vitals[3].value !== undefined ? `${vitals[3].value}${vitals[3].unit}` : '—'}</td>
-                </tr>
+                  <td style="padding:2px 10px 2px 0;font-size:12px;color:#3f3f46;">${v.label} <span style="color:#a1a1aa;">(${v.full})</span></td>
+                  <td align="right" style="padding:2px 0;font-size:13px;font-weight:700;color:#18181b;white-space:nowrap;">${v.value !== null && v.value !== undefined ? `${v.value}${v.unit}` : '—'}</td>
+                </tr>`).join('')}
               </table>
             </td></tr>
           </table>
