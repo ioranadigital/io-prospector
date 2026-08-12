@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
-import { X, ClipboardList, FileCode, Eye, Copy, Check, Download, XCircle, AlertTriangle, Lightbulb, Code2 } from 'lucide-react';
-import { InternalReport, internalReportToMarkdown } from '@/lib/audit-internal-report';
+import { X, ClipboardList, FileCode, Eye, Copy, Check, Download, XCircle, AlertTriangle, CheckCircle, Info, Lightbulb, Code2, Printer, FileType } from 'lucide-react';
+import { InternalReport, internalReportToMarkdown, internalReportToHtml } from '@/lib/audit-internal-report';
 
 interface InternalReportModalProps {
   isOpen: boolean;
@@ -9,31 +9,48 @@ interface InternalReportModalProps {
   report: InternalReport;
 }
 
+const STATUS_STYLE: Record<string, { icon: React.FC<any>; color: string }> = {
+  fail: { icon: XCircle,       color: 'text-red-400' },
+  warn: { icon: AlertTriangle, color: 'text-yellow-400' },
+  info: { icon: Info,          color: 'text-blue-400' },
+  pass: { icon: CheckCircle,   color: 'text-green-400' },
+};
+
 export function InternalReportModal({ isOpen, onClose, report }: InternalReportModalProps) {
-  const [mode, setMode] = useState<'detalle' | 'markdown'>('detalle');
+  const [mode, setMode] = useState<'detalle' | 'exportar'>('detalle');
   const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
 
   const markdown = internalReportToMarkdown(report);
 
-  const handleCopy = () => {
+  const handleCopyMarkdown = () => {
     navigator.clipboard.writeText(markdown);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleDownload = () => {
-    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+  const handleDownloadWord = () => {
+    const html = internalReportToHtml(report);
+    const blob = new Blob([html], { type: 'application/msword;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `informe-interno-${report.domain}.md`;
+    a.download = `informe-interno-${report.domain}.doc`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
-  const categoriesWithIssues = report.categories.filter(c => c.issues.length > 0);
+  const handlePrintPdf = () => {
+    const html = internalReportToHtml(report);
+    const win = window.open('', '_blank');
+    if (!win) return;
+    win.document.write(html);
+    win.document.close();
+    win.onload = () => win.print();
+    // Fallback si onload no dispara (contenido ya cargado por document.write)
+    setTimeout(() => win.print(), 300);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
@@ -51,7 +68,7 @@ export function InternalReportModal({ isOpen, onClose, report }: InternalReportM
             <div className="flex gap-1 bg-zinc-800 rounded-lg p-1">
               {([
                 { id: 'detalle',  icon: <Eye size={12} />,      label: 'Detalle técnico' },
-                { id: 'markdown', icon: <FileCode size={12} />, label: 'Exportar' },
+                { id: 'exportar', icon: <FileCode size={12} />, label: 'Exportar' },
               ] as const).map(t => (
                 <button key={t.id} onClick={() => setMode(t.id)}
                   className={`px-3 py-1.5 rounded text-xs font-medium transition flex items-center gap-1 ${mode === t.id ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:text-white'}`}>
@@ -70,9 +87,7 @@ export function InternalReportModal({ isOpen, onClose, report }: InternalReportM
 
           {mode === 'detalle' && (
             <div className="p-6 space-y-5">
-              {categoriesWithIssues.length === 0 ? (
-                <p className="text-sm text-zinc-500 text-center py-12">Sin errores ni avisos detectados — nada que mejorar por ahora.</p>
-              ) : categoriesWithIssues.map(cat => (
+              {report.categories.map(cat => (
                 <div key={cat.id} className="border border-zinc-800 rounded-xl overflow-hidden">
                   <div className="px-5 py-3 bg-zinc-800/50 border-b border-zinc-800 flex items-center justify-between">
                     <h3 className="text-sm font-bold text-white">{cat.label}</h3>
@@ -80,64 +95,89 @@ export function InternalReportModal({ isOpen, onClose, report }: InternalReportM
                       <span className="text-zinc-500">{cat.scorePercent}% correcto</span>
                       {cat.failCount > 0 && <span className="text-red-400 flex items-center gap-1"><XCircle size={11} /> {cat.failCount}</span>}
                       {cat.warnCount > 0 && <span className="text-yellow-400 flex items-center gap-1"><AlertTriangle size={11} /> {cat.warnCount}</span>}
+                      <span className="text-green-400 flex items-center gap-1"><CheckCircle size={11} /> {cat.passCount}</span>
                     </div>
                   </div>
                   <div className="divide-y divide-zinc-800/60">
-                    {cat.issues.map(issue => (
-                      <div key={issue.checkId} className="px-5 py-4 space-y-2">
-                        <div className="flex items-start gap-2">
-                          {issue.status === 'fail'
-                            ? <XCircle size={15} className="text-red-400 flex-shrink-0 mt-0.5" />
-                            : <AlertTriangle size={15} className="text-yellow-400 flex-shrink-0 mt-0.5" />}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-white">{issue.label}</p>
-                            <p className="text-xs text-zinc-400 mt-0.5">{issue.detail}</p>
+                    {cat.checks.map(check => {
+                      const { icon: Icon, color } = STATUS_STYLE[check.status];
+                      return (
+                        <div key={check.checkId} className="px-5 py-4 space-y-2">
+                          <div className="flex items-start gap-2">
+                            <Icon size={15} className={`${color} flex-shrink-0 mt-0.5`} />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-white">{check.label}</p>
+                              <p className="text-xs text-zinc-400 mt-0.5">{check.detail}</p>
+                            </div>
+                            {check.value !== null && check.value !== undefined && check.value !== '' && typeof check.value !== 'boolean' && (
+                              <span className="text-xs text-zinc-300 font-mono bg-zinc-800/60 border border-zinc-700/50 rounded px-2 py-1 flex-shrink-0 max-w-[35%] truncate" title={String(check.value)}>
+                                {String(check.value)}
+                              </span>
+                            )}
                           </div>
-                          {issue.value !== null && issue.value !== undefined && issue.value !== '' && (
-                            <span className="text-xs text-zinc-300 font-mono bg-zinc-800/60 border border-zinc-700/50 rounded px-2 py-1 flex-shrink-0 max-w-[35%] truncate" title={String(issue.value)}>
-                              {String(issue.value)}
-                            </span>
+                          {check.fix && (
+                            <p className="text-xs text-zinc-400 flex items-start gap-1.5 pl-[23px]">
+                              <Lightbulb size={12} className="text-blue-400 flex-shrink-0 mt-0.5" /> {check.fix}
+                            </p>
+                          )}
+                          {check.example && (
+                            <div className="pl-[23px]">
+                              <p className="text-xs text-zinc-500 flex items-center gap-1.5 mb-1"><Code2 size={12} /> Ejemplo</p>
+                              <pre className="text-xs text-emerald-300 font-mono bg-black/40 border border-zinc-800 rounded-lg px-3 py-2 whitespace-pre-wrap break-words">{check.example}</pre>
+                            </div>
                           )}
                         </div>
-                        {issue.fix && (
-                          <p className="text-xs text-zinc-400 flex items-start gap-1.5 pl-[23px]">
-                            <Lightbulb size={12} className="text-blue-400 flex-shrink-0 mt-0.5" /> {issue.fix}
-                          </p>
-                        )}
-                        {issue.example && (
-                          <div className="pl-[23px]">
-                            <p className="text-xs text-zinc-500 flex items-center gap-1.5 mb-1"><Code2 size={12} /> Ejemplo</p>
-                            <pre className="text-xs text-emerald-300 font-mono bg-black/40 border border-zinc-800 rounded-lg px-3 py-2 whitespace-pre-wrap break-words">{issue.example}</pre>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               ))}
             </div>
           )}
 
-          {mode === 'markdown' && (
-            <div className="flex flex-col h-full p-6 gap-4">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-zinc-400">Versión en texto/Markdown — para pegar en un ticket, Notion o Slack interno</p>
-                <div className="flex gap-2">
-                  <button onClick={handleCopy}
-                    className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-medium flex items-center gap-2 transition">
-                    {copied ? <><Check size={13} /> Copiado</> : <><Copy size={13} /> Copiar</>}
-                  </button>
-                  <button onClick={handleDownload}
-                    className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium flex items-center gap-2 transition">
-                    <Download size={13} /> Descargar .md
+          {mode === 'exportar' && (
+            <div className="flex flex-col h-full p-6 gap-6">
+              <div className="grid grid-cols-3 gap-3">
+                <button onClick={handlePrintPdf}
+                  className="flex flex-col items-center gap-2 px-4 py-5 bg-red-900/20 hover:bg-red-900/30 border border-red-800/50 hover:border-red-600 rounded-xl transition text-center">
+                  <Printer size={22} className="text-red-400" />
+                  <span className="text-sm font-medium text-red-300">Imprimir / Guardar PDF</span>
+                  <span className="text-[11px] text-zinc-500">Abre el informe maquetado y usa "Guardar como PDF" del navegador</span>
+                </button>
+                <button onClick={handleDownloadWord}
+                  className="flex flex-col items-center gap-2 px-4 py-5 bg-blue-900/20 hover:bg-blue-900/30 border border-blue-800/50 hover:border-blue-600 rounded-xl transition text-center">
+                  <FileType size={22} className="text-blue-400" />
+                  <span className="text-sm font-medium text-blue-300">Descargar Word (.doc)</span>
+                  <span className="text-[11px] text-zinc-500">Documento editable, listo para abrir en Microsoft Word</span>
+                </button>
+                <button onClick={handleCopyMarkdown}
+                  className="flex flex-col items-center gap-2 px-4 py-5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl transition text-center">
+                  {copied ? <Check size={22} className="text-white" /> : <Copy size={22} className="text-zinc-300" />}
+                  <span className="text-sm font-medium text-white">{copied ? 'Copiado' : 'Copiar como Markdown'}</span>
+                  <span className="text-[11px] text-zinc-500">Para pegar en un ticket, Notion o Slack interno</span>
+                </button>
+              </div>
+              <div className="flex-1 flex flex-col gap-2 min-h-0">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">Vista previa Markdown</p>
+                  <button onClick={() => {
+                    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `informe-interno-${report.domain}.md`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }} className="text-xs text-zinc-500 hover:text-zinc-300 flex items-center gap-1">
+                    <Download size={12} /> Descargar .md
                   </button>
                 </div>
+                <textarea
+                  readOnly
+                  value={markdown}
+                  className="flex-1 w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-xs text-zinc-300 font-mono resize-none focus:outline-none"
+                />
               </div>
-              <textarea
-                readOnly
-                value={markdown}
-                className="flex-1 w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-xs text-zinc-300 font-mono resize-none focus:outline-none"
-              />
             </div>
           )}
         </div>

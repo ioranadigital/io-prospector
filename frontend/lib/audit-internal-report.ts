@@ -99,10 +99,10 @@ export const CHECK_EXAMPLES: Record<string, string> = {
   'content.multimedia': 'Añadir una lista de servicios (<ul>), una tabla de precios o un vídeo corto de presentación.',
 };
 
-export type InternalIssue = {
+export type InternalCheckItem = {
   checkId: string;
   label: string;
-  status: 'fail' | 'warn';
+  status: 'pass' | 'warn' | 'fail' | 'info';
   value: string | number | boolean | null;
   detail: string;
   fix: string | null;
@@ -115,9 +115,13 @@ export type InternalCategoryReport = {
   passCount: number;
   warnCount: number;
   failCount: number;
+  infoCount: number;
   totalChecks: number;
   scorePercent: number;
-  issues: InternalIssue[];
+  // Todos los checks de la categoría (pass + warn + fail + info), en el mismo
+  // orden en que los emite el motor — los problemas primero, los puntos
+  // correctos al final, para que el informe se lea "de lo urgente a lo bien hecho".
+  checks: InternalCheckItem[];
 };
 
 export type InternalReport = {
@@ -131,6 +135,8 @@ export type InternalReport = {
   totalIssues: number;
 };
 
+const STATUS_ORDER: Record<string, number> = { fail: 0, warn: 1, info: 2, pass: 3 };
+
 export function generateInternalReport(auditResult: any): InternalReport {
   const domain = (() => {
     try { return new URL(auditResult.url.startsWith('http') ? auditResult.url : `https://${auditResult.url}`).hostname; }
@@ -138,21 +144,23 @@ export function generateInternalReport(auditResult: any): InternalReport {
   })();
 
   const categories: InternalCategoryReport[] = Object.entries(auditResult.checks || {}).map(([catId, cat]: [string, any]) => {
-    const checks = cat.checks || [];
-    const passCount = checks.filter((c: any) => c.status === 'pass').length;
-    const warnCount = checks.filter((c: any) => c.status === 'warn').length;
-    const failCount = checks.filter((c: any) => c.status === 'fail').length;
-    const issues: InternalIssue[] = checks
-      .filter((c: any) => c.status === 'fail' || c.status === 'warn')
-      .sort((a: any, b: any) => (a.status === 'fail' ? -1 : 0) - (b.status === 'fail' ? -1 : 0))
+    const rawChecks = cat.checks || [];
+    const passCount = rawChecks.filter((c: any) => c.status === 'pass').length;
+    const warnCount = rawChecks.filter((c: any) => c.status === 'warn').length;
+    const failCount = rawChecks.filter((c: any) => c.status === 'fail').length;
+    const infoCount = rawChecks.filter((c: any) => c.status === 'info').length;
+
+    const checks: InternalCheckItem[] = rawChecks
+      .slice()
+      .sort((a: any, b: any) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status])
       .map((c: any) => ({
         checkId: c.id,
         label: c.label,
         status: c.status,
         value: c.value,
         detail: c.detail,
-        fix: c.fix || null,
-        example: CHECK_EXAMPLES[c.id] || null,
+        fix: c.status === 'pass' ? null : (c.fix || null),
+        example: c.status === 'pass' ? null : (CHECK_EXAMPLES[c.id] || null),
       }));
 
     return {
@@ -161,13 +169,14 @@ export function generateInternalReport(auditResult: any): InternalReport {
       passCount,
       warnCount,
       failCount,
-      totalChecks: checks.length,
-      scorePercent: checks.length > 0 ? Math.round((passCount / checks.length) * 100) : 0,
-      issues,
+      infoCount,
+      totalChecks: rawChecks.length,
+      scorePercent: rawChecks.length > 0 ? Math.round((passCount / rawChecks.length) * 100) : 0,
+      checks,
     };
   });
 
-  const totalIssues = categories.reduce((sum, c) => sum + c.issues.length, 0);
+  const totalIssues = categories.reduce((sum, c) => sum + c.failCount + c.warnCount, 0);
 
   return {
     url: auditResult.url,
@@ -181,6 +190,9 @@ export function generateInternalReport(auditResult: any): InternalReport {
   };
 }
 
+const STATUS_EMOJI: Record<string, string> = { fail: '❌', warn: '⚠️', info: 'ℹ️', pass: '✅' };
+const STATUS_WORD: Record<string, string> = { fail: 'Error', warn: 'Aviso', info: 'Info', pass: 'Correcto' };
+
 // Genera una versión en texto plano (Markdown) del informe, pensada para pegar
 // en Notion/Slack/un ticket interno — no para enviar al cliente.
 export function internalReportToMarkdown(report: InternalReport): string {
@@ -193,18 +205,115 @@ export function internalReportToMarkdown(report: InternalReport): string {
   lines.push('');
 
   for (const cat of report.categories) {
-    if (cat.issues.length === 0) continue;
-    lines.push(`## ${cat.label} (${cat.scorePercent}% · ${cat.failCount} errores, ${cat.warnCount} avisos)`);
+    lines.push(`## ${cat.label} (${cat.scorePercent}% · ${cat.failCount} errores, ${cat.warnCount} avisos, ${cat.passCount} correctos)`);
     lines.push('');
-    for (const issue of cat.issues) {
-      lines.push(`### ${issue.status === 'fail' ? '❌' : '⚠️'} ${issue.label}`);
-      lines.push(`- Valor actual: \`${issue.value ?? '—'}\``);
-      lines.push(`- Detalle: ${issue.detail}`);
-      if (issue.fix) lines.push(`- Recomendación: ${issue.fix}`);
-      if (issue.example) lines.push(`- Ejemplo:\n\`\`\`\n${issue.example}\n\`\`\``);
+    for (const check of cat.checks) {
+      lines.push(`### ${STATUS_EMOJI[check.status]} ${check.label} — ${STATUS_WORD[check.status]}`);
+      lines.push(`- Valor actual: \`${check.value ?? '—'}\``);
+      lines.push(`- Detalle: ${check.detail}`);
+      if (check.fix) lines.push(`- Recomendación: ${check.fix}`);
+      if (check.example) lines.push(`- Ejemplo:\n\`\`\`\n${check.example}\n\`\`\``);
       lines.push('');
     }
   }
 
   return lines.join('\n');
+}
+
+// Documento HTML autocontenido y maquetado — sirve como base tanto para
+// "Imprimir / Guardar como PDF" (window.print) como para "Descargar Word"
+// (mismo HTML servido con mime type de Word, que Word abre como documento).
+// Usa tablas y estilos inline porque es lo que mejor interpreta el motor de
+// renderizado HTML de Word.
+export function internalReportToHtml(report: InternalReport): string {
+  const fmtDate = (iso: string) => {
+    try { return new Date(iso).toLocaleString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
+    catch { return iso; }
+  };
+  const scoreColor = report.score >= 80 ? '#16a34a' : report.score >= 50 ? '#ca8a04' : '#dc2626';
+  const STATUS_COLOR: Record<string, string> = { fail: '#dc2626', warn: '#ca8a04', info: '#2563eb', pass: '#16a34a' };
+  const STATUS_BG: Record<string, string> = { fail: '#fef2f2', warn: '#fefce8', info: '#eff6ff', pass: '#f0fdf4' };
+  const esc = (s: string) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  const categoriesHtml = report.categories.map(cat => `
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px;border:1px solid #e4e4e7;border-radius:8px;">
+      <tr>
+        <td style="background:#18181b;padding:14px 18px;border-radius:8px 8px 0 0;">
+          <table width="100%" cellpadding="0" cellspacing="0"><tr>
+            <td style="color:#ffffff;font-size:16px;font-weight:700;">${esc(cat.label)}</td>
+            <td align="right" style="color:#a1a1aa;font-size:12px;">
+              ${cat.scorePercent}% correcto · ${cat.failCount} errores · ${cat.warnCount} avisos · ${cat.passCount} OK
+            </td>
+          </tr></table>
+        </td>
+      </tr>
+      <tr><td style="padding:0;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          ${cat.checks.map(check => `
+          <tr>
+            <td style="padding:12px 18px;border-bottom:1px solid #f4f4f5;background:${STATUS_BG[check.status]};">
+              <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                <td style="width:24px;vertical-align:top;font-size:14px;">${STATUS_EMOJI[check.status]}</td>
+                <td style="vertical-align:top;">
+                  <p style="margin:0;font-size:13.5px;font-weight:700;color:${STATUS_COLOR[check.status]};">${esc(check.label)}</p>
+                  <p style="margin:3px 0 0;font-size:12.5px;color:#3f3f46;">${esc(check.detail)}</p>
+                  ${check.value !== null && check.value !== undefined && check.value !== '' && typeof check.value !== 'boolean' ? `<p style="margin:4px 0 0;font-size:11.5px;color:#71717a;font-family:monospace;">Valor: ${esc(String(check.value))}</p>` : ''}
+                  ${check.fix ? `<p style="margin:6px 0 0;font-size:12px;color:#3f3f46;">💡 <strong>Recomendación:</strong> ${esc(check.fix)}</p>` : ''}
+                  ${check.example ? `<pre style="margin:6px 0 0;font-size:11px;color:#065f46;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:4px;padding:8px 10px;white-space:pre-wrap;font-family:monospace;">${esc(check.example)}</pre>` : ''}
+                </td>
+              </tr></table>
+            </td>
+          </tr>`).join('')}
+        </table>
+      </td></tr>
+    </table>
+  `).join('');
+
+  return `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Informe técnico interno — ${esc(report.domain)}</title>
+</head>
+<body style="margin:0;padding:0;background:#ffffff;font-family:Arial,Helvetica,sans-serif;color:#18181b;">
+<table width="100%" cellpadding="0" cellspacing="0" style="max-width:800px;margin:0 auto;padding:32px 20px;">
+  <tr><td>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+      <tr>
+        <td style="font-size:22px;font-weight:700;color:#18181b;">Informe técnico interno</td>
+        <td align="right" style="font-size:12px;color:#71717a;">Iorana Digital · Uso interno</td>
+      </tr>
+    </table>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;border:1px solid #e4e4e7;border-radius:8px;">
+      <tr>
+        <td style="padding:20px 24px;">
+          <p style="margin:0 0 4px;font-size:12px;color:#71717a;text-transform:uppercase;letter-spacing:0.5px;">Sitio analizado</p>
+          <p style="margin:0 0 2px;font-size:18px;font-weight:700;">${esc(report.domain)}</p>
+          <p style="margin:0;font-size:12px;color:#71717a;">${esc(report.url)} · Auditado el ${esc(fmtDate(report.auditedAt))}</p>
+        </td>
+        <td align="right" style="padding:20px 24px;">
+          <p style="margin:0;font-size:36px;font-weight:700;color:${scoreColor};">${report.score}<span style="font-size:16px;color:#a1a1aa;">/100</span></p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="padding:0 24px 20px;">
+          <span style="color:#16a34a;font-size:13px;margin-right:16px;">✅ ${report.summary.pass} correctos</span>
+          <span style="color:#dc2626;font-size:13px;margin-right:16px;">❌ ${report.summary.fail} errores</span>
+          <span style="color:#ca8a04;font-size:13px;">⚠️ ${report.summary.warn} avisos</span>
+        </td>
+      </tr>
+    </table>
+
+    ${categoriesHtml}
+
+    <p style="margin:24px 0 0;font-size:11px;color:#a1a1aa;text-align:center;">
+      Generado automáticamente desde Prospector · Solo para uso interno del equipo
+    </p>
+
+  </td></tr>
+</table>
+</body>
+</html>`;
 }
