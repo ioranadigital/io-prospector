@@ -9,8 +9,11 @@ export function run(page, { url, robotsTxt, ttfb }) {
     const hasSchema  = schemaData.length > 0;
     const schemaTypes = schemaData.map(s => s['@type']).filter(Boolean);
 
-    const hasRobots    = !!robotsTxt && !robotsTxt.includes('Disallow: /');
-    const hasRobotsAll = robotsTxt?.includes('Disallow: /') || false;
+    // Solo cuenta como "bloquea todo el sitio" una línea que sea exactamente
+    // "Disallow: /" (nada tras la barra) — un naive .includes('Disallow: /')
+    // también hace match en reglas normales como "Disallow: /wp-admin/" o
+    // "Disallow: /wp-content/uploads/...", que no bloquean el sitio entero.
+    const hasRobotsAll = /^Disallow:\s*\/\s*$/im.test(robotsTxt || '');
 
     const inlineScripts = document.querySelectorAll('script:not([src])').length;
     const inlineStyles  = document.querySelectorAll('style').length;
