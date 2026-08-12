@@ -23,23 +23,33 @@ export function run(page) {
         detail: h1s.length === 0 ? 'No hay H1 en la página' : `"${h1s[0]?.slice(0, 80)}"`,
         fix: 'Añade un H1 único que describa el contenido principal de la página',
       },
-      {
+    ];
+
+    // "H1 único" y "H1 longitud" solo tienen sentido si ya existe al menos un
+    // H1 — cuando no hay ninguno, el problema ya lo reporta "H1 existe" de
+    // arriba; evaluarlos igualmente triplicaba la misma causa raíz (sin H1)
+    // como tres fails distintos, penalizando el score de más y duplicando el
+    // mensaje en el informe.
+    if (h1s.length > 0) {
+      checks.push({
         id: 'headings.h1.unique',
         label: 'H1 único (solo 1)',
-        status: h1s.length === 1 ? 'pass' : h1s.length === 0 ? 'fail' : 'fail',
+        status: h1s.length === 1 ? 'pass' : 'fail',
         value: h1s.length,
-        detail: h1s.length > 1 ? `Hay ${h1s.length} H1s — Google puede confundirse con el tema principal` : h1s.length === 0 ? 'Sin H1' : '1 H1 correcto',
-        fix: 'Usa solo un H1 por página',
-      },
-      {
+        detail: h1s.length > 1 ? `Hay ${h1s.length} H1s — Google puede confundirse con el tema principal` : '1 H1 correcto',
+        fix: h1s.length > 1 ? 'Usa solo un H1 por página' : null,
+      });
+      checks.push({
         id: 'headings.h1.length',
         label: 'H1 longitud (20-70 chars)',
-        status: h1s[0] && h1s[0].length >= 20 && h1s[0].length <= 70 ? 'pass'
-               : h1s[0] ? 'warn' : 'fail',
-        value: h1s[0]?.length || 0,
-        detail: h1s[0] ? `${h1s[0].length} caracteres` : 'Sin H1',
+        status: h1s[0].length >= 20 && h1s[0].length <= 70 ? 'pass' : 'warn',
+        value: h1s[0].length,
+        detail: `${h1s[0].length} caracteres`,
         fix: 'El H1 debe tener entre 20 y 70 caracteres',
-      },
+      });
+    }
+
+    checks.push(
       {
         id: 'headings.h2.exists',
         label: 'H2 existen',
@@ -65,7 +75,7 @@ export function run(page) {
         detail: `H2s: ${h2s.slice(0, 3).map(h => `"${h.slice(0,40)}"`).join(', ') || 'ninguno'}`,
         fix: 'Los headings deben contener palabras clave relevantes para el negocio',
       },
-    ];
+    );
 
     return checks;
   });
