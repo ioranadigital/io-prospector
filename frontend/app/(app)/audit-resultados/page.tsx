@@ -12,6 +12,8 @@ import toast from 'react-hot-toast';
 import { AuditContactModal } from '@/components/audit/AuditContactModal';
 import { ClientReportModal } from '@/components/audit/ClientReportModal';
 import { generateClientReport } from '@/lib/audit-client-report';
+import { InternalReportModal } from '@/components/audit/InternalReportModal';
+import { generateInternalReport } from '@/lib/audit-internal-report';
 
 type CheckStatus = 'pass' | 'warn' | 'fail' | 'info';
 
@@ -103,6 +105,7 @@ function AuditResultadosContent() {
   const [saved, setSaved] = useState<'lead' | 'history' | null>(null);
   const [contactModal, setContactModal] = useState<'email' | 'whatsapp' | null>(null);
   const [showClientReport, setShowClientReport] = useState(false);
+  const [showInternalReport, setShowInternalReport] = useState(false);
   const [contactPreFill, setContactPreFill] = useState<{ body?: string; subject?: string } | null>(null);
   // Vista histórica (abierta desde el Histórico con ?id=)
   const [isHistorical, setIsHistorical] = useState(false);
@@ -308,6 +311,12 @@ function AuditResultadosContent() {
             {result.url} <ExternalLink size={12} />
           </a>
         </div>
+        <button
+          onClick={() => setShowInternalReport(true)}
+          className="ml-auto flex items-center gap-2 px-4 py-2.5 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-600/50 hover:border-indigo-500 text-indigo-300 rounded-lg text-sm font-medium transition"
+        >
+          <FileText size={16} /> Informe interno (equipo)
+        </button>
       </div>
 
       {/* BANNER HISTÓRICO (vista de solo lectura desde el Histórico) */}
@@ -629,6 +638,15 @@ function AuditResultadosContent() {
             setContactPreFill({ body });
             setContactModal('whatsapp');
           }}
+        />
+      )}
+
+      {/* Modal informe interno */}
+      {showInternalReport && (
+        <InternalReportModal
+          isOpen={true}
+          onClose={() => setShowInternalReport(false)}
+          report={generateInternalReport(result)}
         />
       )}
     </div>
