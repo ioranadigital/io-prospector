@@ -128,12 +128,22 @@ export type InternalReport = {
   url: string;
   domain: string;
   score: number;
+  duration: number | null;
   auditedAt: string;
   summary: { pass: number; warn: number; fail: number; info: number; total: number };
   performance: { ttfb: number | null; lcp: number | null; cls: number | null; fcp: number | null };
   categories: InternalCategoryReport[];
   totalIssues: number;
 };
+
+// Misma escala de etiquetas que ScoreCircle en /audit-resultados — se replica
+// aquí para que el número y la etiqueta ("Mejorable"...) coincidan siempre
+// con lo que se ve en pantalla.
+export function getScoreLabel(score: number): { label: string; color: string } {
+  if (score >= 80) return { label: 'Excelente', color: '#22c55e' };
+  if (score >= 50) return { label: 'Mejorable', color: '#eab308' };
+  return { label: 'Crítico', color: '#ef4444' };
+}
 
 const STATUS_ORDER: Record<string, number> = { fail: 0, warn: 1, info: 2, pass: 3 };
 
@@ -182,6 +192,7 @@ export function generateInternalReport(auditResult: any): InternalReport {
     url: auditResult.url,
     domain,
     score: auditResult.totalScore,
+    duration: auditResult.duration ?? null,
     auditedAt: auditResult.auditedAt,
     summary: auditResult.summary,
     performance: auditResult.performance,
@@ -199,9 +210,11 @@ export function internalReportToMarkdown(report: InternalReport): string {
   const lines: string[] = [];
   lines.push(`# Informe técnico interno — ${report.domain}`);
   lines.push('');
+  const scoreMeta = getScoreLabel(report.score);
   lines.push(`URL: ${report.url}`);
-  lines.push(`Score SEO: ${report.score}/100`);
+  lines.push(`Score SEO: ${report.score}/100 · ${scoreMeta.label}${report.duration !== null ? ` · ${report.duration}ms` : ''}`);
   lines.push(`Correctos: ${report.summary.pass} · Avisos: ${report.summary.warn} · Errores: ${report.summary.fail}`);
+  lines.push(`Core Web Vitals: TTFB ${report.performance?.ttfb ?? '—'}ms · FCP ${report.performance?.fcp ?? '—'}s · LCP ${report.performance?.lcp ?? '—'}s · CLS ${report.performance?.cls ?? '—'}`);
   lines.push('');
 
   for (const cat of report.categories) {
@@ -230,7 +243,13 @@ export function internalReportToHtml(report: InternalReport): string {
     try { return new Date(iso).toLocaleString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
     catch { return iso; }
   };
-  const scoreColor = report.score >= 80 ? '#16a34a' : report.score >= 50 ? '#ca8a04' : '#dc2626';
+  const scoreMeta = getScoreLabel(report.score);
+  const vitals = [
+    { label: 'TTFB', value: report.performance?.ttfb, unit: 'ms' },
+    { label: 'FCP',  value: report.performance?.fcp,  unit: 's' },
+    { label: 'LCP',  value: report.performance?.lcp,  unit: 's' },
+    { label: 'CLS',  value: report.performance?.cls,  unit: '' },
+  ];
   const STATUS_COLOR: Record<string, string> = { fail: '#dc2626', warn: '#ca8a04', info: '#2563eb', pass: '#16a34a' };
   const STATUS_BG: Record<string, string> = { fail: '#fef2f2', warn: '#fefce8', info: '#eff6ff', pass: '#f0fdf4' };
   const esc = (s: string) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -286,22 +305,58 @@ export function internalReportToHtml(report: InternalReport): string {
       </tr>
     </table>
 
-    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;border:1px solid #e4e4e7;border-radius:8px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
       <tr>
-        <td style="padding:20px 24px;">
-          <p style="margin:0 0 4px;font-size:12px;color:#71717a;text-transform:uppercase;letter-spacing:0.5px;">Sitio analizado</p>
+        <td>
           <p style="margin:0 0 2px;font-size:18px;font-weight:700;">${esc(report.domain)}</p>
           <p style="margin:0;font-size:12px;color:#71717a;">${esc(report.url)} · Auditado el ${esc(fmtDate(report.auditedAt))}</p>
         </td>
-        <td align="right" style="padding:20px 24px;">
-          <p style="margin:0;font-size:36px;font-weight:700;color:${scoreColor};">${report.score}<span style="font-size:16px;color:#a1a1aa;">/100</span></p>
-        </td>
       </tr>
+    </table>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
       <tr>
-        <td colspan="2" style="padding:0 24px 20px;">
-          <span style="color:#16a34a;font-size:13px;margin-right:16px;">✅ ${report.summary.pass} correctos</span>
-          <span style="color:#dc2626;font-size:13px;margin-right:16px;">❌ ${report.summary.fail} errores</span>
-          <span style="color:#ca8a04;font-size:13px;">⚠️ ${report.summary.warn} avisos</span>
+        <td width="33%" valign="top" style="padding-right:8px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e4e4e7;border-radius:8px;height:100%;">
+            <tr><td align="center" style="padding:20px 12px;">
+              <p style="margin:0;font-size:34px;font-weight:700;color:${scoreMeta.color};">${report.score}<span style="font-size:14px;color:#a1a1aa;">/100</span></p>
+              <p style="margin:4px 0 0;font-size:13px;font-weight:600;color:${scoreMeta.color};">${scoreMeta.label}</p>
+              ${report.duration !== null ? `<p style="margin:6px 0 0;font-size:11px;color:#a1a1aa;">${report.duration}ms</p>` : ''}
+            </td></tr>
+          </table>
+        </td>
+        <td width="33%" valign="top" style="padding:0 4px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e4e4e7;border-radius:8px;height:100%;">
+            <tr><td style="padding:16px 18px;">
+              <p style="margin:0 0 10px;font-size:11px;font-weight:700;color:#71717a;text-transform:uppercase;letter-spacing:0.5px;">Resultados</p>
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr><td style="padding:2px 0;font-size:13px;color:#3f3f46;">Correctos</td><td align="right" style="font-size:15px;font-weight:700;color:#16a34a;">${report.summary.pass}</td></tr>
+                <tr><td style="padding:2px 0;font-size:13px;color:#3f3f46;">Avisos</td><td align="right" style="font-size:15px;font-weight:700;color:#ca8a04;">${report.summary.warn}</td></tr>
+                <tr><td style="padding:2px 0;font-size:13px;color:#3f3f46;">Errores</td><td align="right" style="font-size:15px;font-weight:700;color:#dc2626;">${report.summary.fail}</td></tr>
+              </table>
+            </td></tr>
+          </table>
+        </td>
+        <td width="34%" valign="top" style="padding-left:8px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e4e4e7;border-radius:8px;height:100%;">
+            <tr><td style="padding:16px 18px;">
+              <p style="margin:0 0 10px;font-size:11px;font-weight:700;color:#71717a;text-transform:uppercase;letter-spacing:0.5px;">Core Web Vitals</p>
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding:2px 10px 2px 0;font-size:12px;color:#3f3f46;">${vitals[0].label}</td>
+                  <td style="padding:2px 0;font-size:13px;font-weight:700;color:#18181b;text-align:right;">${vitals[0].value !== null && vitals[0].value !== undefined ? `${vitals[0].value}${vitals[0].unit}` : '—'}</td>
+                  <td style="padding:2px 10px 2px 16px;font-size:12px;color:#3f3f46;">${vitals[1].label}</td>
+                  <td style="padding:2px 0;font-size:13px;font-weight:700;color:#18181b;text-align:right;">${vitals[1].value !== null && vitals[1].value !== undefined ? `${vitals[1].value}${vitals[1].unit}` : '—'}</td>
+                </tr>
+                <tr>
+                  <td style="padding:2px 10px 2px 0;font-size:12px;color:#3f3f46;">${vitals[2].label}</td>
+                  <td style="padding:2px 0;font-size:13px;font-weight:700;color:#18181b;text-align:right;">${vitals[2].value !== null && vitals[2].value !== undefined ? `${vitals[2].value}${vitals[2].unit}` : '—'}</td>
+                  <td style="padding:2px 10px 2px 16px;font-size:12px;color:#3f3f46;">${vitals[3].label}</td>
+                  <td style="padding:2px 0;font-size:13px;font-weight:700;color:#18181b;text-align:right;">${vitals[3].value !== null && vitals[3].value !== undefined ? `${vitals[3].value}${vitals[3].unit}` : '—'}</td>
+                </tr>
+              </table>
+            </td></tr>
+          </table>
         </td>
       </tr>
     </table>

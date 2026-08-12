@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { X, ClipboardList, FileCode, Eye, Copy, Check, Download, XCircle, AlertTriangle, CheckCircle, Info, Lightbulb, Code2, Printer, FileType } from 'lucide-react';
-import { InternalReport, internalReportToMarkdown, internalReportToHtml } from '@/lib/audit-internal-report';
+import { InternalReport, internalReportToMarkdown, internalReportToHtml, getScoreLabel } from '@/lib/audit-internal-report';
 
 interface InternalReportModalProps {
   isOpen: boolean;
@@ -87,6 +87,32 @@ export function InternalReportModal({ isOpen, onClose, report }: InternalReportM
 
           {mode === 'detalle' && (
             <div className="p-6 space-y-5">
+              {/* Score + Resultados + Core Web Vitals — mismos datos que en /audit-resultados */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4 flex flex-col items-center justify-center text-center">
+                  <p className="text-3xl font-bold text-white">{report.score}<span className="text-sm text-zinc-500">/100</span></p>
+                  <p className="text-xs font-semibold mt-1" style={{ color: getScoreLabel(report.score).color }}>{getScoreLabel(report.score).label}</p>
+                  {report.duration !== null && <p className="text-[11px] text-zinc-500 mt-1">{report.duration}ms</p>}
+                </div>
+                <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4">
+                  <p className="text-[11px] text-zinc-500 uppercase tracking-wider font-semibold mb-2">Resultados</p>
+                  <div className="space-y-1.5 text-sm">
+                    <div className="flex items-center justify-between"><span className="text-zinc-400">Correctos</span><span className="font-bold text-green-400">{report.summary.pass}</span></div>
+                    <div className="flex items-center justify-between"><span className="text-zinc-400">Avisos</span><span className="font-bold text-yellow-400">{report.summary.warn}</span></div>
+                    <div className="flex items-center justify-between"><span className="text-zinc-400">Errores</span><span className="font-bold text-red-400">{report.summary.fail}</span></div>
+                  </div>
+                </div>
+                <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4">
+                  <p className="text-[11px] text-zinc-500 uppercase tracking-wider font-semibold mb-2">Core Web Vitals</p>
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
+                    <div className="flex items-center justify-between"><span className="text-zinc-500 font-mono">TTFB</span><span className="font-bold text-white">{report.performance?.ttfb ?? '—'}ms</span></div>
+                    <div className="flex items-center justify-between"><span className="text-zinc-500 font-mono">FCP</span><span className="font-bold text-white">{report.performance?.fcp ?? '—'}s</span></div>
+                    <div className="flex items-center justify-between"><span className="text-zinc-500 font-mono">LCP</span><span className="font-bold text-white">{report.performance?.lcp ?? '—'}s</span></div>
+                    <div className="flex items-center justify-between"><span className="text-zinc-500 font-mono">CLS</span><span className="font-bold text-white">{report.performance?.cls ?? '—'}</span></div>
+                  </div>
+                </div>
+              </div>
+
               {report.categories.map(cat => (
                 <div key={cat.id} className="border border-zinc-800 rounded-xl overflow-hidden">
                   <div className="px-5 py-3 bg-zinc-800/50 border-b border-zinc-800 flex items-center justify-between">
