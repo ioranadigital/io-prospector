@@ -295,7 +295,12 @@ export function internalReportToHtml(report: InternalReport): string {
 <title>Informe técnico interno — ${esc(report.domain)}</title>
 </head>
 <body style="margin:0;padding:0;background:#ffffff;font-family:Arial,Helvetica,sans-serif;color:#18181b;">
-<table width="100%" cellpadding="0" cellspacing="0" style="max-width:800px;margin:0 auto;padding:32px 20px;">
+<!-- El motor HTML de Word ignora max-width y centra mal con margin:0 auto en
+     una tabla al 100%. <center> + una tabla de ancho fijo + align="center"
+     es la técnica que sí respeta (la misma que se usa para centrar emails
+     HTML en Outlook, que comparte motor de render con Word). -->
+<center>
+<table align="center" width="760" cellpadding="0" cellspacing="0" style="width:760px;margin:0 auto;padding:32px 20px;">
   <tr><td>
 
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
@@ -362,6 +367,7 @@ export function internalReportToHtml(report: InternalReport): string {
 
   </td></tr>
 </table>
+</center>
 </body>
 </html>`;
 }
