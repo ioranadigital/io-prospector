@@ -9,6 +9,8 @@ import * as technical   from './checks/technical.check.js';
 import * as performance from './checks/performance.check.js';
 import * as content     from './checks/content.check.js';
 import * as schema      from './checks/schema.check.js';
+import * as security    from './checks/security.check.js';
+import * as compliance  from './checks/compliance.check.js';
 
 // ─── Supabase Client ───────────────────────────────────────────────────────
 const supabase = createClient(
@@ -18,7 +20,7 @@ const supabase = createClient(
 );
 
 // ─── Registro de checks (añadir aquí nuevos módulos) ───────────────────────
-const CHECKS = [meta, headings, images, links, technical, performance, content, schema];
+const CHECKS = [meta, headings, images, links, technical, performance, content, schema, security, compliance];
 
 // ─── Cache de reglas (5 minutos) ──────────────────────────────────────────
 let cachedRules = null;
@@ -159,10 +161,19 @@ export async function auditUrl(rawUrl) {
   });
   const page = await context.newPage();
 
+  // Content-Type real de cada imagen cargada — permite validar el formato
+  // (WebP/AVIF) sin adivinar por la extensión de la URL, que falla con CDNs
+  // que sirven WebP sin ".webp" en el path (Cloudflare Polish, imgix...).
+  const imageContentTypes = new Map();
+  page.on('response', res => {
+    const ct = res.headers()['content-type'] || '';
+    if (ct.startsWith('image/')) imageContentTypes.set(res.url(), ct);
+  });
+
   try {
     // Medir TTFB con timing nativo
     const navigationStart = Date.now();
-    await page.goto(url, { waitUntil: 'networkidle', timeout: 20000 });
+    const mainResponse = await page.goto(url, { waitUntil: 'networkidle', timeout: 20000 });
     const ttfbRaw = Date.now() - navigationStart;
 
     // Métricas de performance
@@ -177,11 +188,15 @@ export async function auditUrl(rawUrl) {
       url,
       robotsTxt,
       ttfb,
-      lcp:           perfMetrics.lcp,
-      cls:           perfMetrics.cls,
-      fcp:           perfMetrics.fcp,
-      domSize:       perfMetrics.domSize,
-      resourceCount: null,
+      lcp:              perfMetrics.lcp,
+      cls:              perfMetrics.cls,
+      fcp:              perfMetrics.fcp,
+      domSize:          perfMetrics.domSize,
+      resourceCount:    null,
+      // Cabeceras HTTP de la respuesta principal — para checks que no pueden
+      // verse solo con el DOM (HSTS, CSP, X-Robots-Tag, etc.)
+      responseHeaders:  mainResponse ? mainResponse.headers() : {},
+      imageContentTypes,
     };
 
     // Cargar reglas dinámicamente desde BD

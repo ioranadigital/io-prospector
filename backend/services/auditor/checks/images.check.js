@@ -2,8 +2,14 @@ export const id     = 'images';
 export const label  = 'Imágenes';
 export const weight = 15;
 
-export function run(page) {
-  return page.evaluate(() => {
+export function run(page, ctx = {}) {
+  // Content-Type real capturado en auditor/index.js vía page.on('response') —
+  // se pasa como array de [url, contentType] porque es lo que cruza sin
+  // ambigüedad la frontera page.evaluate() (browser realm).
+  const contentTypeEntries = ctx.imageContentTypes ? [...ctx.imageContentTypes.entries()] : [];
+
+  return page.evaluate((contentTypeEntries) => {
+    const contentTypes = new Map(contentTypeEntries);
     const imgs = [...document.querySelectorAll('img')];
     const total = imgs.length;
     const missingAlt   = imgs.filter(i => !i.alt?.trim()).length;
@@ -12,11 +18,17 @@ export function run(page) {
     const lazyLoaded   = imgs.filter(i => i.loading === 'lazy').length;
     const svgInline    = document.querySelectorAll('svg').length;
 
-    // Detecta imágenes grandes por src (heurístico)
+    // Formato real vía Content-Type de red cuando está disponible — evita el
+    // falso "no optimizado" de CDNs que sirven WebP sin ".webp" en la URL
+    // (Cloudflare Polish, imgix con format=auto...). Si no se capturó la
+    // respuesta (imagen cacheada, data URI), cae al heurístico por extensión.
+    const MODERN_TYPES = ['image/webp', 'image/avif'];
     const unoptimized = imgs.filter(i => {
       const src = i.src || '';
-      return src && !src.includes('.svg') && !src.includes('data:') &&
-             !src.includes('webp') && !src.includes('.avif');
+      if (!src || src.startsWith('data:') || src.includes('.svg')) return false;
+      const contentType = contentTypes.get(src);
+      if (contentType) return !MODERN_TYPES.includes(contentType.split(';')[0].trim());
+      return !src.includes('webp') && !src.includes('.avif');
     }).length;
 
     const checks = [

@@ -2,8 +2,10 @@ export const id       = 'meta';
 export const label    = 'Metadatos';
 export const weight   = 25; // % del score total
 
-export function run(page) {
-  return page.evaluate(() => {
+export function run(page, ctx = {}) {
+  const headers = ctx.responseHeaders || {};
+
+  return page.evaluate(({ headers }) => {
     const title       = document.title?.trim() || '';
     const metaDesc    = document.querySelector('meta[name="description"]')?.content?.trim() || '';
     const ogTitle     = document.querySelector('meta[property="og:title"]')?.content?.trim() || '';
@@ -11,7 +13,9 @@ export function run(page) {
     const ogImage     = document.querySelector('meta[property="og:image"]')?.content?.trim() || '';
     const canonical   = document.querySelector('link[rel="canonical"]')?.href?.trim() || '';
     const robots      = document.querySelector('meta[name="robots"]')?.content?.trim() || '';
-    const noindex     = /noindex/i.test(robots);
+    const metaNoindex   = /noindex/i.test(robots);
+    const headerNoindex = /noindex/i.test(headers['x-robots-tag'] || '');
+    const noindex     = metaNoindex || headerNoindex;
     const lang        = document.documentElement.lang?.trim() || '';
     const charset     = document.querySelector('meta[charset]')?.getAttribute('charset') || '';
     const viewport    = document.querySelector('meta[name="viewport"]')?.content?.trim() || '';
@@ -65,9 +69,13 @@ export function run(page) {
         id: 'meta.noindex',
         label: 'Página indexable',
         status: noindex ? 'fail' : 'pass',
-        value: robots || 'index, follow',
-        detail: noindex ? '¡Página marcada como noindex! Google no la indexará' : 'Indexable correctamente',
-        fix: 'Elimina "noindex" del meta robots o cambia a "index, follow"',
+        value: noindex ? (headerNoindex ? 'X-Robots-Tag: noindex' : robots) : (robots || 'index, follow'),
+        detail: !noindex
+          ? 'Indexable correctamente'
+          : headerNoindex && !metaNoindex
+            ? '¡Bloqueada por la cabecera HTTP X-Robots-Tag! No se ve en el HTML pero Google la trata igual que un noindex'
+            : '¡Página marcada como noindex! Google no la indexará',
+        fix: 'Elimina "noindex" del meta robots y/o de la cabecera X-Robots-Tag',
       },
       {
         id: 'meta.og.title',
@@ -119,6 +127,42 @@ export function run(page) {
       },
     ];
 
+    // "Canonical autorreferencial" solo tiene sentido si ya hay un canonical
+    // — si no existe, el problema ya lo reporta "meta.canonical" de arriba
+    // (mismo criterio aplicado a H1 en headings.check.js: no triplicar la
+    // misma causa raíz como varios checks fallidos distintos).
+    if (canonical) {
+      try {
+        const canonicalUrl = new URL(canonical);
+        const current = new URL(location.href);
+        const normalize = u => u.origin + u.pathname.replace(/\/$/, '');
+        const isSelfReferential = normalize(canonicalUrl) === normalize(current);
+        const isCrossDomain = canonicalUrl.origin !== current.origin;
+
+        checks.push({
+          id: 'meta.canonical.target',
+          label: 'Canonical autorreferencial',
+          status: isSelfReferential ? 'pass' : isCrossDomain ? 'warn' : 'info',
+          value: canonical,
+          detail: isSelfReferential
+            ? 'El canonical apunta a la propia URL'
+            : isCrossDomain
+              ? `El canonical apunta a otro dominio (${canonicalUrl.origin}) — solo es correcto si esta página es una copia intencional de contenido de terceros`
+              : `El canonical apunta a una URL distinta dentro del mismo dominio (${canonicalUrl.pathname}) — solo es correcto si esta es una variante (filtro, paginación...) de esa página principal`,
+          fix: isSelfReferential ? null : 'Verifica que el canonical apunte realmente a la URL que quieres posicionar en Google',
+        });
+      } catch {
+        checks.push({
+          id: 'meta.canonical.target',
+          label: 'Canonical autorreferencial',
+          status: 'warn',
+          value: canonical,
+          detail: 'El canonical no es una URL válida',
+          fix: 'Usa una URL absoluta válida en <link rel="canonical">',
+        });
+      }
+    }
+
     return checks;
-  });
+  }, { headers });
 }

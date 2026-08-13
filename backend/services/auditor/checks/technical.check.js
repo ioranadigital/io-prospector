@@ -2,8 +2,46 @@ export const id     = 'technical';
 export const label  = 'SEO Técnico';
 export const weight = 20;
 
+// Bots de los principales motores de respuesta de IA generativa — relevante
+// para GEO (Generative Engine Optimization): si estos user-agents están
+// bloqueados en robots.txt, el contenido no puede citarse en ChatGPT, Claude
+// o Perplexity aunque el SEO tradicional esté perfecto.
+const AI_BOTS = ['GPTBot', 'ClaudeBot', 'Google-Extended', 'PerplexityBot', 'ByteSpider'];
+
+// Parser mínimo de robots.txt: agrupa líneas "User-agent:" consecutivas (que
+// comparten las reglas siguientes, como permite el estándar) y comprueba si
+// alguno de esos grupos tiene "Disallow: /" para el bot indicado o para "*".
+function isUserAgentBlocked(robotsTxt, botName) {
+  if (!robotsTxt) return false;
+  const lines = robotsTxt.split(/\r?\n/).map(l => l.trim());
+  const sections = [];
+  let current = null;
+
+  for (const line of lines) {
+    if (!line || line.startsWith('#')) continue;
+    const uaMatch = line.match(/^User-agent:\s*(.+)$/i);
+    if (uaMatch) {
+      if (!current || current.disallowSeen) {
+        current = { agents: [], disallowAll: false, disallowSeen: false };
+        sections.push(current);
+      }
+      current.agents.push(uaMatch[1].trim());
+      continue;
+    }
+    const disallowMatch = line.match(/^Disallow:\s*(.*)$/i);
+    if (disallowMatch && current) {
+      current.disallowSeen = true;
+      if (disallowMatch[1].trim() === '/') current.disallowAll = true;
+    }
+  }
+
+  return sections.some(s => s.disallowAll && s.agents.some(a => a === '*' || a.toLowerCase() === botName.toLowerCase()));
+}
+
 export function run(page, { url, robotsTxt, ttfb }) {
-  return page.evaluate(({ isHTTPS, robotsTxt, ttfb }) => {
+  const blockedAiBots = AI_BOTS.filter(bot => isUserAgentBlocked(robotsTxt, bot));
+
+  return page.evaluate(({ isHTTPS, robotsTxt, ttfb, blockedAiBots }) => {
     const schema     = [...document.querySelectorAll('script[type="application/ld+json"]')];
     const schemaData = schema.map(s => { try { return JSON.parse(s.textContent); } catch { return null; } }).filter(Boolean);
     const hasSchema  = schemaData.length > 0;
@@ -91,8 +129,22 @@ export function run(page, { url, robotsTxt, ttfb }) {
         detail: hreflang.length > 0 ? `Idiomas: ${hreflang.join(', ')}` : 'Sin hreflang (solo relevante si es sitio multiidioma)',
         fix: 'Si el sitio tiene múltiples idiomas, añade hreflang para cada versión',
       },
+      {
+        id: 'technical.robots.ai-bots',
+        label: 'Acceso de bots de IA generativa (GEO)',
+        status: !robotsTxt ? 'info' : blockedAiBots.length === 0 ? 'pass' : 'warn',
+        value: blockedAiBots.join(', ') || null,
+        detail: !robotsTxt
+          ? 'Sin robots.txt — no se puede determinar si los bots de IA están bloqueados'
+          : blockedAiBots.length > 0
+            ? `Bloqueados en robots.txt: ${blockedAiBots.join(', ')} — no podrán citar este contenido en respuestas de ChatGPT/Claude/Perplexity`
+            : 'Ningún bot de IA generativa conocido está bloqueado — el contenido es citable por LLMs',
+        fix: blockedAiBots.length > 0
+          ? 'Si quieres aparecer citado en ChatGPT/Claude/Perplexity, elimina esas reglas Disallow (o manténlas si prefieres que tu contenido no entrene/alimente esos modelos)'
+          : null,
+      },
     ];
 
     return checks;
-  }, { isHTTPS: url.startsWith('https'), robotsTxt, ttfb });
+  }, { isHTTPS: url.startsWith('https'), robotsTxt, ttfb, blockedAiBots });
 }

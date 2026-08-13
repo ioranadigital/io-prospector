@@ -97,6 +97,27 @@ export const CHECK_EXAMPLES: Record<string, string> = {
   'content.paragraphs': 'Dividir el texto en varios <p> con ideas concretas, en vez de un único bloque largo.',
   'content.long_paragraphs': 'Dividir párrafos de más de 150 palabras en 2-3 párrafos más cortos y escaneables.',
   'content.multimedia': 'Añadir una lista de servicios (<ul>), una tabla de precios o un vídeo corto de presentación.',
+
+  // Technical (GEO)
+  'technical.robots.ai-bots': 'Quitar del robots.txt las líneas Disallow que afecten a GPTBot, ClaudeBot, Google-Extended, PerplexityBot o ByteSpider si quieres que tu contenido pueda citarse en ChatGPT/Claude/Perplexity.',
+
+  // Meta
+  'meta.canonical.target': 'Corrige el canonical para que apunte a la propia URL:\n<link rel="canonical" href="https://midominio.com/esta-misma-pagina/">',
+
+  // Security
+  'security.hsts': 'Strict-Transport-Security: max-age=31536000; includeSubDomains',
+  'security.csp': 'Content-Security-Policy: default-src \'self\'; script-src \'self\' https://www.googletagmanager.com',
+  'security.x-frame-options': 'X-Frame-Options: SAMEORIGIN',
+  'security.x-content-type-options': 'X-Content-Type-Options: nosniff',
+  'security.mixed-content': 'Cambiar cualquier <img src="http://..."> o <script src="http://..."> a https://.',
+  'security.sri': '<script src="https://cdn.ejemplo.com/lib.js" integrity="sha384-..." crossorigin="anonymous"></script>',
+  'security.password.field': 'Servir el formulario de login/contraseña siempre bajo https:// — nunca en una página http://.',
+
+  // Compliance
+  'compliance.cookies': 'Instalar un gestor de consentimiento (ej. CookieYes, Complianz, Cookiebot) que bloquee cookies no esenciales hasta que el usuario acepte.',
+  'compliance.privacy.policy': 'Añadir en el footer: <a href="/politica-de-privacidad/">Política de privacidad</a>',
+  'compliance.terms.service': 'Añadir en el footer: <a href="/aviso-legal/">Aviso legal</a>',
+  'compliance.gdpr': 'Combinar aviso de cookies + política de privacidad publicada — son los dos requisitos básicos para reducir el riesgo de sanción RGPD.',
 };
 
 export type InternalCheckItem = {
