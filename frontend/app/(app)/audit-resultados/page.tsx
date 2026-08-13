@@ -35,7 +35,13 @@ type AuditResult = {
   checks: Record<string, { label: string; weight: number; checks: AuditCheck[] }>;
   summary: { pass: number; warn: number; fail: number; info: number; total: number };
   topIssues: AuditCheck[];
-  performance: { ttfb: number | null; lcp: number | null; cls: number | null; fcp: number | null };
+  performance: {
+    ttfb: number | null; lcp: number | null; cls: number | null; fcp: number | null;
+    // Datos de campo (CrUX, usuarios reales vía PageSpeed Insights) — null si
+    // Google no tiene tráfico real suficiente registrado para este sitio.
+    field?: { ttfb: number | null; fcp: number | null; lcp: number | null; cls: number | null; overallCategory: string | null } | null;
+    pageSpeedScore?: number | null;
+  };
 };
 
 const STATUS_CONFIG: Record<CheckStatus, { icon: React.FC<any>; color: string; bg: string; label: string }> = {
@@ -491,6 +497,13 @@ function AuditResultadosContent() {
               );
             })}
           </div>
+          {result.performance?.field && (
+            <p className="text-xs text-zinc-500 mt-3 flex items-center gap-1.5">
+              <Info size={12} className="text-blue-400 flex-shrink-0" />
+              Datos de campo reales (CrUX, últimos 28 días): {result.performance.field.overallCategory === 'FAST' ? 'Rápido' : result.performance.field.overallCategory === 'AVERAGE' ? 'Medio' : result.performance.field.overallCategory === 'SLOW' ? 'Lento' : result.performance.field.overallCategory}
+              {result.performance.pageSpeedScore != null && ` · Lighthouse: ${result.performance.pageSpeedScore}/100`}
+            </p>
+          )}
         </div>
       </div>
 

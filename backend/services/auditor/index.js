@@ -11,6 +11,9 @@ import * as content     from './checks/content.check.js';
 import * as schema      from './checks/schema.check.js';
 import * as security    from './checks/security.check.js';
 import * as compliance  from './checks/compliance.check.js';
+import * as mobile      from './checks/mobile.check.js';
+import * as a11y        from './checks/a11y.check.js';
+import { getPageSpeedData } from '../pagespeed.service.js';
 
 // ─── Supabase Client ───────────────────────────────────────────────────────
 const supabase = createClient(
@@ -20,7 +23,7 @@ const supabase = createClient(
 );
 
 // ─── Registro de checks (añadir aquí nuevos módulos) ───────────────────────
-const CHECKS = [meta, headings, images, links, technical, performance, content, schema, security, compliance];
+const CHECKS = [meta, headings, images, links, technical, performance, content, schema, security, compliance, mobile, a11y];
 
 // ─── Cache de reglas (5 minutos) ──────────────────────────────────────────
 let cachedRules = null;
@@ -171,6 +174,12 @@ export async function auditUrl(rawUrl) {
   });
 
   try {
+    // PageSpeed Insights corre en paralelo a todo el resto — es una consulta
+    // HTTP externa independiente del browser, y así no añade latencia extra
+    // más allá de lo que ya tarda el propio Playwright (best-effort: si falla
+    // o no hay datos de campo, sigue sin ella).
+    const pageSpeedPromise = getPageSpeedData(url).catch(() => null);
+
     // Medir TTFB con timing nativo
     const navigationStart = Date.now();
     const mainResponse = await page.goto(url, { waitUntil: 'networkidle', timeout: 20000 });
@@ -235,6 +244,11 @@ export async function auditUrl(rawUrl) {
       total:    allChecks.length,
     };
 
+    // Para este punto el checks loop ya ha tardado varios segundos, así que
+    // normalmente esta promesa ya está resuelta — el await no añade espera
+    // adicional en el caso común.
+    const pageSpeed = await pageSpeedPromise;
+
     const result = {
       url,
       totalScore,
@@ -244,7 +258,14 @@ export async function auditUrl(rawUrl) {
       checks: checksByCategory,
       summary,
       topIssues: issues.slice(0, 5),
-      performance: { ttfb, lcp: perfMetrics.lcp, cls: perfMetrics.cls, fcp: perfMetrics.fcp },
+      performance: {
+        ttfb, lcp: perfMetrics.lcp, cls: perfMetrics.cls, fcp: perfMetrics.fcp,
+        // Datos de campo (CrUX, usuarios reales) y score de Lighthouse vía
+        // PageSpeed Insights — null si Google no tiene suficiente tráfico
+        // real registrado para este sitio (frecuente en negocios pequeños).
+        field: pageSpeed?.field ?? null,
+        pageSpeedScore: pageSpeed?.labScore ?? null,
+      },
     };
 
     // NOTA: el histórico (io_pro_audit_logs) se guarda SOLO de forma manual

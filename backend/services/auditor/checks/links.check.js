@@ -2,8 +2,36 @@ export const id     = 'links';
 export const label  = 'Enlaces';
 export const weight = 10;
 
-export function run(page) {
-  return page.evaluate(() => {
+// Límite de enlaces internos a verificar con una petición HTTP real — una
+// auditoría no debe convertirse en un crawler completo del sitio; con esto
+// se cubre una muestra representativa sin disparar decenas de requests ni
+// alargar mucho la duración total.
+const MAX_LINKS_TO_VERIFY = 15;
+const LINK_CHECK_TIMEOUT_MS = 4000;
+
+async function findBrokenLinks(hrefs) {
+  const sample = hrefs.slice(0, MAX_LINKS_TO_VERIFY);
+  const results = await Promise.allSettled(sample.map(async href => {
+    try {
+      let res = await fetch(href, { method: 'HEAD', redirect: 'follow', signal: AbortSignal.timeout(LINK_CHECK_TIMEOUT_MS) });
+      // Algunos servidores no soportan HEAD correctamente (405) aunque el enlace funcione con GET
+      if (res.status === 405) {
+        res = await fetch(href, { method: 'GET', redirect: 'follow', signal: AbortSignal.timeout(LINK_CHECK_TIMEOUT_MS) });
+      }
+      return res.status >= 400 ? { href, status: res.status } : null;
+    } catch {
+      return { href, status: 'sin respuesta' };
+    }
+  }));
+
+  return {
+    checked: sample.length,
+    broken: results.filter(r => r.status === 'fulfilled' && r.value).map(r => r.value),
+  };
+}
+
+export async function run(page) {
+  const { checks, internalHrefs } = await page.evaluate(() => {
     const baseHost = location.hostname;
     const anchors  = [...document.querySelectorAll('a[href]')];
 
@@ -17,6 +45,7 @@ export function run(page) {
     const noOpener = external.filter(a => /noopener|noreferrer/i.test(a.rel));
     const emptyHref = anchors.filter(a => !a.href || a.href === '#' || a.href === `${location.origin}/`).length;
     const noText   = anchors.filter(a => !a.innerText?.trim() && !a.querySelector('img')).length;
+    const internalHrefs = [...new Set(internal.map(a => a.href))];
 
     const checks = [
       {
@@ -64,6 +93,22 @@ export function run(page) {
       },
     ];
 
-    return checks;
+    return { checks, internalHrefs };
   });
+
+  const { checked, broken } = await findBrokenLinks(internalHrefs);
+  checks.push({
+    id: 'links.broken',
+    label: 'Enlaces internos rotos (status HTTP real)',
+    status: checked === 0 ? 'info' : broken.length === 0 ? 'pass' : broken.length <= 2 ? 'warn' : 'fail',
+    value: checked > 0 ? `${broken.length}/${checked} rotos` : null,
+    detail: checked === 0
+      ? 'Sin enlaces internos para verificar'
+      : broken.length > 0
+        ? `${broken.length} de ${checked} enlace(s) verificados devuelven error: ${broken.map(b => `${b.href} (${b.status})`).slice(0, 3).join(', ')}${broken.length > 3 ? '…' : ''}`
+        : `${checked} enlace(s) internos verificados, todos responden correctamente`,
+    fix: broken.length > 0 ? 'Corrige o elimina los enlaces rotos; revisa si apuntan a páginas movidas o eliminadas' : null,
+  });
+
+  return checks;
 }
