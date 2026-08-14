@@ -118,6 +118,21 @@ export const CHECK_EXAMPLES: Record<string, string> = {
   'compliance.privacy.policy': 'Añadir en el footer: <a href="/politica-de-privacidad/">Política de privacidad</a>',
   'compliance.terms.service': 'Añadir en el footer: <a href="/aviso-legal/">Aviso legal</a>',
   'compliance.gdpr': 'Combinar aviso de cookies + política de privacidad publicada — son los dos requisitos básicos para reducir el riesgo de sanción RGPD.',
+
+  // Crawl
+  'crawl.sitemap': 'Genera el sitemap y referéncialo en robots.txt:\nSitemap: https://midominio.com/sitemap.xml',
+  'crawl.robots.optimization': 'User-agent: *\nDisallow:\nSitemap: https://midominio.com/sitemap.xml',
+  'crawl.redirect.chains': 'Actualiza los enlaces internos para que apunten directamente a la URL final, sin pasar por redirecciones intermedias.',
+  'crawl.duplicate.content': 'Reescribe el <title> (y el contenido) de esta página para que sea único frente a las demás páginas del sitio.',
+  'crawl.pagination': '<link rel="next" href="https://midominio.com/blog/pagina/3/">\n<link rel="prev" href="https://midominio.com/blog/pagina/1/">',
+
+  // Analytics
+  'analytics.ga4': '<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'G-XXXXXXX\');</script>',
+  'analytics.utm.consistency': 'Cambiar enlaces internos como <a href="/contacto?utm_source=home"> por <a href="/contacto"> — los UTM son solo para campañas externas.',
+
+  // Local
+  'local.phone.visible': '<a href="tel:+34600000000">600 00 00 00</a>',
+  'local.google.mybusiness': '<a href="https://maps.app.goo.gl/tu-negocio" target="_blank" rel="noopener">Cómo llegar</a>',
 };
 
 export type InternalCheckItem = {

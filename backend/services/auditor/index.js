@@ -13,6 +13,9 @@ import * as security    from './checks/security.check.js';
 import * as compliance  from './checks/compliance.check.js';
 import * as mobile      from './checks/mobile.check.js';
 import * as a11y        from './checks/a11y.check.js';
+import * as crawl       from './checks/crawl.check.js';
+import * as analytics   from './checks/analytics.check.js';
+import * as local       from './checks/local.check.js';
 import { getPageSpeedData } from '../pagespeed.service.js';
 
 // ─── Supabase Client ───────────────────────────────────────────────────────
@@ -23,7 +26,7 @@ const supabase = createClient(
 );
 
 // ─── Registro de checks (añadir aquí nuevos módulos) ───────────────────────
-const CHECKS = [meta, headings, images, links, technical, performance, content, schema, security, compliance, mobile, a11y];
+const CHECKS = [meta, headings, images, links, technical, performance, content, schema, security, compliance, mobile, a11y, crawl, analytics, local];
 
 // ─── Cache de reglas (5 minutos) ──────────────────────────────────────────
 let cachedRules = null;
@@ -70,6 +73,17 @@ async function loadAuditRules() {
 }
 
 // ─── Utilidades ────────────────────────────────────────────────────────────
+function countRedirectHops(response) {
+  if (!response) return 0;
+  let hops = 0;
+  let req = response.request().redirectedFrom();
+  while (req) {
+    hops++;
+    req = req.redirectedFrom();
+  }
+  return hops;
+}
+
 async function fetchRobotsTxt(url) {
   try {
     const base = new URL(url);
@@ -206,6 +220,9 @@ export async function auditUrl(rawUrl) {
       // verse solo con el DOM (HSTS, CSP, X-Robots-Tag, etc.)
       responseHeaders:  mainResponse ? mainResponse.headers() : {},
       imageContentTypes,
+      // Nº de saltos de redirección hasta la URL final — Playwright expone la
+      // cadena vía Request.redirectedFrom(), no es algo visible en el DOM.
+      redirectChainLength: countRedirectHops(mainResponse),
     };
 
     // Cargar reglas dinámicamente desde BD
