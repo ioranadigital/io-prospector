@@ -24,9 +24,17 @@ services:
       - GOOGLE_PLACES_API_KEY=${GOOGLE_PLACES_API_KEY}
       - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
       - PAGESPEED_API_KEY=${PAGESPEED_API_KEY}
+      - AUDIT_QUEUE_CONCURRENCY=${AUDIT_QUEUE_CONCURRENCY:-2}
     depends_on:
       - redis
     restart: unless-stopped
+    # Límite defensivo — cada auditoría lanza un Chromium headless; sin esto,
+    # picos de tráfico o una página que consuma memoria de más podrían
+    # arrastrar al resto de contenedores del VPS (mismo host, RAM compartida).
+    # La defensa principal es AUDIT_QUEUE_CONCURRENCY (limita cuántos
+    # Chromium corren en paralelo); esto es la red de seguridad adicional.
+    mem_limit: 1024m
+    cpus: 1.5
     networks:
       - coolify
       - default

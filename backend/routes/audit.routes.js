@@ -1,29 +1,41 @@
 import { Router } from 'express';
-import { auditUrl } from '../services/auditor/index.js';
+import rateLimit from 'express-rate-limit';
+import { auditQueueService } from '../services/audit-queue.service.js';
 import { logger }   from '../utils/logger.js';
 
 const router = Router();
 
+// Cada auditoría lanza un Chromium headless — un límite más estricto que el
+// genérico de /api (100/min) evita que un cliente sature la cola de audits
+// aunque las peticiones de encolado en sí sean baratas.
+router.use(rateLimit({ windowMs: 60_000, max: 20, standardHeaders: true }));
+
+// POST /api/audit/url — encola la auditoría y responde de inmediato con el
+// job_id. El resultado se recoge con GET /status/:jobId (polling desde el
+// frontend, ver frontend/lib/api.ts → auditUrl()).
 router.post('/url', async (req, res) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ error: 'URL requerida' });
 
   try {
-    logger.info(`🔍 Auditando: ${url}`);
-    const result = await auditUrl(url);
-    res.json(result);
+    const jobId = await auditQueueService.enqueue(url);
+    logger.info(`🔍 Auditoría encolada: ${url} (job ${jobId})`);
+    res.status(202).json({ jobId });
   } catch (err) {
-    logger.error('Audit error:', err.message);
-    const msg = err.message || '';
-    // URL inaccesible (DNS, conexión, timeout, SSL...) → error de cliente, no del servidor
-    const unreachable = /ERR_NAME_NOT_RESOLVED|ERR_CONNECTION|ERR_ADDRESS_UNREACHABLE|ENOTFOUND|ERR_ABORTED|ERR_SOCKET|ERR_CERT|ERR_SSL|net::ERR|timeout|Timeout|ERR_TIMED_OUT/i.test(msg);
-    if (unreachable) {
-      return res.status(400).json({
-        code: 'URL_UNREACHABLE',
-        error: 'No se pudo acceder a la URL. Comprueba que el dominio existe y está online (sin errores de DNS, conexión o certificado).',
-      });
-    }
-    res.status(500).json({ code: 'AUDIT_ERROR', error: 'Error al auditar el sitio. Inténtalo de nuevo en unos segundos.' });
+    logger.error('Error al encolar auditoría:', err.message);
+    res.status(500).json({ code: 'AUDIT_ERROR', error: 'No se pudo encolar la auditoría. Inténtalo de nuevo.' });
+  }
+});
+
+// GET /api/audit/status/:jobId
+router.get('/status/:jobId', async (req, res) => {
+  try {
+    const status = await auditQueueService.getStatus(req.params.jobId);
+    if (!status) return res.status(404).json({ error: 'Auditoría no encontrada (puede haber expirado)' });
+    res.json(status);
+  } catch (err) {
+    logger.error('Error consultando estado de auditoría:', err.message);
+    res.status(500).json({ code: 'AUDIT_ERROR', error: 'Error al consultar el estado de la auditoría.' });
   }
 });
 

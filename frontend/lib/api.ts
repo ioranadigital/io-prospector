@@ -32,6 +32,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json();
 }
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export const api = {
   // Leads
   getLeads:    (params?: Record<string, string>) => request(`/leads?${new URLSearchParams(params)}`),
@@ -75,6 +77,25 @@ export const api = {
   // Leads - Import from scraping
   importFromScraping: (body: object)      => request('/leads/import-from-scraping', { method: 'POST', body: JSON.stringify(body) }),
 
-  // Auditoría onsite
-  auditUrl: (url: string)                 => request('/audit/url', { method: 'POST', body: JSON.stringify({ url }) }),
+  // Auditoría onsite — el backend encola la auditoría (Bull) en vez de
+  // bloquear el request; aquí se hace polling hasta que termina, pero el
+  // contrato hacia quien llama sigue siendo el mismo de siempre: esperar y
+  // recibir el resultado completo, o que se lance un error con mensaje.
+  auditUrl: async (url: string, { pollIntervalMs = 2000, timeoutMs = 90_000 }: { pollIntervalMs?: number; timeoutMs?: number } = {}) => {
+    const { jobId } = await request<{ jobId: string }>('/audit/url', { method: 'POST', body: JSON.stringify({ url }) });
+    const startedAt = Date.now();
+
+    while (true) {
+      if (Date.now() - startedAt > timeoutMs) {
+        throw new Error('La auditoría está tardando más de lo normal. Inténtalo de nuevo en unos minutos.');
+      }
+
+      await sleep(pollIntervalMs);
+
+      const status = await request<{ status: string; result?: any; error?: string }>(`/audit/status/${jobId}`);
+      if (status.status === 'completed') return status.result;
+      if (status.status === 'failed') throw new Error(status.error || 'Error al auditar el sitio.');
+      // status === 'processing' → seguir esperando
+    }
+  },
 };

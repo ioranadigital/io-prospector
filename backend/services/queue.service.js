@@ -3,21 +3,16 @@ import Queue from 'bull';
 import { contactService } from './contact.service.js';
 import { supabase } from '../config/supabase.js';
 import { logger } from '../utils/logger.js';
+import { getRedisConnectionOptions } from '../utils/redis-config.js';
 
 // Colas
 const emailQueue = new Queue('emails', {
-  redis: {
-    host: process.env.REDIS_HOST || '127.0.0.1',
-    port: process.env.REDIS_PORT || 6379,
-  },
+  redis: getRedisConnectionOptions(),
   defaultJobOptions: { removeOnComplete: true, removeOnFail: false },
 });
 
 const whatsappQueue = new Queue('whatsapp', {
-  redis: {
-    host: process.env.REDIS_HOST || '127.0.0.1',
-    port: process.env.REDIS_PORT || 6379,
-  },
+  redis: getRedisConnectionOptions(),
   defaultJobOptions: { removeOnComplete: true, removeOnFail: false },
 });
 
