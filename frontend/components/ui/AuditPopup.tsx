@@ -26,20 +26,20 @@ export function AuditPopup({ lead, onClose }: { lead: any; onClose: () => void }
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-zinc-900 border border-zinc-700 rounded-2xl w-full max-w-lg shadow-2xl fade-in" onClick={e => e.stopPropagation()}>
+      <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-2xl w-full max-w-lg shadow-2xl fade-in" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-start justify-between p-6 border-b border-zinc-800">
+        <div className="flex items-start justify-between p-6 border-b border-zinc-200 dark:border-zinc-800">
           <div>
-            <h2 className="font-bold text-white text-lg">{lead.business_name}</h2>
-            <p className="text-zinc-400 text-sm mt-0.5">{lead.website_url || 'Sin web'}</p>
+            <h2 className="font-bold text-zinc-900 dark:text-white text-lg">{lead.business_name}</h2>
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-0.5">{lead.website_url || 'Sin web'}</p>
           </div>
           <div className="flex items-center gap-4">
             {/* Score circular */}
             <div className="text-center">
               <div className="text-3xl font-black" style={{ color: scoreColor }}>{score}</div>
-              <div className="text-[10px] text-zinc-500">/ 100</div>
+              <div className="text-[10px] text-zinc-600 dark:text-zinc-500">/ 100</div>
             </div>
-            <button onClick={onClose} className="p-1.5 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors">
+            <button onClick={onClose} className="p-1.5 text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
               <X size={18} />
             </button>
           </div>
@@ -49,15 +49,15 @@ export function AuditPopup({ lead, onClose }: { lead: any; onClose: () => void }
         <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
           {failing.length > 0 && (
             <div>
-              <p className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <p className="text-xs font-semibold text-red-700 dark:text-red-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                 <XCircle size={13} /> {failing.length} problemas detectados
               </p>
               <div className="space-y-1.5">
                 {failing.map(([key]) => (
                   <div key={key} className="flex items-center gap-2.5 bg-red-500/8 border border-red-500/20 rounded-lg px-3 py-2">
-                    <AlertTriangle size={13} className="text-red-400 flex-shrink-0" />
-                    <span className="text-sm text-zinc-200">{RULE_LABELS[key]?.label || key}</span>
-                    <span className="ml-auto text-[10px] text-zinc-500 bg-zinc-800 px-1.5 py-0.5 rounded">
+                    <AlertTriangle size={13} className="text-red-700 dark:text-red-400 flex-shrink-0" />
+                    <span className="text-sm text-zinc-800 dark:text-zinc-200">{RULE_LABELS[key]?.label || key}</span>
+                    <span className="ml-auto text-[10px] text-zinc-600 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">
                       {RULE_LABELS[key]?.category}
                     </span>
                   </div>
@@ -68,14 +68,14 @@ export function AuditPopup({ lead, onClose }: { lead: any; onClose: () => void }
 
           {passing.length > 0 && (
             <div>
-              <p className="text-xs font-semibold text-green-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <p className="text-xs font-semibold text-green-700 dark:text-green-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                 <CheckCircle size={13} /> {passing.length} correctos
               </p>
               <div className="space-y-1.5">
                 {passing.map(([key]) => (
                   <div key={key} className="flex items-center gap-2.5 bg-green-500/5 border border-green-500/15 rounded-lg px-3 py-2">
-                    <CheckCircle size={13} className="text-green-400 flex-shrink-0" />
-                    <span className="text-sm text-zinc-400">{RULE_LABELS[key]?.label || key}</span>
+                    <CheckCircle size={13} className="text-green-700 dark:text-green-400 flex-shrink-0" />
+                    <span className="text-sm text-zinc-500 dark:text-zinc-400">{RULE_LABELS[key]?.label || key}</span>
                   </div>
                 ))}
               </div>

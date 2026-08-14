@@ -109,7 +109,7 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
       statusIcon: null as React.ReactNode,
       iconDesc: 'Sin contacto',
       text: 'Sin contacto',
-      color: 'text-zinc-500',
+      color: 'text-zinc-600 dark:text-zinc-500',
       typeIcon: null as React.ReactNode,
       typeDesc: 'No se ha establecido contacto',
       template: '',
@@ -140,21 +140,21 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
     let statusColor = '';
 
     if (activity.direction === 'inbound') {
-      statusIcon = <MessageCircle size={12} className="text-amber-400" />;
+      statusIcon = <MessageCircle size={12} className="text-amber-700 dark:text-amber-400" />;
       statusDesc = 'El lead respondió — pendiente de contestar';
-      statusColor = 'text-amber-400';
+      statusColor = 'text-amber-700 dark:text-amber-400';
     } else if (activity.outcome === 'sent') {
-      statusIcon = <CheckCircle size={12} className="text-green-400" />;
+      statusIcon = <CheckCircle size={12} className="text-green-700 dark:text-green-400" />;
       statusDesc = 'Enviado correctamente';
-      statusColor = 'text-green-400';
+      statusColor = 'text-green-700 dark:text-green-400';
     } else if (activity.outcome === 'failed') {
-      statusIcon = <XCircle size={12} className="text-red-400" />;
+      statusIcon = <XCircle size={12} className="text-red-700 dark:text-red-400" />;
       statusDesc = 'Error al enviar';
-      statusColor = 'text-red-400';
+      statusColor = 'text-red-700 dark:text-red-400';
     } else {
-      statusIcon = <Clock size={12} className="text-yellow-400" />;
+      statusIcon = <Clock size={12} className="text-yellow-700 dark:text-yellow-400" />;
       statusDesc = 'Pendiente de envío';
-      statusColor = 'text-yellow-400';
+      statusColor = 'text-yellow-700 dark:text-yellow-400';
     }
 
     return {
@@ -250,14 +250,14 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="text-sm text-zinc-400">
+        <div className="text-sm text-zinc-500 dark:text-zinc-400">
           <span className="inline-flex items-center gap-1.5"><BarChart3 size={14} /> {uniqueCount} leads únicos | {selected.size} seleccionados</span>
         </div>
         {selected.size > 0 && (
           <button
             onClick={handleDeleteSelected}
             disabled={deleting}
-            className="px-3 py-1.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white text-sm font-semibold rounded flex items-center gap-2 transition"
+            className="px-3 py-1.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-zinc-900 dark:text-white text-sm font-semibold rounded flex items-center gap-2 transition"
           >
             <Trash2 size={14} />
             Eliminar {selected.size}
@@ -265,14 +265,14 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
         )}
       </div>
 
-      <div className="overflow-x-auto border border-zinc-800 rounded">
+      <div className="overflow-x-auto border border-zinc-200 dark:border-zinc-800 rounded">
         <table className="w-full text-sm">
-          <thead className="bg-zinc-900 border-b border-zinc-800 sticky top-0">
+          <thead className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 sticky top-0">
             <tr>
               <th className="px-3 py-3 text-left w-8">
                 <button
                   onClick={toggleSelectAll}
-                  className="p-1 hover:bg-zinc-700 rounded"
+                  className="p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded"
                 >
                   {selected.size === leads.length ? (
                     <CheckCircle2 size={16} className="text-blue-500" />
@@ -286,7 +286,7 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
               <th className="px-3 py-3 text-left font-semibold"><Mail size={13} className="inline mr-1" />Email</th>
               <th className="px-3 py-3 text-left font-semibold"><MessageCircle size={13} className="inline mr-1" />Teléfono</th>
               <th className="px-3 py-3 text-left font-semibold">Rating SEO</th>
-              <th className="px-3 py-3 text-left font-semibold"><Star size={13} className="inline mr-1 text-yellow-400" />Rating GMB</th>
+              <th className="px-3 py-3 text-left font-semibold"><Star size={13} className="inline mr-1 text-yellow-700 dark:text-yellow-400" />Rating GMB</th>
               <th className="px-3 py-3 text-left font-semibold">TIER 1</th>
               <th className="px-3 py-3 text-left font-semibold">Estado</th>
               <th className="px-3 py-3 text-left font-semibold">Acciones</th>
@@ -302,15 +302,15 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
               return (
                 <tr
                   key={lead.id}
-                  className={`border-b border-zinc-800 hover:bg-zinc-800/50 transition cursor-pointer ${
-                    hasPendingReply ? 'bg-amber-950/20' : ''
+                  className={`border-b border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition cursor-pointer ${
+                    hasPendingReply ? 'bg-amber-50 dark:bg-amber-950/20' : ''
                   }`}
                   onClick={() => { onSelectLead?.(lead); setDetailLead(lead); }}
                 >
                   <td className="px-3 py-3">
                     <button
                       onClick={() => toggleSelect(lead.id)}
-                      className="p-1 hover:bg-zinc-700 rounded"
+                      className="p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded"
                     >
                       {selected.has(lead.id) ? (
                         <CheckCircle2 size={16} className="text-blue-500" />
@@ -319,39 +319,39 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
                       )}
                     </button>
                   </td>
-                  <td className="px-3 py-3 font-semibold text-white max-w-sm">
+                  <td className="px-3 py-3 font-semibold text-zinc-900 dark:text-white max-w-sm">
                     <div className="truncate">{fixMojibake(lead.business_name) || 'Sin nombre'}</div>
                     {(() => {
                       const social = !lead.has_website && lead.website ? getSocialPlatform(lead.website) : null;
                       if (social) {
                         const Icon = SOCIAL_ICON[social];
                         return (
-                          <a href={lead.website!} target="_blank" rel="noopener" className="text-xs text-purple-400 hover:underline truncate flex items-center gap-1">
+                          <a href={lead.website!} target="_blank" rel="noopener" className="text-xs text-purple-700 dark:text-purple-400 hover:underline truncate flex items-center gap-1">
                             <Icon size={12} /> Sin web (RRSS)
                           </a>
                         );
                       }
                       if (lead.website) {
                         return (
-                          <a href={lead.website} target="_blank" rel="noopener" className="text-xs text-blue-400 hover:underline truncate block">
+                          <a href={lead.website} target="_blank" rel="noopener" className="text-xs text-blue-700 dark:text-blue-400 hover:underline truncate block">
                             {lead.website}
                           </a>
                         );
                       }
-                      return <span className="text-xs text-zinc-600">Sin web</span>;
+                      return <span className="text-xs text-zinc-400 dark:text-zinc-600">Sin web</span>;
                     })()}
                   </td>
                   <td className="px-3 py-3 text-xs max-w-[10rem]">
-                    <div className="truncate text-zinc-300" title={resolveSector(lead.category).sector}>{resolveSector(lead.category).sector}</div>
-                    <div className="truncate text-zinc-500" title={lead.category || ''}>{lead.category || '—'}</div>
+                    <div className="truncate text-zinc-700 dark:text-zinc-300" title={resolveSector(lead.category).sector}>{resolveSector(lead.category).sector}</div>
+                    <div className="truncate text-zinc-600 dark:text-zinc-500" title={lead.category || ''}>{lead.category || '—'}</div>
                   </td>
                   <td className="px-3 py-3 text-xs">
                     {lead.email ? (
                       <div className="flex items-center gap-2">
-                        <span className="text-blue-400 truncate">{lead.email}</span>
+                        <span className="text-blue-700 dark:text-blue-400 truncate">{lead.email}</span>
                         <button
                           onClick={() => navigator.clipboard.writeText(lead.email || '')}
-                          className="text-blue-400 hover:text-blue-300"
+                          className="text-blue-700 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                           title="Copiar email"
                         >
                           <Copy size={12} />
@@ -363,22 +363,22 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
                               className="inline-flex shrink-0"
                               title={`Ya contactado por email — ${new Date(contacted.created_at).toLocaleString('es-ES')}`}
                             >
-                              <CheckCircle size={12} className="text-green-400" />
+                              <CheckCircle size={12} className="text-green-700 dark:text-green-400" />
                             </span>
                           ) : null;
                         })()}
                       </div>
                     ) : (
-                      <span className="text-zinc-500">-</span>
+                      <span className="text-zinc-600 dark:text-zinc-500">-</span>
                     )}
                   </td>
                   <td className="px-3 py-3 text-xs">
                     {lead.phone ? (
                       <div className="flex items-center gap-2">
-                        <span className="text-green-400 truncate">{lead.phone}</span>
+                        <span className="text-green-700 dark:text-green-400 truncate">{lead.phone}</span>
                         <button
                           onClick={() => navigator.clipboard.writeText(lead.phone || '')}
-                          className="text-green-400 hover:text-green-300"
+                          className="text-green-700 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300"
                           title="Copiar teléfono"
                         >
                           <Copy size={12} />
@@ -390,37 +390,37 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
                               className="inline-flex shrink-0"
                               title={`Ya contactado por WhatsApp — ${new Date(contacted.created_at).toLocaleString('es-ES')}`}
                             >
-                              <CheckCircle size={12} className="text-green-400" />
+                              <CheckCircle size={12} className="text-green-700 dark:text-green-400" />
                             </span>
                           ) : null;
                         })()}
                       </div>
                     ) : (
-                      <span className="text-zinc-500">-</span>
+                      <span className="text-zinc-600 dark:text-zinc-500">-</span>
                     )}
                   </td>
                   <td className="px-3 py-3 text-sm">
-                    <span className="font-semibold text-blue-400" title="Puntuación de Auditoría SEO">
+                    <span className="font-semibold text-blue-700 dark:text-blue-400" title="Puntuación de Auditoría SEO">
                       {lead.audit_score}/100
                     </span>
                   </td>
                   <td className="px-3 py-3 text-sm">
                     {lead.gmb_rating ? (
-                      <span className="font-semibold text-yellow-400" title="Google My Business Rating">
-                        <span className="inline-flex items-center gap-1">{lead.gmb_rating.toFixed(1)} <Star size={12} className="text-yellow-400 fill-yellow-400" /></span>
+                      <span className="font-semibold text-yellow-700 dark:text-yellow-400" title="Google My Business Rating">
+                        <span className="inline-flex items-center gap-1">{lead.gmb_rating.toFixed(1)} <Star size={12} className="text-yellow-700 dark:text-yellow-400 fill-yellow-400" /></span>
                       </span>
                     ) : (
-                      <span className="text-zinc-500" title="Sin datos de Google Maps">
+                      <span className="text-zinc-600 dark:text-zinc-500" title="Sin datos de Google Maps">
                         -
                       </span>
                     )}
                   </td>
                   <td className="px-3 py-3 text-xs">
                     <div className="flex gap-1">
-                      {!lead.email && <span className="px-1 py-0.5 bg-red-900/40 text-red-300 rounded text-xs inline-flex items-center gap-0.5"><Mail size={10} /></span>}
-                      {!lead.phone && <span className="px-1 py-0.5 bg-red-900/40 text-red-300 rounded text-xs inline-flex items-center gap-0.5"><MessageCircle size={10} /></span>}
+                      {!lead.email && <span className="px-1 py-0.5 bg-red-50 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded text-xs inline-flex items-center gap-0.5"><Mail size={10} /></span>}
+                      {!lead.phone && <span className="px-1 py-0.5 bg-red-50 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded text-xs inline-flex items-center gap-0.5"><MessageCircle size={10} /></span>}
                       {lead.email && lead.phone ? (
-                        <span className="px-1 py-0.5 bg-green-900/40 text-green-300 rounded text-xs inline-flex items-center gap-0.5"><CheckCircle size={10} /></span>
+                        <span className="px-1 py-0.5 bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-300 rounded text-xs inline-flex items-center gap-0.5"><CheckCircle size={10} /></span>
                       ) : null}
                     </div>
                   </td>
@@ -434,15 +434,15 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
                         <span title={status.iconDesc} className="inline-flex">{status.statusIcon}</span>
                         <span title={status.typeDesc} className="inline-flex">{status.typeIcon}</span>
                         {tooltipLead === lead.id && (
-                          <div className="absolute left-0 bottom-full mb-2 bg-zinc-900 border border-zinc-700 rounded px-2 py-1 whitespace-nowrap text-xs text-zinc-200 z-40 pointer-events-none">
+                          <div className="absolute left-0 bottom-full mb-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded px-2 py-1 whitespace-nowrap text-xs text-zinc-800 dark:text-zinc-200 z-40 pointer-events-none">
                             {status.iconDesc}
                           </div>
                         )}
                       </div>
-                      <div className="text-zinc-400" title={`Plantilla: ${status.template}`}>
+                      <div className="text-zinc-500 dark:text-zinc-400" title={`Plantilla: ${status.template}`}>
                         {status.template}
                       </div>
-                      <div className="text-zinc-500" title={`Hace ${status.timeStr}`}>
+                      <div className="text-zinc-600 dark:text-zinc-500" title={`Hace ${status.timeStr}`}>
                         {status.timeStr}
                       </div>
                     </div>
@@ -453,7 +453,7 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
                         e.stopPropagation();
                         setDetailLead(lead);
                       }}
-                      className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium transition"
+                      className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-zinc-900 dark:text-white rounded text-xs font-medium transition"
                       title="Ver ficha completa"
                     >
                       <ClipboardList size={12} className="inline mr-1" /> Ficha
@@ -463,10 +463,10 @@ export function LeadsTable({ refreshTrigger, filterCategory, filterSector, onSel
                         e.stopPropagation();
                         setTierLead(lead);
                       }}
-                      className="p-1.5 hover:bg-purple-900/30 rounded-lg transition-colors"
+                      className="p-1.5 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-lg transition-colors"
                       title="Ver TIER"
                     >
-                      <BarChart3 size={16} className="text-purple-400" />
+                      <BarChart3 size={16} className="text-purple-700 dark:text-purple-400" />
                     </button>
                   </td>
                 </tr>

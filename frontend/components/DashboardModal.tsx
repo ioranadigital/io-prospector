@@ -33,14 +33,14 @@ export function DashboardModal({ prospectionId, isOpen, onClose, leads }: Dashbo
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-h-[90vh] overflow-y-auto max-w-4xl">
+      <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl w-full max-h-[90vh] overflow-y-auto max-w-4xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-zinc-800 sticky top-0 bg-zinc-900">
+        <div className="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 bg-zinc-50 dark:bg-zinc-900">
           <div className="flex items-center gap-3">
-            <BarChart3 className="w-6 h-6 text-blue-400" />
-            <h2 className="text-2xl font-bold text-white">Dashboard de Resultados</h2>
+            <BarChart3 className="w-6 h-6 text-blue-700 dark:text-blue-400" />
+            <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">Dashboard de Resultados</h2>
           </div>
-          <button onClick={onClose} className="text-zinc-400 hover:text-white">
+          <button onClick={onClose} className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
             <X size={28} />
           </button>
         </div>
@@ -48,28 +48,28 @@ export function DashboardModal({ prospectionId, isOpen, onClose, leads }: Dashbo
         {/* Content */}
         <div className="p-6 space-y-6">
           {/* Summary */}
-          <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-800 rounded-lg p-4">
-            <p className="text-sm text-blue-300 font-semibold mb-2 flex items-center gap-1.5"><BarChart3 size={14} /> Resumen</p>
+          <div className="bg-gradient-to-r from-blue-50 dark:from-blue-900/30 to-purple-50 dark:to-purple-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <p className="text-sm text-blue-700 dark:text-blue-300 font-semibold mb-2 flex items-center gap-1.5"><BarChart3 size={14} /> Resumen</p>
             <div className="grid grid-cols-4 gap-4">
               <div>
-                <p className="text-xs text-zinc-400">Leads Procesados</p>
-                <p className="text-2xl font-bold text-blue-400">{leadsArray.length}</p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">Leads Procesados</p>
+                <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">{leadsArray.length}</p>
               </div>
               <div>
-                <p className="text-xs text-zinc-400">Score Promedio</p>
-                <p className="text-2xl font-bold text-green-400">
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">Score Promedio</p>
+                <p className="text-2xl font-bold text-green-700 dark:text-green-400">
                   {leadsArray.length > 0
                     ? Math.round(leadsArray.reduce((sum: number, lead: any) => sum + calculateScore(lead), 0) / leadsArray.length)
                     : 0}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-zinc-400">Críticos (TIER1)</p>
-                <p className="text-2xl font-bold text-red-400">{leadsArray.filter(l => !l.has_phone && !l.has_email).length}</p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">Críticos (TIER1)</p>
+                <p className="text-2xl font-bold text-red-700 dark:text-red-400">{leadsArray.filter(l => !l.has_phone && !l.has_email).length}</p>
               </div>
               <div>
-                <p className="text-xs text-zinc-400">Excelentes (80+)</p>
-                <p className="text-2xl font-bold text-yellow-400">{leadsArray.filter(l => calculateScore(l) >= 80).length}</p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">Excelentes (80+)</p>
+                <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-400">{leadsArray.filter(l => calculateScore(l) >= 80).length}</p>
               </div>
             </div>
           </div>
@@ -79,31 +79,31 @@ export function DashboardModal({ prospectionId, isOpen, onClose, leads }: Dashbo
             {leadsArray.map((lead, idx) => {
               const score = calculateScore(lead);
               const statusColor =
-                score >= 80 ? 'text-green-400' : score >= 60 ? 'text-yellow-400' : score >= 40 ? 'text-orange-400' : 'text-red-400';
+                score >= 80 ? 'text-green-700 dark:text-green-400' : score >= 60 ? 'text-yellow-700 dark:text-yellow-400' : score >= 40 ? 'text-orange-700 dark:text-orange-400' : 'text-red-700 dark:text-red-400';
 
               return (
-                <div key={idx} className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4">
+                <div key={idx} className="bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-300 dark:border-zinc-700 rounded-lg p-4">
                   {/* Lead Header */}
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-white text-lg">{lead.business_name}</h3>
+                      <h3 className="font-semibold text-zinc-900 dark:text-white text-lg">{lead.business_name}</h3>
                       {lead.website && (
-                        <a href={lead.website} target="_blank" rel="noopener" className="text-sm text-blue-400 hover:underline">
+                        <a href={lead.website} target="_blank" rel="noopener" className="text-sm text-blue-700 dark:text-blue-400 hover:underline">
                           {lead.website}
                         </a>
                       )}
                     </div>
                     <div className="text-right">
                       <p className={`text-3xl font-bold ${statusColor}`}>{score}</p>
-                      <p className="text-xs text-zinc-400">/100</p>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">/100</p>
                     </div>
                   </div>
 
                   {/* Contact Info */}
                   <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
-                    {lead.email && <p className="text-zinc-300 flex items-center gap-1"><Mail size={12} /> {lead.email}</p>}
-                    {lead.phone && <p className="text-zinc-300 flex items-center gap-1"><Phone size={12} /> {lead.phone}</p>}
-                    {lead.created_at && <p className="text-zinc-400 text-xs flex items-center gap-1"><Calendar size={11} /> {new Date(lead.created_at).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' })}</p>}
+                    {lead.email && <p className="text-zinc-700 dark:text-zinc-300 flex items-center gap-1"><Mail size={12} /> {lead.email}</p>}
+                    {lead.phone && <p className="text-zinc-700 dark:text-zinc-300 flex items-center gap-1"><Phone size={12} /> {lead.phone}</p>}
+                    {lead.created_at && <p className="text-zinc-500 dark:text-zinc-400 text-xs flex items-center gap-1"><Calendar size={11} /> {new Date(lead.created_at).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' })}</p>}
                   </div>
 
                   {/* TIERs Progress */}
@@ -119,11 +119,11 @@ export function DashboardModal({ prospectionId, isOpen, onClose, leads }: Dashbo
                       const percentage = Math.round((count / tier.items.length) * 100);
                       return (
                         <div key={tier.label}>
-                          <p className="text-xs font-semibold text-zinc-300 mb-1">{tier.label}</p>
-                          <div className="bg-zinc-700 rounded h-2 overflow-hidden">
+                          <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">{tier.label}</p>
+                          <div className="bg-zinc-200 dark:bg-zinc-700 rounded h-2 overflow-hidden">
                             <div className={`${tier.color} h-full transition-all`} style={{ width: `${percentage}%` }} />
                           </div>
-                          <p className="text-xs text-zinc-400 mt-1">{count}/{tier.items.length}</p>
+                          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{count}/{tier.items.length}</p>
                         </div>
                       );
                     })}
@@ -138,7 +138,7 @@ export function DashboardModal({ prospectionId, isOpen, onClose, leads }: Dashbo
             <a
               href={api.downloadFile(prospectionId, 'csv')}
               download
-              className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold text-center"
+              className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-zinc-900 dark:text-white rounded font-semibold text-center"
             >
               <Download size={15} className="inline mr-1" />Descargar CSV
             </a>
@@ -146,7 +146,7 @@ export function DashboardModal({ prospectionId, isOpen, onClose, leads }: Dashbo
               href={`/prospecciones-historico/${prospectionId}`}
               target="_blank"
               rel="noopener"
-              className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded font-semibold text-center"
+              className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-zinc-900 dark:text-white rounded font-semibold text-center"
             >
               <BarChart3 size={15} className="inline mr-1" />Ver Reporte Completo
             </a>

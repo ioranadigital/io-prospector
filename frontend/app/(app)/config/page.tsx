@@ -47,19 +47,19 @@ export default function ConfigPage() {
     toast.success(`"${term}" eliminado`);
   };
 
-  if (loading) return <div className="text-zinc-500 text-center py-24">Cargando configuración...</div>;
+  if (loading) return <div className="text-zinc-600 dark:text-zinc-500 text-center py-24">Cargando configuración...</div>;
 
   return (
     <div className="w-full space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2"><Settings size={22} className="text-white" /> Configuración</h1>
-        <p className="text-zinc-400 text-sm mt-1">Categorías de sectores y exclusiones globales de prospección</p>
+        <h1 className="text-2xl font-bold text-zinc-900 dark:text-white flex items-center gap-2"><Settings size={22} className="text-zinc-900 dark:text-white" /> Configuración</h1>
+        <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">Categorías de sectores y exclusiones globales de prospección</p>
       </div>
 
       {/* Categorías / Sectores */}
       <div>
-        <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2"><FolderOpen size={18} /> Categorías</h2>
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+        <h2 className="text-lg font-bold text-zinc-900 dark:text-white mb-3 flex items-center gap-2"><FolderOpen size={18} /> Categorías</h2>
+        <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-6">
           <SectorsAdmin />
         </div>
       </div>
@@ -67,9 +67,9 @@ export default function ConfigPage() {
       {/* Exclusiones Globales */}
       <div className="space-y-4">
         <div>
-          <h2 className="text-lg font-bold text-white mb-1 flex items-center gap-2"><Ban size={18} /> Exclusiones</h2>
-          <p className="text-xs text-zinc-500">
-            Términos que se excluyen de <strong className="text-zinc-300">todas</strong> las búsquedas de prospección.
+          <h2 className="text-lg font-bold text-zinc-900 dark:text-white mb-1 flex items-center gap-2"><Ban size={18} /> Exclusiones</h2>
+          <p className="text-xs text-zinc-600 dark:text-zinc-500">
+            Términos que se excluyen de <strong className="text-zinc-700 dark:text-zinc-300">todas</strong> las búsquedas de prospección.
           </p>
         </div>
           <div className="flex gap-3">
@@ -78,26 +78,26 @@ export default function ConfigPage() {
               onChange={e => setNewExclude(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && addGlobalExclude()}
               placeholder="Añadir término a excluir..."
-              className="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500"
+              className="flex-1 bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-blue-500"
             />
             <button onClick={addGlobalExclude}
-              className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium flex items-center gap-2">
+              className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-zinc-900 dark:text-white rounded-lg text-sm font-medium flex items-center gap-2">
               <Plus size={14} /> Añadir
             </button>
           </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
+          <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
             {globalExcludes.length === 0 ? (
-              <p className="px-5 py-8 text-center text-zinc-500 text-sm">Sin exclusiones globales</p>
+              <p className="px-5 py-8 text-center text-zinc-600 dark:text-zinc-500 text-sm">Sin exclusiones globales</p>
             ) : (
-              <div className="divide-y divide-zinc-800">
+              <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
                 {globalExcludes.map((ex, i) => (
                   <div key={ex.id || i} className="flex items-center justify-between px-5 py-3">
-                    <span className="text-sm text-zinc-300 font-mono">-{ex.term}</span>
+                    <span className="text-sm text-zinc-700 dark:text-zinc-300 font-mono">-{ex.term}</span>
                     <button
                       onClick={() => ex.id && removeGlobalExclude(ex.id, ex.term)}
-                      className="p-1.5 hover:bg-red-900/30 rounded transition"
+                      className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition"
                     >
-                      <Trash2 size={14} className="text-red-400" />
+                      <Trash2 size={14} className="text-red-700 dark:text-red-400" />
                     </button>
                   </div>
                 ))}

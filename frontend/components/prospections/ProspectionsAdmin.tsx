@@ -109,13 +109,13 @@ export function ProspectionsAdmin() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-600/20 text-green-400';
+        return 'bg-green-600/20 text-green-700 dark:text-green-400';
       case 'in_progress':
-        return 'bg-yellow-600/20 text-yellow-400';
+        return 'bg-yellow-600/20 text-yellow-700 dark:text-yellow-400';
       case 'failed':
-        return 'bg-red-600/20 text-red-400';
+        return 'bg-red-600/20 text-red-700 dark:text-red-400';
       default:
-        return 'bg-zinc-600/20 text-zinc-400';
+        return 'bg-zinc-300 dark:bg-zinc-600/20 text-zinc-500 dark:text-zinc-400';
     }
   };
 
@@ -131,7 +131,7 @@ export function ProspectionsAdmin() {
         </h3>
         <button
           onClick={loadSessions}
-          className="flex items-center gap-2 px-3 py-2 bg-zinc-700 hover:bg-zinc-600 rounded text-sm"
+          className="flex items-center gap-2 px-3 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 rounded text-sm"
         >
           <RefreshCw size={16} />
           Actualizar
@@ -139,26 +139,26 @@ export function ProspectionsAdmin() {
       </div>
 
       {sessions.length === 0 ? (
-        <div className="text-center py-8 bg-zinc-800 border border-zinc-700 rounded-lg">
-          <p className="text-zinc-400">No hay prospecciones guardadas</p>
+        <div className="text-center py-8 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg">
+          <p className="text-zinc-500 dark:text-zinc-400">No hay prospecciones guardadas</p>
         </div>
       ) : (
         <div className="grid gap-3">
           {sessions.map((session) => (
             <div
               key={session.id}
-              className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 flex items-start justify-between hover:border-zinc-600 transition"
+              className="bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-4 flex items-start justify-between hover:border-zinc-300 dark:hover:border-zinc-600 transition"
             >
               <div className="flex-1">
                 {/* Header */}
                 <div className="flex items-center gap-3 mb-3">
                   <div className="flex-1">
-                    <h4 className="font-semibold text-white">
+                    <h4 className="font-semibold text-zinc-900 dark:text-white">
                       {session.query}
-                      {session.city && <span className="text-zinc-400 ml-2 inline-flex items-center gap-0.5"><MapPin size={11} /> {session.city}</span>}
+                      {session.city && <span className="text-zinc-500 dark:text-zinc-400 ml-2 inline-flex items-center gap-0.5"><MapPin size={11} /> {session.city}</span>}
                     </h4>
                     {session.category && (
-                      <p className="text-xs text-zinc-500 mt-1">Categoría: {session.category}</p>
+                      <p className="text-xs text-zinc-600 dark:text-zinc-500 mt-1">Categoría: {session.category}</p>
                     )}
                   </div>
                   <span className={`text-xs px-2 py-1 rounded font-medium ${getStatusColor(session.status)}`}>
@@ -171,16 +171,16 @@ export function ProspectionsAdmin() {
                 {/* Info */}
                 <div className="grid grid-cols-3 gap-4 text-xs">
                   <div>
-                    <span className="text-zinc-500">Leads encontrados:</span>
-                    <p className="font-semibold text-white">{session.leads_count || session.total_found}</p>
+                    <span className="text-zinc-600 dark:text-zinc-500">Leads encontrados:</span>
+                    <p className="font-semibold text-zinc-900 dark:text-white">{session.leads_count || session.total_found}</p>
                   </div>
                   <div>
-                    <span className="text-zinc-500">Páginas:</span>
-                    <p className="font-semibold text-white">{session.pages_from} → {session.pages_to}</p>
+                    <span className="text-zinc-600 dark:text-zinc-500">Páginas:</span>
+                    <p className="font-semibold text-zinc-900 dark:text-white">{session.pages_from} → {session.pages_to}</p>
                   </div>
                   <div>
-                    <span className="text-zinc-500">Fecha:</span>
-                    <p className="font-semibold text-white">{formatDate(session.created_at)}</p>
+                    <span className="text-zinc-600 dark:text-zinc-500">Fecha:</span>
+                    <p className="font-semibold text-zinc-900 dark:text-white">{formatDate(session.created_at)}</p>
                   </div>
                 </div>
               </div>
@@ -189,7 +189,7 @@ export function ProspectionsAdmin() {
               <button
                 onClick={() => setConfirmDel({ id: session.id, query: session.query })}
                 disabled={deleting === session.id}
-                className="ml-4 p-2 bg-red-600/20 hover:bg-red-600/40 disabled:opacity-50 text-red-400 rounded transition"
+                className="ml-4 p-2 bg-red-600/20 hover:bg-red-600/40 disabled:opacity-50 text-red-700 dark:text-red-400 rounded transition"
                 title="Eliminar prospección (se borran también todos sus leads)"
               >
                 {deleting === session.id ? (
@@ -204,9 +204,9 @@ export function ProspectionsAdmin() {
       )}
 
       {/* Info */}
-      <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-4 text-xs text-zinc-400">
+      <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg p-4 text-xs text-zinc-500 dark:text-zinc-400">
         <p className="flex items-start gap-1.5">
-          <Lightbulb size={13} className="text-zinc-400 flex-shrink-0 mt-0.5" /> <strong>Nota:</strong> Al eliminar una prospección se borran automáticamente todos los leads asociados. Esta acción no se puede deshacer.
+          <Lightbulb size={13} className="text-zinc-500 dark:text-zinc-400 flex-shrink-0 mt-0.5" /> <strong>Nota:</strong> Al eliminar una prospección se borran automáticamente todos los leads asociados. Esta acción no se puede deshacer.
         </p>
       </div>
 

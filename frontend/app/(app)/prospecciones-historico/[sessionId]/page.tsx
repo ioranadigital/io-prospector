@@ -93,15 +93,15 @@ export default function ProspeccionDetallePage() {
     }
   };
 
-  if (loading) return <div className="text-zinc-500 text-center py-24">Cargando prospección...</div>;
+  if (loading) return <div className="text-zinc-600 dark:text-zinc-500 text-center py-24">Cargando prospección...</div>;
 
   if (!session) {
     return (
       <div className="w-full space-y-4">
-        <button onClick={() => router.push('/prospecciones-historico')} className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white">
+        <button onClick={() => router.push('/prospecciones-historico')} className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
           <ArrowLeft size={15} /> Volver al histórico
         </button>
-        <p className="text-center text-zinc-500 py-16 bg-zinc-900 border border-zinc-800 rounded-xl">
+        <p className="text-center text-zinc-600 dark:text-zinc-500 py-16 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl">
           No se encontró esta prospección.
         </p>
       </div>
@@ -110,34 +110,34 @@ export default function ProspeccionDetallePage() {
 
   return (
     <div className="w-full space-y-6">
-      <button onClick={() => router.push('/prospecciones-historico')} className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white">
+      <button onClick={() => router.push('/prospecciones-historico')} className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
         <ArrowLeft size={15} /> Volver al histórico
       </button>
 
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-3">
+      <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 space-y-3">
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <h1 className="text-xl font-bold text-white flex items-center gap-2">
+          <h1 className="text-xl font-bold text-zinc-900 dark:text-white flex items-center gap-2">
             <Search size={18} /> {fixMojibake(session.query) || session.category || 'Prospección'}
           </h1>
           <a
             href={api.downloadFile(session.id, 'csv')}
             download
-            className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition"
+            className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-zinc-900 dark:text-white rounded-lg text-sm font-medium transition"
           >
             <Download size={14} /> CSV
           </a>
         </div>
-        <div className="flex items-center gap-5 text-xs text-zinc-400 flex-wrap">
+        <div className="flex items-center gap-5 text-xs text-zinc-500 dark:text-zinc-400 flex-wrap">
           {session.category && <span className="flex items-center gap-1"><Tag size={12} /> {session.category}</span>}
           <span className="flex items-center gap-1"><MapPin size={12} /> {fixMojibake(session.city) || '—'}</span>
           <span className="flex items-center gap-1"><Clock size={12} /> {fmtDate(session.created_at)}</span>
-          <span className={`font-semibold ${session.status === 'completed' ? 'text-green-400' : session.status === 'error' ? 'text-red-400' : 'text-yellow-400'}`}>
+          <span className={`font-semibold ${session.status === 'completed' ? 'text-green-700 dark:text-green-400' : session.status === 'error' ? 'text-red-700 dark:text-red-400' : 'text-yellow-700 dark:text-yellow-400'}`}>
             {session.total_found ?? leads.length} leads
           </span>
         </div>
       </div>
 
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+      <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
         <LeadsTable
           leads={leads}
           onOpenDetail={(lead) => setDetailLead(lead)}

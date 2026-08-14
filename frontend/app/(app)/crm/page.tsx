@@ -54,38 +54,38 @@ export default function CrmPage() {
     <div className="flex gap-6 h-[calc(100vh-4rem)] fade-in">
       {/* Lista de leads */}
       <div className="w-72 flex-shrink-0 flex flex-col gap-2 overflow-y-auto">
-        <h1 className="text-lg font-bold text-white mb-2">CRM Contacto</h1>
+        <h1 className="text-lg font-bold text-zinc-900 dark:text-white mb-2">CRM Contacto</h1>
         {leads.map(lead => (
           <div key={lead.id} onClick={() => setSelected(lead)}
             className={`p-3 rounded-xl border cursor-pointer transition-all ${
               selected?.id === lead.id
                 ? 'bg-blue-600/15 border-blue-600/40'
-                : 'bg-zinc-900 border-zinc-800 hover:border-zinc-700'
+                : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700'
             }`}>
-            <p className="text-sm font-medium text-zinc-200 truncate">{lead.business_name}</p>
-            <p className="text-xs text-zinc-500 mt-0.5">{lead.city} · score {lead.audit_score ?? '—'}</p>
+            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate">{lead.business_name}</p>
+            <p className="text-xs text-zinc-600 dark:text-zinc-500 mt-0.5">{lead.city} · score {lead.audit_score ?? '—'}</p>
           </div>
         ))}
       </div>
 
       {/* Panel de contacto */}
       {selected ? (
-        <div className="flex-1 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col overflow-hidden">
+        <div className="flex-1 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col overflow-hidden">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-zinc-800">
+          <div className="px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-bold text-white">{selected.business_name}</h2>
-                <p className="text-xs text-zinc-500 mt-0.5">{selected.city} · {selected.category}</p>
+                <h2 className="font-bold text-zinc-900 dark:text-white">{selected.business_name}</h2>
+                <p className="text-xs text-zinc-600 dark:text-zinc-500 mt-0.5">{selected.city} · {selected.category}</p>
               </div>
               <div className="flex items-center gap-2">
                 {selected.phone && (
-                  <a href={`tel:${selected.phone}`} className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/15 text-green-400 rounded-lg text-xs font-medium hover:bg-green-500/25">
+                  <a href={`tel:${selected.phone}`} className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/15 text-green-700 dark:text-green-400 rounded-lg text-xs font-medium hover:bg-green-500/25">
                     <Phone size={12} /> {selected.phone}
                   </a>
                 )}
                 <button onClick={() => setScriptLead(selected)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 text-zinc-300 rounded-lg text-xs font-medium hover:bg-zinc-700">
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-lg text-xs font-medium hover:bg-zinc-200 dark:hover:bg-zinc-700">
                   <FileText size={12} /> Guión
                 </button>
               </div>
@@ -93,11 +93,11 @@ export default function CrmPage() {
           </div>
 
           {/* Tabs */}
-          <div className="flex border-b border-zinc-800">
+          <div className="flex border-b border-zinc-200 dark:border-zinc-800">
             {(['email','whatsapp'] as const).map(t => (
               <button key={t} onClick={() => setTab(t)}
                 className={`px-6 py-3 text-sm font-medium transition-colors ${
-                  tab === t ? 'text-blue-400 border-b-2 border-blue-500' : 'text-zinc-500 hover:text-zinc-300'
+                  tab === t ? 'text-blue-700 dark:text-blue-400 border-b-2 border-blue-500' : 'text-zinc-600 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
                 }`}>
                 {t === 'email' ? <><Mail size={13} className="inline mr-1.5" />Email</> : <><MessageCircle size={13} className="inline mr-1.5" />WhatsApp</>}
               </button>
@@ -110,18 +110,18 @@ export default function CrmPage() {
               <div className="flex gap-2 flex-wrap">
                 {templates.map(t => (
                   <button key={t.id} onClick={() => loadTemplate(t)}
-                    className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs transition-colors">
+                    className="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg text-xs transition-colors">
                     {t.name}
                   </button>
                 ))}
               </div>
               <input value={emailData.subject} onChange={e => setEmailData(d => ({ ...d, subject: e.target.value }))}
-                placeholder="Asunto del email..." className="bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500" />
+                placeholder="Asunto del email..." className="bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-blue-500" />
               <textarea value={emailData.body} onChange={e => setEmailData(d => ({ ...d, body: e.target.value }))}
                 rows={10} placeholder="Cuerpo del email..."
-                className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500 resize-none font-mono" />
+                className="flex-1 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-blue-500 resize-none font-mono" />
               <button onClick={sendEmail} disabled={sending || !emailData.body}
-                className="flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold rounded-xl transition-colors">
+                className="flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-zinc-900 dark:text-white font-semibold rounded-xl transition-colors">
                 {sending ? <Loader2 size={15} className="animate-spin" /> : <Mail size={15} />}
                 Enviar email a {selected.email || '(sin email)'}
               </button>
@@ -140,20 +140,20 @@ export default function CrmPage() {
                       .replace(/{{business_name}}/g, selected.business_name)
                       .replace(/{{audit_score}}/g, selected.audit_score ?? '?')
                       .replace(/{{city}}/g, selected.city ?? ''));
-                  }} className="py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-xs font-medium capitalize transition-colors">
+                  }} className="py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-xl text-xs font-medium capitalize transition-colors">
                     {intensity === 'soft'
-                      ? <><Leaf size={13} className="inline mr-1 text-green-400" />Suave</>
+                      ? <><Leaf size={13} className="inline mr-1 text-green-700 dark:text-green-400" />Suave</>
                       : intensity === 'medium'
-                        ? <><Flame size={13} className="inline mr-1 text-orange-400" />Media</>
-                        : <><Zap size={13} className="inline mr-1 text-yellow-400" />Fuerte</>}
+                        ? <><Flame size={13} className="inline mr-1 text-orange-700 dark:text-orange-400" />Media</>
+                        : <><Zap size={13} className="inline mr-1 text-yellow-700 dark:text-yellow-400" />Fuerte</>}
                   </button>
                 ))}
               </div>
               <textarea value={waMessage} onChange={e => setWaMessage(e.target.value)}
                 rows={8} placeholder="Mensaje de WhatsApp..."
-                className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500 resize-none" />
+                className="flex-1 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-blue-500 resize-none" />
               <button onClick={sendWhatsApp} disabled={sending || !waMessage}
-                className="flex items-center justify-center gap-2 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold rounded-xl transition-colors">
+                className="flex items-center justify-center gap-2 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-zinc-900 dark:text-white font-semibold rounded-xl transition-colors">
                 {sending ? <Loader2 size={15} className="animate-spin" /> : <MessageCircle size={15} />}
                 Enviar WhatsApp a {selected.phone || '(sin teléfono)'}
               </button>
@@ -161,7 +161,7 @@ export default function CrmPage() {
           )}
         </div>
       ) : (
-        <div className="flex-1 flex items-center justify-center text-zinc-600">
+        <div className="flex-1 flex items-center justify-center text-zinc-400 dark:text-zinc-600">
           <div className="text-center">
             <p className="text-lg">Selecciona un lead</p>
             <p className="text-sm mt-1">para gestionar el contacto</p>

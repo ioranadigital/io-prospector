@@ -98,12 +98,12 @@ export function ActivitiesTable() {
         <div className="flex-1 min-w-[200px]">
           <label className="block text-sm font-medium mb-2">Buscar cliente</label>
           <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600 dark:text-zinc-500" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Nombre del negocio..."
-              className="w-full bg-zinc-800 border border-zinc-700 pl-8 pr-3 py-2 rounded text-white text-sm"
+              className="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 pl-8 pr-3 py-2 rounded text-zinc-900 dark:text-white text-sm"
             />
           </div>
         </div>
@@ -112,7 +112,7 @@ export function ActivitiesTable() {
           <select
             value={typeFilter}
             onChange={e => setTypeFilter(e.target.value as any)}
-            className="bg-zinc-800 border border-zinc-700 px-3 py-2 rounded text-white text-sm"
+            className="bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-3 py-2 rounded text-zinc-900 dark:text-white text-sm"
           >
             <option value="all">Todos</option>
             <option value="email">Email</option>
@@ -121,37 +121,37 @@ export function ActivitiesTable() {
         </div>
       </div>
 
-      <div className="border border-zinc-800 rounded divide-y divide-zinc-800">
+      <div className="border border-zinc-200 dark:border-zinc-800 rounded divide-y divide-zinc-200 dark:divide-zinc-800">
         {rows.length === 0 ? (
-          <div className="px-4 py-8 text-center text-zinc-400 text-sm">No hay clientes</div>
+          <div className="px-4 py-8 text-center text-zinc-500 dark:text-zinc-400 text-sm">No hay clientes</div>
         ) : (
           rows.map(({ lead, activities: leadActivities, last }) => {
             const isOpen = expanded.has(lead.id);
             const hasPendingReply = last?.direction === 'inbound';
             return (
-              <div key={lead.id} className={hasPendingReply ? 'bg-amber-950/20' : ''}>
+              <div key={lead.id} className={hasPendingReply ? 'bg-amber-50 dark:bg-amber-950/20' : ''}>
                 <button
                   onClick={() => toggle(lead.id)}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-zinc-800/50 transition"
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition"
                 >
-                  {isOpen ? <ChevronDown size={14} className="text-zinc-500 flex-shrink-0" /> : <ChevronRight size={14} className="text-zinc-500 flex-shrink-0" />}
-                  <span className="text-sm font-medium text-white flex-1 truncate">{lead.business_name || 'Sin nombre'}</span>
+                  {isOpen ? <ChevronDown size={14} className="text-zinc-600 dark:text-zinc-500 flex-shrink-0" /> : <ChevronRight size={14} className="text-zinc-600 dark:text-zinc-500 flex-shrink-0" />}
+                  <span className="text-sm font-medium text-zinc-900 dark:text-white flex-1 truncate">{lead.business_name || 'Sin nombre'}</span>
                   {hasPendingReply && (
-                    <span className="text-xs text-amber-400 flex items-center gap-1 flex-shrink-0">
+                    <span className="text-xs text-amber-700 dark:text-amber-400 flex items-center gap-1 flex-shrink-0">
                       <ArrowDownLeft size={12} /> Respondió
                     </span>
                   )}
-                  <span className="text-xs text-zinc-500 flex-shrink-0">
+                  <span className="text-xs text-zinc-600 dark:text-zinc-500 flex-shrink-0">
                     {leadActivities.length} {leadActivities.length === 1 ? 'envío' : 'envíos'}
                   </span>
                   {last && (
-                    <span className="text-xs text-zinc-500 flex-shrink-0 w-16 text-right">{timeAgo(last.created_at)}</span>
+                    <span className="text-xs text-zinc-600 dark:text-zinc-500 flex-shrink-0 w-16 text-right">{timeAgo(last.created_at)}</span>
                   )}
                 </button>
                 {isOpen && (
                   <div className="px-4 pb-3 pl-11">
                     {leadActivities.length === 0 ? (
-                      <p className="text-xs text-zinc-500">Sin contacto registrado todavía.</p>
+                      <p className="text-xs text-zinc-600 dark:text-zinc-500">Sin contacto registrado todavía.</p>
                     ) : (
                       <ul className="space-y-2">
                         {leadActivities.map(activity => {
@@ -162,17 +162,17 @@ export function ActivitiesTable() {
                           return (
                             <li key={activity.id} className="flex items-start gap-2 text-sm">
                               {isInbound ? (
-                                <ArrowDownLeft size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                                <ArrowDownLeft size={14} className="text-amber-700 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                               ) : (
-                                <ArrowUpRight size={14} className="text-blue-400 flex-shrink-0 mt-0.5" />
+                                <ArrowUpRight size={14} className="text-blue-700 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                               )}
                               {activity.type === 'email' ? (
-                                <Mail size={12} className="text-zinc-500 flex-shrink-0 mt-1" />
+                                <Mail size={12} className="text-zinc-600 dark:text-zinc-500 flex-shrink-0 mt-1" />
                               ) : (
-                                <MessageCircle size={12} className="text-zinc-500 flex-shrink-0 mt-1" />
+                                <MessageCircle size={12} className="text-zinc-600 dark:text-zinc-500 flex-shrink-0 mt-1" />
                               )}
-                              <span className="text-zinc-200 truncate flex-1">{label}</span>
-                              <span className="text-xs text-zinc-500 flex-shrink-0">{timeAgo(activity.created_at)}</span>
+                              <span className="text-zinc-800 dark:text-zinc-200 truncate flex-1">{label}</span>
+                              <span className="text-xs text-zinc-600 dark:text-zinc-500 flex-shrink-0">{timeAgo(activity.created_at)}</span>
                             </li>
                           );
                         })}
@@ -186,7 +186,7 @@ export function ActivitiesTable() {
         )}
       </div>
 
-      <div className="text-xs text-zinc-400">
+      <div className="text-xs text-zinc-500 dark:text-zinc-400">
         Mostrando {rows.length} clientes
       </div>
     </div>

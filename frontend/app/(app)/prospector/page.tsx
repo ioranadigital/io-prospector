@@ -298,10 +298,10 @@ export default function ProspectorPage() {
   };
 
   const statusColors = {
-    starting: 'text-blue-400',
-    processing: 'text-blue-400',
-    completed: 'text-green-400',
-    error: 'text-red-400',
+    starting: 'text-blue-700 dark:text-blue-400',
+    processing: 'text-blue-700 dark:text-blue-400',
+    completed: 'text-green-700 dark:text-green-400',
+    error: 'text-red-700 dark:text-red-400',
   };
 
   const statusIcons = {
@@ -314,21 +314,21 @@ export default function ProspectorPage() {
   return (
     <div className="space-y-8 fade-in w-full">
       <div>
-        <h1 className="text-3xl font-bold text-white flex items-center gap-2"><Search size={22} className="text-white" /> Prospector</h1>
-        <p className="text-zinc-400 text-sm mt-1">
+        <h1 className="text-3xl font-bold text-zinc-900 dark:text-white flex items-center gap-2"><Search size={22} className="text-zinc-900 dark:text-white" /> Prospector</h1>
+        <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
           Busca negocios en Google e identifica sus debilidades SEO automáticamente. Genera dashboards y campañas de email personalizadas.
         </p>
       </div>
 
       {/* Formulario de búsqueda */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+      <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
         <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6">
 
           {/* ===== Columna Principal: flujo directo de la prospección ===== */}
           <div className="space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                   {(() => { const Icon = getCategoryIcon(selectedCategoryGroup); return <Icon size={13} />; })()}
                   Categoría Principal
                 </label>
@@ -352,7 +352,7 @@ export default function ProspectorPage() {
                     setExcludeTags(allExclude);
                     setForm(f => ({ ...f, category: '', query: '' }));
                   }}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-blue-500"
                 >
                   <option value="">Seleccionar categoría...</option>
                   {sectors.map((sector: any) => (
@@ -361,7 +361,7 @@ export default function ProspectorPage() {
                 </select>
               </div>
               <div>
-                <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-1.5">Subcategoría / Sector</label>
+                <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block mb-1.5">Subcategoría / Sector</label>
                 <select
                   value={form.category}
                   onChange={e => {
@@ -374,7 +374,7 @@ export default function ProspectorPage() {
                     setExcludeTags(sub?.excludeDefaults ?? []);
                   }}
                   disabled={!selectedCategory}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="">Seleccionar sector...</option>
                   {selectedCategory?.subcategories.map((sub: any) => (
@@ -385,16 +385,16 @@ export default function ProspectorPage() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                 <MapPin size={13} /> Ubicación Geográfica
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <p className="text-xs text-zinc-600 mb-1.5">Comunidad Autónoma</p>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-600 mb-1.5">Comunidad Autónoma</p>
                   <select
                     value={form.ccaa}
                     onChange={e => setForm(f => ({ ...f, ccaa: e.target.value, provincia: '', municipio: '' }))}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-blue-500"
                   >
                     <option value="">Seleccionar CCAA...</option>
                     {getComunidadesAutonomas().map((ccaa: string) => (
@@ -404,12 +404,12 @@ export default function ProspectorPage() {
                 </div>
 
                 <div>
-                  <p className="text-xs text-zinc-600 mb-1.5">Provincia</p>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-600 mb-1.5">Provincia</p>
                   <select
                     value={form.provincia}
                     onChange={e => setForm(f => ({ ...f, provincia: e.target.value, municipio: '' }))}
                     disabled={!form.ccaa}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <option value="">Seleccionar provincia...</option>
                     {form.ccaa && getProvincias(form.ccaa).map((provincia: string) => (
@@ -419,12 +419,12 @@ export default function ProspectorPage() {
                 </div>
 
                 <div>
-                  <p className="text-xs text-zinc-600 mb-1.5">Municipio</p>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-600 mb-1.5">Municipio</p>
                   <select
                     value={form.municipio}
                     onChange={e => setForm(f => ({ ...f, municipio: e.target.value }))}
                     disabled={!form.provincia}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <option value="">Seleccionar municipio...</option>
                     {form.provincia && getMunicipios(form.ccaa, form.provincia).map((municipio: string) => (
@@ -436,56 +436,56 @@ export default function ProspectorPage() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-2">
+              <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block mb-2">
                 Páginas de Google: {form.pagesFrom} → {form.pagesTo}
               </label>
               {form.pagesFrom === 1 && (
-                <p className="text-xs text-amber-400/80 mb-2">
+                <p className="text-xs text-amber-700 dark:text-amber-400/80 mb-2">
                   Incluyendo la página 1: más volumen, pero mezcla negocios ya bien posicionados (útil para propuestas de conversión/CRO, no solo "sin web").
                 </p>
               )}
               <div className="flex items-center gap-6">
                 <div className="flex-1">
-                  <p className="text-xs text-zinc-600 mb-1">Desde página</p>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-600 mb-1">Desde página</p>
                   <input type="range" min="1" max="10" value={form.pagesFrom}
                     onChange={e => setForm(f => ({ ...f, pagesFrom: Number(e.target.value) }))} className="w-full" />
-                  <p className="text-xs text-zinc-400 mt-1">Página {form.pagesFrom}</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Página {form.pagesFrom}</p>
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs text-zinc-600 mb-1">Hasta página</p>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-600 mb-1">Hasta página</p>
                   <input type="range" min="1" max="15" value={form.pagesTo}
                     onChange={e => setForm(f => ({ ...f, pagesTo: Number(e.target.value) }))} className="w-full" />
-                  <p className="text-xs text-zinc-400 mt-1">Página {form.pagesTo}</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Página {form.pagesTo}</p>
                 </div>
               </div>
-              <p className="text-xs text-zinc-600 mt-2">
+              <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-2">
                 ~{(form.pagesTo - form.pagesFrom + 1) * 10} resultados a analizar (<Timer size={12} className="inline align-middle" /> ~{(form.pagesTo - form.pagesFrom + 1) * 2}-3 minutos)
               </p>
             </div>
 
             <button onClick={handleSearch} disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold rounded-xl transition-colors">
+              className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-zinc-900 dark:text-white font-semibold rounded-xl transition-colors">
               {loading ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
               {loading ? `Buscando... ${prospectionStatus?.progress || 0}%` : 'Iniciar prospección'}
             </button>
           </div>
 
           {/* ===== Columna Secundaria: personalización avanzada de la búsqueda ===== */}
-          <div className="space-y-4 lg:border-l lg:border-zinc-800 lg:pl-6">
+          <div className="space-y-4 lg:border-l lg:border-zinc-200 dark:lg:border-zinc-800 lg:pl-6">
             {/* Constructor de términos de búsqueda con tags */}
             <div>
-              <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-2 flex items-center gap-1.5"><FileText size={14} /> Términos de Búsqueda</label>
+              <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block mb-2 flex items-center gap-1.5"><FileText size={14} /> Términos de Búsqueda</label>
 
               {/* Tags para incluir */}
               <div className="mb-3">
-                <p className="text-xs text-zinc-500 mb-1.5">Incluir en búsqueda:</p>
-                <div className="flex flex-wrap gap-1.5 p-2 bg-zinc-800 border border-zinc-700 rounded-lg min-h-10 items-center">
+                <p className="text-xs text-zinc-600 dark:text-zinc-500 mb-1.5">Incluir en búsqueda:</p>
+                <div className="flex flex-wrap gap-1.5 p-2 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg min-h-10 items-center">
                   {includeTags.map((tag, idx) => (
-                    <div key={idx} className="bg-blue-900/50 border border-blue-700 text-blue-300 text-xs px-2 py-1 rounded-lg flex items-center gap-1.5">
+                    <div key={idx} className="bg-blue-50 dark:bg-blue-900/50 border border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300 text-xs px-2 py-1 rounded-lg flex items-center gap-1.5">
                       <span>{tag}</span>
                       <button
                         onClick={() => setIncludeTags(includeTags.filter((_, i) => i !== idx))}
-                        className="text-blue-400 hover:text-blue-200 font-bold"
+                        className="text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 font-bold"
                       >
                         ×
                       </button>
@@ -503,21 +503,21 @@ export default function ProspectorPage() {
                         includeInputRef.current.value = '';
                       }
                     }}
-                    className="bg-transparent border-none text-sm text-zinc-200 focus:outline-none px-2 flex-1 min-w-24"
+                    className="bg-transparent border-none text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none px-2 flex-1 min-w-24"
                   />
                 </div>
               </div>
 
               {/* Tags para excluir */}
               <div>
-                <p className="text-xs text-zinc-500 mb-1.5">Excluir de búsqueda:</p>
-                <div className="flex flex-wrap gap-1.5 p-2 bg-zinc-800 border border-zinc-700 rounded-lg min-h-10 items-center">
+                <p className="text-xs text-zinc-600 dark:text-zinc-500 mb-1.5">Excluir de búsqueda:</p>
+                <div className="flex flex-wrap gap-1.5 p-2 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg min-h-10 items-center">
                   {excludeTags.map((tag, idx) => (
-                    <div key={idx} className="bg-red-900/50 border border-red-700 text-red-300 text-xs px-2 py-1 rounded-lg flex items-center gap-1.5">
+                    <div key={idx} className="bg-red-50 dark:bg-red-900/50 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 text-xs px-2 py-1 rounded-lg flex items-center gap-1.5">
                       <span>-{tag}</span>
                       <button
                         onClick={() => setExcludeTags(excludeTags.filter((_, i) => i !== idx))}
-                        className="text-red-400 hover:text-red-200 font-bold"
+                        className="text-red-700 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 font-bold"
                       >
                         ×
                       </button>
@@ -538,19 +538,19 @@ export default function ProspectorPage() {
                         (e.currentTarget as HTMLInputElement).value = '';
                       }
                     }}
-                    className="bg-transparent border-none text-sm text-zinc-200 focus:outline-none px-2 flex-1 min-w-24"
+                    className="bg-transparent border-none text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none px-2 flex-1 min-w-24"
                   />
                 </div>
               </div>
 
               {/* Preview: cada término rota en una página distinta, no se combinan */}
-              <div className="mt-3 p-3 bg-zinc-800 border border-zinc-700 rounded-lg space-y-1.5">
-                <p className="text-xs text-zinc-500 flex items-center gap-1"><Search size={12} /> Se rotará un término distinto por página en {form.municipio || '...'}:</p>
-                <p className="text-sm text-zinc-200 font-mono break-words">
-                  {includeTags.length > 0 ? includeTags.join('  ·  ') : <span className="text-zinc-600 italic">sin términos aún</span>}
+              <div className="mt-3 p-3 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg space-y-1.5">
+                <p className="text-xs text-zinc-600 dark:text-zinc-500 flex items-center gap-1"><Search size={12} /> Se rotará un término distinto por página en {form.municipio || '...'}:</p>
+                <p className="text-sm text-zinc-800 dark:text-zinc-200 font-mono break-words">
+                  {includeTags.length > 0 ? includeTags.join('  ·  ') : <span className="text-zinc-400 dark:text-zinc-600 italic">sin términos aún</span>}
                 </p>
                 {[...excludeTags, ...globalExcludes].length > 0 && (
-                  <p className="text-xs text-red-300/80 font-mono break-words">
+                  <p className="text-xs text-red-700 dark:text-red-300/80 font-mono break-words">
                     siempre excluye: {[...excludeTags, ...globalExcludes].map(t => `-${t}`).join(' ')}
                   </p>
                 )}
@@ -559,16 +559,16 @@ export default function ProspectorPage() {
 
             {/* Exclusiones Globales */}
             {globalExcludes.length > 0 && (
-              <div className="p-4 bg-red-900/20 border border-red-800 rounded-lg">
-                <p className="text-xs font-semibold text-red-300 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Globe size={12} /> Exclusiones Globales (Aplicadas a todas las búsquedas)</p>
+              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <p className="text-xs font-semibold text-red-700 dark:text-red-300 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Globe size={12} /> Exclusiones Globales (Aplicadas a todas las búsquedas)</p>
                 <div className="flex flex-wrap gap-2">
                   {globalExcludes.map((term, idx) => (
-                    <div key={idx} className="bg-red-900/40 border border-red-700 text-red-200 text-xs px-2.5 py-1 rounded-full">
+                    <div key={idx} className="bg-red-50 dark:bg-red-900/40 border border-red-300 dark:border-red-700 text-red-800 dark:text-red-200 text-xs px-2.5 py-1 rounded-full">
                       -{term}
                     </div>
                   ))}
                 </div>
-                <p className="text-xs text-red-300 mt-2 flex items-center gap-1"><Check size={12} /> {globalExcludes.length} término(s) excluido(s) globalmente</p>
+                <p className="text-xs text-red-700 dark:text-red-300 mt-2 flex items-center gap-1"><Check size={12} /> {globalExcludes.length} término(s) excluido(s) globalmente</p>
               </div>
             )}
           </div>
@@ -578,55 +578,55 @@ export default function ProspectorPage() {
 
       {/* Estado de prospección en progreso */}
       {prospectionStatus && prospectionStatus.status !== 'completed' && (
-        <div className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 border border-blue-800 rounded-2xl p-6 space-y-4">
+        <div className="bg-gradient-to-r from-blue-50 dark:from-blue-900/20 to-purple-50 dark:to-purple-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-6 space-y-4">
           <div className="flex items-center gap-3">
-            <Loader2 size={20} className="animate-spin text-blue-400" />
+            <Loader2 size={20} className="animate-spin text-blue-700 dark:text-blue-400" />
             <div>
-              <p className="text-white font-semibold">Prospección en progreso...</p>
-              <p className="text-zinc-400 text-sm">Query: <strong>{prospectionStatus?.params?.query}</strong> en <strong>{prospectionStatus?.params?.municipio || prospectionStatus?.params?.city}</strong></p>
+              <p className="text-zinc-900 dark:text-white font-semibold">Prospección en progreso...</p>
+              <p className="text-zinc-500 dark:text-zinc-400 text-sm">Query: <strong>{prospectionStatus?.params?.query}</strong> en <strong>{prospectionStatus?.params?.municipio || prospectionStatus?.params?.city}</strong></p>
             </div>
           </div>
-          <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
+          <div className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-full transition-all duration-300" style={{ width: `${prospectionStatus?.progress || 0}%` }}></div>
           </div>
-          <p className="text-xs text-zinc-400">Progreso: {prospectionStatus?.progress || 0}%</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">Progreso: {prospectionStatus?.progress || 0}%</p>
         </div>
       )}
 
       {/* Prospección completada */}
       {prospectionStatus && prospectionStatus.status === 'completed' && (
-        <div className="bg-gradient-to-r from-green-900/20 to-emerald-900/20 border border-green-800 rounded-2xl p-6 space-y-4">
+        <div className="bg-gradient-to-r from-green-50 dark:from-green-900/20 to-emerald-50 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-6 space-y-4">
           <div className="flex items-center gap-3">
-            <CheckCircle size={20} className="text-green-400" />
+            <CheckCircle size={20} className="text-green-700 dark:text-green-400" />
             <div>
-              <p className="text-white font-semibold flex items-center gap-2"><CheckCircle size={16} className="text-green-400" /> Prospección completada</p>
-              <p className="text-zinc-400 text-sm">{prospectionStatus?.result?.leadsCount} leads encontrados y analizados</p>
+              <p className="text-zinc-900 dark:text-white font-semibold flex items-center gap-2"><CheckCircle size={16} className="text-green-700 dark:text-green-400" /> Prospección completada</p>
+              <p className="text-zinc-500 dark:text-zinc-400 text-sm">{prospectionStatus?.result?.leadsCount} leads encontrados y analizados</p>
             </div>
           </div>
           <div className="grid grid-cols-4 gap-3">
             <button
               onClick={handleSaveProspection}
-              className="flex items-center justify-center gap-2 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors"
+              className="flex items-center justify-center gap-2 py-2 bg-green-600 hover:bg-green-700 text-zinc-900 dark:text-white text-sm font-semibold rounded-lg transition-colors"
             >
               <Save size={16} /> Guardar prospección
             </button>
             <a
               href={`${api.downloadFile(prospectionId!, 'csv')}`}
               download
-              className="flex items-center justify-center gap-2 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors"
+              className="flex items-center justify-center gap-2 py-2 bg-blue-600 hover:bg-blue-700 text-zinc-900 dark:text-white text-sm font-semibold rounded-lg transition-colors"
             >
               <Download size={16} /> CSV
             </a>
             <button
               onClick={() => setDashboardModalOpen(true)}
-              className="flex items-center justify-center gap-2 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg transition-colors"
+              className="flex items-center justify-center gap-2 py-2 bg-purple-600 hover:bg-purple-700 text-zinc-900 dark:text-white text-sm font-semibold rounded-lg transition-colors"
             >
               <Eye size={16} /> Dashboard
             </button>
             <a
               href={`${api.downloadFile(prospectionId!, 'emails')}`}
               download
-              className="flex items-center justify-center gap-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg transition-colors"
+              className="flex items-center justify-center gap-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-zinc-900 dark:text-white text-sm font-semibold rounded-lg transition-colors"
             >
               <Download size={16} /> Emails
             </a>
@@ -636,12 +636,12 @@ export default function ProspectorPage() {
 
       {/* Error */}
       {prospectionStatus && prospectionStatus.status === 'error' && (
-        <div className="bg-red-900/20 border border-red-800 rounded-2xl p-6">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-6">
           <div className="flex items-center gap-3">
-            <AlertCircle size={20} className="text-red-400" />
+            <AlertCircle size={20} className="text-red-700 dark:text-red-400" />
             <div>
-              <p className="text-white font-semibold flex items-center gap-2"><XCircle size={16} className="text-red-400" /> Error en la prospección</p>
-              <p className="text-red-400 text-sm">{prospectionStatus?.error}</p>
+              <p className="text-zinc-900 dark:text-white font-semibold flex items-center gap-2"><XCircle size={16} className="text-red-700 dark:text-red-400" /> Error en la prospección</p>
+              <p className="text-red-700 dark:text-red-400 text-sm">{prospectionStatus?.error}</p>
             </div>
           </div>
         </div>
@@ -650,10 +650,10 @@ export default function ProspectorPage() {
       {/* Resultados del scraping (candidatos) */}
       {prospectionStatus?.status === 'completed' && leads.length > 0 && (
         <div>
-          <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <h2 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-4 flex items-center gap-2">
             <Search size={14} /> Resultados del scraping — selecciona los interesantes
           </h2>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+          <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
             <LeadsTable
               leads={leads}
               onOpenDetail={(lead) => setDetailLead(lead)}
@@ -671,20 +671,20 @@ export default function ProspectorPage() {
       {/* Historial */}
       {history.length > 0 && !prospectionStatus && (
         <div>
-          <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-3 flex items-center gap-2"><ClipboardList size={14} /> Historial Reciente</h2>
+          <h2 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3 flex items-center gap-2"><ClipboardList size={14} /> Historial Reciente</h2>
           <div className="space-y-2">
             {history.slice(0, 5).map((h: any) => (
-              <div key={h.id} className="flex items-center gap-4 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3">
+              <div key={h.id} className="flex items-center gap-4 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3">
                 <div>
-                  {h.status === 'completed' ? <CheckCircle size={13} className="text-green-400" /> : <Clock size={13} className="text-zinc-600" />}
+                  {h.status === 'completed' ? <CheckCircle size={13} className="text-green-700 dark:text-green-400" /> : <Clock size={13} className="text-zinc-400 dark:text-zinc-600" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-zinc-200 font-medium truncate">{h.params?.query} - {h.params?.municipio || h.params?.city}</p>
-                  <p className="text-xs text-zinc-500">Pág. {h.params?.pagesFrom}–{h.params?.pagesTo}</p>
+                  <p className="text-sm text-zinc-800 dark:text-zinc-200 font-medium truncate">{h.params?.query} - {h.params?.municipio || h.params?.city}</p>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-500">Pág. {h.params?.pagesFrom}–{h.params?.pagesTo}</p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-sm font-semibold text-zinc-300">{h.result?.leadsCount || 0} leads</p>
-                  <p className="text-xs text-zinc-600">{new Date(h.startedAt).toLocaleDateString('es')}</p>
+                  <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{h.result?.leadsCount || 0} leads</p>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-600">{new Date(h.startedAt).toLocaleDateString('es')}</p>
                 </div>
                 {h.status === 'completed' && (
                   <div className="flex gap-1">
@@ -712,8 +712,8 @@ export default function ProspectorPage() {
                       disabled={savedProspections.has(h.id)}
                       className={`text-xs px-2 py-1 rounded transition-colors ${
                         savedProspections.has(h.id)
-                          ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
-                          : 'bg-green-900 hover:bg-green-800 text-green-200'
+                          ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-500 cursor-not-allowed'
+                          : 'bg-green-50 dark:bg-green-900 hover:bg-green-100 dark:hover:bg-green-800 text-green-800 dark:text-green-200'
                       }`}
                       title={savedProspections.has(h.id) ? 'Ya guardada' : 'Guardar en Histórico'}
                     >
@@ -722,7 +722,7 @@ export default function ProspectorPage() {
                     <a
                       href={`${api.downloadFile(h.id, 'csv')}`}
                       download
-                      className="text-xs px-2 py-1 bg-blue-900 hover:bg-blue-800 text-blue-200 rounded transition-colors"
+                      className="text-xs px-2 py-1 bg-blue-50 dark:bg-blue-900 hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-800 dark:text-blue-200 rounded transition-colors"
                       title="Descargar CSV"
                     >
                       <Download size={12} />
@@ -731,7 +731,7 @@ export default function ProspectorPage() {
                       href={`/prospecciones-historico/${h.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs px-2 py-1 bg-purple-900 hover:bg-purple-800 text-purple-200 rounded transition-colors"
+                      className="text-xs px-2 py-1 bg-purple-50 dark:bg-purple-900 hover:bg-purple-100 dark:hover:bg-purple-800 text-purple-800 dark:text-purple-200 rounded transition-colors"
                       title="Ver Dashboard"
                     >
                       <Eye size={12} />
@@ -739,14 +739,14 @@ export default function ProspectorPage() {
                     <a
                       href={`${api.downloadFile(h.id, 'emails')}`}
                       download
-                      className="text-xs px-2 py-1 bg-emerald-900 hover:bg-emerald-800 text-emerald-200 rounded transition-colors"
+                      className="text-xs px-2 py-1 bg-emerald-50 dark:bg-emerald-900 hover:bg-emerald-100 dark:hover:bg-emerald-800 text-emerald-800 dark:text-emerald-200 rounded transition-colors"
                       title="Descargar Emails"
                     >
                       <Download size={12} />
                     </a>
                     <button
                       onClick={() => setConfirmDelProspection({ id: h.id, query: h.params?.query || h.params?.category, isSaved: savedProspections.has(h.id) })}
-                      className="text-xs px-2 py-1 bg-red-900 hover:bg-red-800 text-red-200 rounded transition-colors"
+                      className="text-xs px-2 py-1 bg-red-50 dark:bg-red-900 hover:bg-red-100 dark:hover:bg-red-800 text-red-800 dark:text-red-200 rounded transition-colors"
                       title={savedProspections.has(h.id) ? 'Eliminar (con leads)' : 'Eliminar'}
                     >
                       <Trash2 size={12} />

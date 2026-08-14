@@ -280,18 +280,18 @@ export function SectorsAdmin() {
     }
   };
 
-  if (loading) return <div className="text-center py-8 text-zinc-400">Loading...</div>;
+  if (loading) return <div className="text-center py-8 text-zinc-500 dark:text-zinc-400">Loading...</div>;
 
   return (
     <div className="space-y-6">
       {/* SECCIÓN: EXCLUSIONES GLOBALES */}
-      <div className="bg-red-900/20 border border-red-800 rounded-lg p-4">
-        <div className="font-semibold text-red-300 mb-3 flex items-center gap-1.5"><Globe size={14} /> Exclusiones Globales (aplica a todas las categorías)</div>
+      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+        <div className="font-semibold text-red-700 dark:text-red-300 mb-3 flex items-center gap-1.5"><Globe size={14} /> Exclusiones Globales (aplica a todas las categorías)</div>
         <div className="flex flex-wrap gap-2 mb-3">
           {globalExcludes.map(exc => (
-            <div key={exc.id} className="bg-red-800/40 border border-red-700 rounded px-3 py-1 flex items-center gap-2">
-              <span className="text-sm text-red-200">-{exc.term}</span>
-              <button onClick={() => deleteGlobalExclude(exc.id)} className="text-red-400 hover:text-red-300">
+            <div key={exc.id} className="bg-red-100 dark:bg-red-800/40 border border-red-300 dark:border-red-700 rounded px-3 py-1 flex items-center gap-2">
+              <span className="text-sm text-red-800 dark:text-red-200">-{exc.term}</span>
+              <button onClick={() => deleteGlobalExclude(exc.id)} className="text-red-700 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300">
                 <X size={16} />
               </button>
             </div>
@@ -305,16 +305,16 @@ export function SectorsAdmin() {
               onChange={e => setNewGlobalExclude(e.target.value)}
               onKeyPress={e => e.key === 'Enter' && addGlobalExclude()}
               placeholder="-término a excluir globalmente"
-              className="flex-1 px-3 py-2 bg-zinc-700 text-zinc-200 text-base rounded border border-zinc-600 focus:outline-none"
+              className="flex-1 px-3 py-2 bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-base rounded border border-zinc-300 dark:border-zinc-600 focus:outline-none"
             />
-            <button onClick={addGlobalExclude} className="px-3 py-2 bg-red-700 text-red-200 rounded hover:bg-red-600">
+            <button onClick={addGlobalExclude} className="px-3 py-2 bg-red-700 text-red-800 dark:text-red-200 rounded hover:bg-red-600">
               +
             </button>
           </div>
         ) : (
           <button
             onClick={() => setAddingGlobalExclude(true)}
-            className="text-red-400 hover:text-red-300 text-sm"
+            className="text-red-700 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm"
           >
             + Añadir exclusión global
           </button>
@@ -324,28 +324,28 @@ export function SectorsAdmin() {
       {/* SECCIÓN: GESTIÓN DE 4 COLUMNAS */}
       <div className="grid gap-6" style={{gridTemplateColumns: '400px 1fr 1fr 1fr'}}>
         {/* COLUMNA 1: CATEGORÍAS */}
-        <div className="flex flex-col bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden">
-          <div className="p-4 border-b border-zinc-700 font-semibold text-zinc-300 flex items-center gap-1.5"><FolderOpen size={14} /> Categorías</div>
+        <div className="flex flex-col bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg overflow-hidden">
+          <div className="p-4 border-b border-zinc-300 dark:border-zinc-700 font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5"><FolderOpen size={14} /> Categorías</div>
           <div className="flex-1 overflow-y-auto p-2">
             {categories.map(cat => (
               <div
                 key={cat.id}
                 className={`p-3 mb-2 rounded-lg cursor-pointer flex items-center justify-between transition-colors ${
-                  selectedCategoryId === cat.id ? 'bg-blue-900 border border-blue-700' : 'bg-zinc-700 hover:bg-zinc-600'
+                  selectedCategoryId === cat.id ? 'bg-blue-50 dark:bg-blue-900 border border-blue-300 dark:border-blue-700' : 'bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600'
                 }`}
                 onClick={() => setSelectedCategoryId(cat.id)}
               >
-                <span className="text-sm text-zinc-200 flex-1">{cat.name}</span>
+                <span className="text-sm text-zinc-800 dark:text-zinc-200 flex-1">{cat.name}</span>
                 <button
                   onClick={e => { e.stopPropagation(); deleteCategory(cat.id); }}
-                  className="text-red-400 hover:text-red-300"
+                  className="text-red-700 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                 >
                   <X size={16} />
                 </button>
               </div>
             ))}
           </div>
-          <div className="p-3 border-t border-zinc-700">
+          <div className="p-3 border-t border-zinc-300 dark:border-zinc-700">
             {addingCategory ? (
               <div className="flex gap-2">
                 <input
@@ -354,12 +354,12 @@ export function SectorsAdmin() {
                   onChange={e => setNewCategoryName(e.target.value)}
                   onKeyPress={e => e.key === 'Enter' && addCategory()}
                   placeholder="Nueva categoría"
-                  className="flex-1 px-3 py-2 bg-zinc-700 text-zinc-200 text-base rounded border border-zinc-600 focus:outline-none"
+                  className="flex-1 px-3 py-2 bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-base rounded border border-zinc-300 dark:border-zinc-600 focus:outline-none"
                 />
-                <button onClick={addCategory} className="text-green-400"><Check size={16} /></button>
+                <button onClick={addCategory} className="text-green-700 dark:text-green-400"><Check size={16} /></button>
               </div>
             ) : (
-              <button onClick={() => setAddingCategory(true)} className="w-full text-blue-400 text-sm">
+              <button onClick={() => setAddingCategory(true)} className="w-full text-blue-700 dark:text-blue-400 text-sm">
                 + Nueva Categoría
               </button>
             )}
@@ -367,28 +367,28 @@ export function SectorsAdmin() {
         </div>
 
         {/* COLUMNA 2: SUBCATEGORÍA (muestra SECTORES) */}
-        <div className="flex flex-col bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden">
-          <div className="p-4 border-b border-zinc-700 font-semibold text-zinc-300 flex items-center gap-1.5"><ClipboardList size={14} /> Subcategoría</div>
+        <div className="flex flex-col bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg overflow-hidden">
+          <div className="p-4 border-b border-zinc-300 dark:border-zinc-700 font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5"><ClipboardList size={14} /> Subcategoría</div>
           <div className="flex-1 overflow-y-auto p-2">
             {sectors.map(sec => (
               <div
                 key={sec.id}
                 className={`p-3 mb-2 rounded-lg cursor-pointer flex items-center justify-between transition-colors ${
-                  selectedSectorId === sec.id ? 'bg-blue-900 border border-blue-700' : 'bg-zinc-700 hover:bg-zinc-600'
+                  selectedSectorId === sec.id ? 'bg-blue-50 dark:bg-blue-900 border border-blue-300 dark:border-blue-700' : 'bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600'
                 }`}
                 onClick={() => setSelectedSectorId(sec.id)}
               >
-                <span className="text-sm text-zinc-200 flex-1">{sec.name}</span>
+                <span className="text-sm text-zinc-800 dark:text-zinc-200 flex-1">{sec.name}</span>
                 <button
                   onClick={e => { e.stopPropagation(); deleteSector(sec.id); }}
-                  className="text-red-400 hover:text-red-300"
+                  className="text-red-700 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                 >
                   <X size={16} />
                 </button>
               </div>
             ))}
           </div>
-          <div className="p-3 border-t border-zinc-700">
+          <div className="p-3 border-t border-zinc-300 dark:border-zinc-700">
             {addingSector ? (
               <div className="flex gap-2">
                 <input
@@ -397,15 +397,15 @@ export function SectorsAdmin() {
                   onChange={e => setNewSectorName(e.target.value)}
                   onKeyPress={e => e.key === 'Enter' && addSector()}
                   placeholder="Nuevo sector"
-                  className="flex-1 px-3 py-2 bg-zinc-700 text-zinc-200 text-base rounded border border-zinc-600 focus:outline-none"
+                  className="flex-1 px-3 py-2 bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-base rounded border border-zinc-300 dark:border-zinc-600 focus:outline-none"
                 />
-                <button onClick={addSector} className="text-green-400"><Check size={16} /></button>
+                <button onClick={addSector} className="text-green-700 dark:text-green-400"><Check size={16} /></button>
               </div>
             ) : (
               <button
                 onClick={() => setAddingSector(true)}
                 disabled={!selectedCategoryId}
-                className="w-full text-blue-400 text-sm disabled:text-zinc-600"
+                className="w-full text-blue-700 dark:text-blue-400 text-sm disabled:text-zinc-400 dark:disabled:text-zinc-600"
               >
                 + Nuevo Sector
               </button>
@@ -414,19 +414,19 @@ export function SectorsAdmin() {
         </div>
 
         {/* COLUMNA 3: TÉRMINOS */}
-        <div className="flex flex-col bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden">
-          <div className="p-4 border-b border-zinc-700 font-semibold text-zinc-300 flex items-center gap-1.5"><Check size={14} className="text-green-400" /> Términos</div>
+        <div className="flex flex-col bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg overflow-hidden">
+          <div className="p-4 border-b border-zinc-300 dark:border-zinc-700 font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5"><Check size={14} className="text-green-700 dark:text-green-400" /> Términos</div>
           <div className="flex-1 overflow-y-auto p-2">
             {terms.map(term => (
-              <div key={term.id} className="p-3 mb-2 rounded-lg bg-green-800/30 border border-green-700/50 flex items-center justify-between">
-                <span className="text-sm text-green-200">{term.term}</span>
-                <button onClick={() => deleteTerm(term.id)} className="text-red-400 hover:text-red-300">
+              <div key={term.id} className="p-3 mb-2 rounded-lg bg-green-100 dark:bg-green-800/30 border border-green-300 dark:border-green-700/50 flex items-center justify-between">
+                <span className="text-sm text-green-800 dark:text-green-200">{term.term}</span>
+                <button onClick={() => deleteTerm(term.id)} className="text-red-700 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300">
                   <X size={16} />
                 </button>
               </div>
             ))}
           </div>
-          <div className="p-3 border-t border-zinc-700">
+          <div className="p-3 border-t border-zinc-300 dark:border-zinc-700">
             {addingTerm ? (
               <div className="flex gap-2">
                 <input
@@ -435,15 +435,15 @@ export function SectorsAdmin() {
                   onChange={e => setNewTermName(e.target.value)}
                   onKeyPress={e => e.key === 'Enter' && addTerm()}
                   placeholder="Nuevo término"
-                  className="flex-1 px-3 py-2 bg-zinc-700 text-zinc-200 text-base rounded border border-zinc-600 focus:outline-none"
+                  className="flex-1 px-3 py-2 bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-base rounded border border-zinc-300 dark:border-zinc-600 focus:outline-none"
                 />
-                <button onClick={addTerm} className="text-green-400"><Check size={16} /></button>
+                <button onClick={addTerm} className="text-green-700 dark:text-green-400"><Check size={16} /></button>
               </div>
             ) : (
               <button
                 onClick={() => setAddingTerm(true)}
                 disabled={!selectedSectorId}
-                className="w-full text-green-400 text-sm disabled:text-zinc-600"
+                className="w-full text-green-700 dark:text-green-400 text-sm disabled:text-zinc-400 dark:disabled:text-zinc-600"
               >
                 + Añadir Término
               </button>
@@ -452,19 +452,19 @@ export function SectorsAdmin() {
         </div>
 
         {/* COLUMNA 4: TÉRMINOS EXCLUIDOS */}
-        <div className="flex flex-col bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden">
-          <div className="p-4 border-b border-zinc-700 font-semibold text-zinc-300 flex items-center gap-1.5"><XCircle size={14} className="text-red-400" /> Excluir (-)</div>
+        <div className="flex flex-col bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg overflow-hidden">
+          <div className="p-4 border-b border-zinc-300 dark:border-zinc-700 font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5"><XCircle size={14} className="text-red-700 dark:text-red-400" /> Excluir (-)</div>
           <div className="flex-1 overflow-y-auto p-2">
             {sectorExcludes.map(exc => (
-              <div key={exc.id} className="p-3 mb-2 rounded-lg bg-red-800/30 border border-red-700/50 flex items-center justify-between">
-                <span className="text-sm text-red-200">-{exc.term}</span>
-                <button onClick={() => deleteSectorExclude(exc.id)} className="text-red-400 hover:text-red-300">
+              <div key={exc.id} className="p-3 mb-2 rounded-lg bg-red-100 dark:bg-red-800/30 border border-red-300 dark:border-red-700/50 flex items-center justify-between">
+                <span className="text-sm text-red-800 dark:text-red-200">-{exc.term}</span>
+                <button onClick={() => deleteSectorExclude(exc.id)} className="text-red-700 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300">
                   <X size={16} />
                 </button>
               </div>
             ))}
           </div>
-          <div className="p-3 border-t border-zinc-700">
+          <div className="p-3 border-t border-zinc-300 dark:border-zinc-700">
             {addingSectorExclude ? (
               <div className="flex gap-2">
                 <input
@@ -473,15 +473,15 @@ export function SectorsAdmin() {
                   onChange={e => setNewSectorExclude(e.target.value)}
                   onKeyPress={e => e.key === 'Enter' && addSectorExclude()}
                   placeholder="-término a excluir"
-                  className="flex-1 px-3 py-2 bg-zinc-700 text-zinc-200 text-base rounded border border-zinc-600 focus:outline-none"
+                  className="flex-1 px-3 py-2 bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-base rounded border border-zinc-300 dark:border-zinc-600 focus:outline-none"
                 />
-                <button onClick={addSectorExclude} className="text-red-400"><Check size={16} /></button>
+                <button onClick={addSectorExclude} className="text-red-700 dark:text-red-400"><Check size={16} /></button>
               </div>
             ) : (
               <button
                 onClick={() => setAddingSectorExclude(true)}
                 disabled={!selectedSectorId}
-                className="w-full text-red-400 text-sm disabled:text-zinc-600"
+                className="w-full text-red-700 dark:text-red-400 text-sm disabled:text-zinc-400 dark:disabled:text-zinc-600"
               >
                 + Excluir Término
               </button>

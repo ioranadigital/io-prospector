@@ -69,20 +69,20 @@ export default function LeadsPage() {
     <div className="space-y-6 h-screen flex flex-col">
       <div>
         <h1 className="text-2xl font-bold mb-1 flex items-center gap-2">
-          Prospector CRM <Target size={22} className="text-blue-400" />
+          Prospector CRM <Target size={22} className="text-blue-700 dark:text-blue-400" />
         </h1>
-        <p className="text-xs text-zinc-400">Análisis de clientes | Gestión de campañas</p>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">Análisis de clientes | Gestión de campañas</p>
       </div>
 
-      <div className="flex items-center justify-between gap-4 border-b border-zinc-800 pb-0">
+      <div className="flex items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-0">
         {/* Pestañas */}
         <div className="flex gap-4">
           <button
             onClick={() => setActiveTab('leads')}
             className={`px-4 py-3 font-medium border-b-2 transition-colors ${
               activeTab === 'leads'
-                ? 'border-blue-500 text-white'
-                : 'border-transparent text-zinc-400 hover:text-white'
+                ? 'border-blue-500 text-zinc-900 dark:text-white'
+                : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             }`}
           >
             <BarChart2 size={15} className="inline mr-1" /> Leads ({refreshTrigger})
@@ -91,8 +91,8 @@ export default function LeadsPage() {
             onClick={() => setActiveTab('activities')}
             className={`px-4 py-3 font-medium border-b-2 transition-colors ${
               activeTab === 'activities'
-                ? 'border-blue-500 text-white'
-                : 'border-transparent text-zinc-400 hover:text-white'
+                ? 'border-blue-500 text-zinc-900 dark:text-white'
+                : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             }`}
           >
             <TrendingUp size={15} className="inline mr-1" /> Historial
@@ -104,7 +104,7 @@ export default function LeadsPage() {
           <div className="pb-3 flex items-center gap-3">
             <button
               onClick={() => setAddLeadOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-sm font-medium text-white transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-sm font-medium text-zinc-900 dark:text-white transition-colors"
             >
               <Plus size={16} /> Añadir Lead Manual
             </button>
@@ -127,7 +127,7 @@ export default function LeadsPage() {
                 key={t.id}
                 onClick={() => setSource(t.id)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-                  source === t.id ? 'bg-blue-600 text-white' : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white'
+                  source === t.id ? 'bg-blue-600 text-zinc-900 dark:text-white' : 'bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                 }`}
               >
                 <t.icon size={14} className="inline mr-1" />{t.label}
@@ -143,7 +143,7 @@ export default function LeadsPage() {
                 <select
                   value={selectedSector || ''}
                   onChange={e => { setSelectedSector(e.target.value || null); setSelectedCategory(null); }}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white"
+                  className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-900 dark:text-white"
                 >
                   <option value="">Todos los sectores</option>
                   {sectorsPresent.map(sector => (
@@ -153,11 +153,11 @@ export default function LeadsPage() {
               </div>
 
               {/* Pestañas — pantallas normales en adelante, nombres cortos + flex-wrap para no scrollear */}
-              <div className="hidden sm:flex gap-1 flex-wrap border-b border-zinc-800 pb-0 flex-shrink-0">
+              <div className="hidden sm:flex gap-1 flex-wrap border-b border-zinc-200 dark:border-zinc-800 pb-0 flex-shrink-0">
                 <button
                   onClick={() => { setSelectedSector(null); setSelectedCategory(null); }}
                   className={`px-3 py-2.5 font-semibold border-b-2 transition-colors whitespace-nowrap text-sm ${
-                    selectedSector === null ? 'border-purple-500 text-white' : 'border-transparent text-zinc-400 hover:text-white'
+                    selectedSector === null ? 'border-purple-500 text-zinc-900 dark:text-white' : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                   }`}
                 >
                   Todos
@@ -168,7 +168,7 @@ export default function LeadsPage() {
                     title={sector}
                     onClick={() => { setSelectedSector(sector); setSelectedCategory(null); }}
                     className={`px-3 py-2.5 font-semibold border-b-2 transition-colors whitespace-nowrap text-sm ${
-                      selectedSector === sector ? 'border-purple-500 text-white' : 'border-transparent text-zinc-400 hover:text-white'
+                      selectedSector === sector ? 'border-purple-500 text-zinc-900 dark:text-white' : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                     }`}
                   >
                     {SECTOR_SHORT_LABELS[sector] || sector}
@@ -179,11 +179,11 @@ export default function LeadsPage() {
           )}
 
           {/* Pestañas de subcategoría (filtradas por el sector elegido arriba) */}
-          <div className="flex gap-2 border-b border-zinc-800 overflow-x-auto pb-0 flex-shrink-0">
+          <div className="flex gap-2 border-b border-zinc-200 dark:border-zinc-800 overflow-x-auto pb-0 flex-shrink-0">
             <button
               onClick={() => setSelectedCategory(null)}
               className={`px-4 py-3 font-medium border-b-2 transition-colors whitespace-nowrap text-sm ${
-                selectedCategory === null ? 'border-blue-500 text-white' : 'border-transparent text-zinc-400 hover:text-white'
+                selectedCategory === null ? 'border-blue-500 text-zinc-900 dark:text-white' : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
               }`}
             >
               Todas
@@ -194,8 +194,8 @@ export default function LeadsPage() {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-3 font-medium border-b-2 transition-colors whitespace-nowrap text-sm ${
                   selectedCategory === category
-                    ? 'border-blue-500 text-white'
-                    : 'border-transparent text-zinc-400 hover:text-white'
+                    ? 'border-blue-500 text-zinc-900 dark:text-white'
+                    : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                 }`}
               >
                 <Tag size={14} className="inline mr-1" /> {category}
@@ -204,10 +204,10 @@ export default function LeadsPage() {
           </div>
 
           {/* Tabla a ancho completo */}
-          <div className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden flex flex-col min-h-0">
-            <div className="px-6 py-4 border-b border-zinc-800 flex-shrink-0">
+          <div className="flex-1 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden flex flex-col min-h-0">
+            <div className="px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 flex-shrink-0">
               <h2 className="text-sm font-semibold">Análisis de Clientes</h2>
-              <p className="text-xs text-zinc-500 mt-1">Haz clic en un cliente para ver análisis detallado (Fortalezas & Debilidades)</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-500 mt-1">Haz clic en un cliente para ver análisis detallado (Fortalezas & Debilidades)</p>
             </div>
             <div className="flex-1 overflow-auto">
               <LeadsTable
@@ -228,7 +228,7 @@ export default function LeadsPage() {
       />
 
       {activeTab === 'activities' && (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+        <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">Historial de Envíos</h2>
           <ActivitiesTable />
         </div>

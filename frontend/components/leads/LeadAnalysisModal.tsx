@@ -58,11 +58,11 @@ export function LeadAnalysisModal({ lead, onClose }: LeadAnalysisModalProps) {
   };
 
   const colorMap = {
-    red: { bg: 'bg-red-900/20', border: 'border-red-800', text: 'text-red-300' },
-    yellow: { bg: 'bg-yellow-900/20', border: 'border-yellow-800', text: 'text-yellow-300' },
-    blue: { bg: 'bg-blue-900/20', border: 'border-blue-800', text: 'text-blue-300' },
-    green: { bg: 'bg-green-900/20', border: 'border-green-800', text: 'text-green-300' },
-    purple: { bg: 'bg-purple-900/20', border: 'border-purple-800', text: 'text-purple-300' },
+    red: { bg: 'bg-red-50 dark:bg-red-900/20', border: 'border-red-200 dark:border-red-800', text: 'text-red-700 dark:text-red-300' },
+    yellow: { bg: 'bg-yellow-50 dark:bg-yellow-900/20', border: 'border-yellow-200 dark:border-yellow-800', text: 'text-yellow-700 dark:text-yellow-300' },
+    blue: { bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-200 dark:border-blue-800', text: 'text-blue-700 dark:text-blue-300' },
+    green: { bg: 'bg-green-50 dark:bg-green-900/20', border: 'border-green-200 dark:border-green-800', text: 'text-green-700 dark:text-green-300' },
+    purple: { bg: 'bg-purple-50 dark:bg-purple-900/20', border: 'border-purple-200 dark:border-purple-800', text: 'text-purple-700 dark:text-purple-300' },
   };
 
   const barColors = {
@@ -100,18 +100,18 @@ export function LeadAnalysisModal({ lead, onClose }: LeadAnalysisModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-h-[95vh] overflow-y-auto">
+      <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl w-full max-h-[95vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-start justify-between p-6 border-b border-zinc-800 sticky top-0 bg-zinc-900">
+        <div className="flex items-start justify-between p-6 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 bg-zinc-50 dark:bg-zinc-900">
           <div>
-            <h2 className="text-2xl font-bold text-white">{lead.business_name}</h2>
+            <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">{lead.business_name}</h2>
             {lead.website && (
-              <a href={lead.website} target="_blank" rel="noopener" className="text-sm text-blue-400 hover:underline">
+              <a href={lead.website} target="_blank" rel="noopener" className="text-sm text-blue-700 dark:text-blue-400 hover:underline">
                 {lead.website}
               </a>
             )}
           </div>
-          <button onClick={onClose} className="text-zinc-400 hover:text-white">
+          <button onClick={onClose} className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
             <X size={28} />
           </button>
         </div>
@@ -119,36 +119,36 @@ export function LeadAnalysisModal({ lead, onClose }: LeadAnalysisModalProps) {
         {/* Content */}
         <div className="p-6 space-y-4">
           {/* Puntuación General */}
-          <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-800 rounded-lg p-4">
+          <div className="bg-gradient-to-r from-blue-50 dark:from-blue-900/30 to-purple-50 dark:to-purple-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-semibold text-blue-300 flex items-center gap-1.5"><BarChart2 size={14} /> Puntuación Integral</p>
-              <span className="text-3xl font-bold text-blue-400">{scores.totalScore}%</span>
+              <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 flex items-center gap-1.5"><BarChart2 size={14} /> Puntuación Integral</p>
+              <span className="text-3xl font-bold text-blue-700 dark:text-blue-400">{scores.totalScore}%</span>
             </div>
-            <div className="w-full bg-zinc-800 rounded-full h-2 mb-2">
+            <div className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-full h-2 mb-2">
               <div
                 className="bg-gradient-to-r from-blue-500 to-blue-400 h-2 rounded-full transition-all"
                 style={{ width: `${scores.totalScore}%` }}
               />
             </div>
-            <p className="text-sm text-zinc-300">{statusText}</p>
+            <p className="text-sm text-zinc-700 dark:text-zinc-300">{statusText}</p>
           </div>
 
           {/* Detalles del Lead */}
           <div className="grid grid-cols-4 gap-3">
-            <div className="bg-zinc-800/50 rounded p-3">
-              <p className="text-xs text-zinc-500 uppercase mb-1">Email</p>
+            <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded p-3">
+              <p className="text-xs text-zinc-600 dark:text-zinc-500 uppercase mb-1">Email</p>
               <p className="text-sm font-semibold truncate">{lead.email || '—'}</p>
             </div>
-            <div className="bg-zinc-800/50 rounded p-3">
-              <p className="text-xs text-zinc-500 uppercase mb-1">Teléfono</p>
+            <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded p-3">
+              <p className="text-xs text-zinc-600 dark:text-zinc-500 uppercase mb-1">Teléfono</p>
               <p className="text-sm font-semibold truncate">{lead.phone || '—'}</p>
             </div>
-            <div className="bg-zinc-800/50 rounded p-3">
-              <p className="text-xs text-zinc-500 uppercase mb-1">Estado CRM</p>
+            <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded p-3">
+              <p className="text-xs text-zinc-600 dark:text-zinc-500 uppercase mb-1">Estado CRM</p>
               <p className="text-sm font-semibold truncate">{lead.crm_status || '—'}</p>
             </div>
-            <div className="bg-zinc-800/50 rounded p-3">
-              <p className="text-xs text-zinc-500 uppercase mb-1">Score Audit</p>
+            <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded p-3">
+              <p className="text-xs text-zinc-600 dark:text-zinc-500 uppercase mb-1">Score Audit</p>
               <p className="text-sm font-semibold truncate">{lead.audit_score || '—'}/100</p>
             </div>
           </div>
@@ -168,13 +168,13 @@ export function LeadAnalysisModal({ lead, onClose }: LeadAnalysisModalProps) {
                   <div className="flex items-center justify-between mb-2">
                     <p className={`text-xs font-bold uppercase ${colors.text}`}>{tier.name}</p>
                     <div className="flex items-center gap-2">
-                      <div className="w-16 bg-zinc-800 rounded-full h-1.5">
+                      <div className="w-16 bg-zinc-100 dark:bg-zinc-800 rounded-full h-1.5">
                         <div
                           className={`h-1.5 rounded-full transition-all ${barColor}`}
                           style={{ width: `${percentage}%` }}
                         />
                       </div>
-                      <span className="text-xs font-semibold text-zinc-400">{completedCount}/{tier.checks.length}</span>
+                      <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">{completedCount}/{tier.checks.length}</span>
                     </div>
                   </div>
 
@@ -187,8 +187,8 @@ export function LeadAnalysisModal({ lead, onClose }: LeadAnalysisModalProps) {
                           key={idx}
                           className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors ${
                             check.has
-                              ? `${colors.bg} border ${colors.border} text-zinc-200`
-                              : 'bg-zinc-800/50 border border-zinc-700 text-zinc-400 line-through opacity-50'
+                              ? `${colors.bg} border ${colors.border} text-zinc-800 dark:text-zinc-200`
+                              : 'bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 line-through opacity-50'
                           }`}
                         >
                           {check.has ? <Check size={10} /> : <X size={10} />}
@@ -205,9 +205,9 @@ export function LeadAnalysisModal({ lead, onClose }: LeadAnalysisModalProps) {
 
           {/* Notas */}
           {lead.notes && (
-            <div className="bg-zinc-800/50 rounded-lg p-4">
-              <p className="text-xs text-zinc-500 uppercase mb-2">Notas</p>
-              <p className="text-sm text-zinc-300">{lead.notes}</p>
+            <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded-lg p-4">
+              <p className="text-xs text-zinc-600 dark:text-zinc-500 uppercase mb-2">Notas</p>
+              <p className="text-sm text-zinc-700 dark:text-zinc-300">{lead.notes}</p>
             </div>
           )}
         </div>

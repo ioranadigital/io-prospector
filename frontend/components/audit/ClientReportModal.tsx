@@ -179,29 +179,29 @@ ${report.issues.slice(0, 4).map((issue, i) =>
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-4xl h-[92vh] flex flex-col">
+      <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-4xl h-[92vh] flex flex-col">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 flex-shrink-0">
           <div>
-            <h2 className="text-lg font-bold text-white flex items-center gap-2"><ClipboardList size={18} /> Informe para el cliente</h2>
-            <p className="text-xs text-zinc-500 mt-0.5">{report.domain} · Score: {report.score}/100</p>
+            <h2 className="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2"><ClipboardList size={18} /> Informe para el cliente</h2>
+            <p className="text-xs text-zinc-600 dark:text-zinc-500 mt-0.5">{report.domain} · Score: {report.score}/100</p>
           </div>
           <div className="flex items-center gap-2">
             {/* Tabs */}
-            <div className="flex gap-1 bg-zinc-800 rounded-lg p-1">
+            <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1">
               {([
                 { id: 'visual',    icon: <Eye size={12} />,          label: 'Vista previa' },
                 { id: 'email',     icon: <Mail size={12} />,         label: 'Email HTML' },
                 { id: 'whatsapp',  icon: <MessageCircle size={12} />, label: 'WhatsApp' },
               ] as const).map(t => (
                 <button key={t.id} onClick={() => setMode(t.id)}
-                  className={`px-3 py-1.5 rounded text-xs font-medium transition flex items-center gap-1 ${mode === t.id ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:text-white'}`}>
+                  className={`px-3 py-1.5 rounded text-xs font-medium transition flex items-center gap-1 ${mode === t.id ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-white' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'}`}>
                   {t.icon} {t.label}
                 </button>
               ))}
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-zinc-800 rounded-lg transition text-zinc-400">
+            <button onClick={onClose} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition text-zinc-500 dark:text-zinc-400">
               <X size={18} />
             </button>
           </div>
@@ -215,23 +215,23 @@ ${report.issues.slice(0, 4).map((issue, i) =>
             <div className="p-6">
               <div className="bg-white rounded-xl overflow-hidden text-black">
                 {/* Header */}
-                <div className="bg-zinc-900 px-8 py-5 flex items-center justify-between">
-                  <span className="text-white font-bold text-lg">Iorana Digital</span>
-                  <span className="text-zinc-400 text-sm">Auditoría SEO</span>
+                <div className="bg-zinc-50 dark:bg-zinc-900 px-8 py-5 flex items-center justify-between">
+                  <span className="text-zinc-900 dark:text-white font-bold text-lg">Iorana Digital</span>
+                  <span className="text-zinc-500 dark:text-zinc-400 text-sm">Auditoría SEO</span>
                 </div>
                 {/* Body */}
                 <div className="px-8 py-6 space-y-6">
                   <div>
-                    <p className="text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-1">INFORME SEO PARA</p>
-                    <h1 className="text-2xl font-bold text-zinc-900">{report.domain}</h1>
-                    <p className="text-zinc-600 mt-2 leading-relaxed">{hookText}</p>
+                    <p className="text-xs text-zinc-600 dark:text-zinc-500 uppercase tracking-wider font-semibold mb-1">INFORME SEO PARA</p>
+                    <h1 className="text-2xl font-bold text-zinc-800 dark:text-zinc-900">{report.domain}</h1>
+                    <p className="text-zinc-400 dark:text-zinc-600 mt-2 leading-relaxed">{hookText}</p>
                   </div>
                   {/* Score */}
                   <div className="bg-zinc-100 rounded-xl p-5 flex items-center gap-8">
                     <div className="text-center">
-                      <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Puntuación SEO</p>
+                      <p className="text-xs text-zinc-600 dark:text-zinc-500 uppercase tracking-wider mb-1">Puntuación SEO</p>
                       <p className="text-6xl font-bold" style={{ color: scoreMeta.color }}>{report.score}</p>
-                      <p className="text-sm text-zinc-500 mt-1">/100 · {scoreMeta.emoji} {report.scoreLabel}</p>
+                      <p className="text-sm text-zinc-600 dark:text-zinc-500 mt-1">/100 · {scoreMeta.emoji} {report.scoreLabel}</p>
                     </div>
                     <div className="border-l border-zinc-300 pl-8 space-y-2">
                       <p className="text-sm text-green-600 flex items-center gap-1"><Check size={12} /> {report.passCount} checks correctos</p>
@@ -241,30 +241,30 @@ ${report.issues.slice(0, 4).map((issue, i) =>
                   </div>
                   {/* Problemas */}
                   <div>
-                    <h2 className="text-lg font-bold text-zinc-900 mb-3">Problemas detectados en tu web</h2>
+                    <h2 className="text-lg font-bold text-zinc-800 dark:text-zinc-900 mb-3">Problemas detectados en tu web</h2>
                     <div className="space-y-3">
                       {report.issues.map((issue, i) => (
                         <div key={i} className={`border rounded-lg p-4 ${issue.severity === 'critical' ? 'border-red-200 bg-red-50' : 'border-yellow-200 bg-yellow-50'}`}>
                           <p className={`font-semibold text-sm flex items-center gap-1 ${issue.severity === 'critical' ? 'text-red-800' : 'text-yellow-800'}`}>
                             {issue.severity === 'critical' ? <XCircle size={13} /> : <AlertTriangle size={13} />} {issue.title}
                           </p>
-                          <p className="text-sm text-zinc-600 mt-1">{issue.impact}</p>
+                          <p className="text-sm text-zinc-400 dark:text-zinc-600 mt-1">{issue.impact}</p>
                         </div>
                       ))}
                     </div>
                   </div>
                   {/* Despedida */}
-                  <p className="text-zinc-600 text-sm leading-relaxed whitespace-pre-line">{farewellText}</p>
+                  <p className="text-zinc-400 dark:text-zinc-600 text-sm leading-relaxed whitespace-pre-line">{farewellText}</p>
                   {/* CTA */}
                   <div className="text-center pt-2">
-                    <div className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-bold text-sm">
+                    <div className="inline-block bg-blue-600 text-zinc-900 dark:text-white px-8 py-3 rounded-lg font-bold text-sm">
                       Quiero mejorar mi web →
                     </div>
                   </div>
                 </div>
                 {/* Footer */}
                 <div className="bg-zinc-100 px-8 py-4 text-center">
-                  <p className="text-xs text-zinc-400">Iorana Digital · Informe generado para {report.domain}</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">Iorana Digital · Informe generado para {report.domain}</p>
                 </div>
               </div>
             </div>
@@ -276,41 +276,41 @@ ${report.issues.slice(0, 4).map((issue, i) =>
 
               {/* Texto editable del intro */}
               <div>
-                <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-2 flex items-center gap-1">
+                <label className="text-xs text-zinc-600 dark:text-zinc-500 uppercase tracking-wider font-semibold mb-2 flex items-center gap-1">
                   <Pencil size={11} /> Texto de introducción (editable)
                 </label>
                 <textarea
                   value={hookText}
                   onChange={e => setHookText(e.target.value)}
                   rows={3}
-                  className="w-full bg-zinc-800 border border-blue-600/50 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 resize-none"
+                  className="w-full bg-zinc-100 dark:bg-zinc-800 border border-blue-600/50 rounded-lg px-4 py-2.5 text-sm text-zinc-900 dark:text-white focus:outline-none focus:border-blue-500 resize-none"
                 />
-                <p className="text-xs text-zinc-600 mt-1">Aparece debajo del nombre del dominio.</p>
+                <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-1">Aparece debajo del nombre del dominio.</p>
               </div>
 
               {/* Texto de despedida editable */}
               <div>
-                <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-2 flex items-center gap-1">
+                <label className="text-xs text-zinc-600 dark:text-zinc-500 uppercase tracking-wider font-semibold mb-2 flex items-center gap-1">
                   <Pencil size={11} /> Texto de despedida (editable)
                 </label>
                 <textarea
                   value={farewellText}
                   onChange={e => setFarewellText(e.target.value)}
                   rows={3}
-                  className="w-full bg-zinc-800 border border-blue-600/50 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 resize-none"
+                  className="w-full bg-zinc-100 dark:bg-zinc-800 border border-blue-600/50 rounded-lg px-4 py-2.5 text-sm text-zinc-900 dark:text-white focus:outline-none focus:border-blue-500 resize-none"
                 />
-                <p className="text-xs text-zinc-600 mt-1">Aparece antes del botón "Quiero mejorar mi web".</p>
+                <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-1">Aparece antes del botón "Quiero mejorar mi web".</p>
               </div>
 
               <div className="flex items-center justify-between">
-                <p className="text-sm text-zinc-400">Código HTML listo para usar en tu cliente de email</p>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">Código HTML listo para usar en tu cliente de email</p>
                 <div className="flex gap-2">
                   <button onClick={() => handleCopy(emailHtml)}
-                    className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-medium flex items-center gap-2 transition">
+                    className="px-3 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white rounded-lg text-xs font-medium flex items-center gap-2 transition">
                     {copied ? <><Check size={13} /> Copiado</> : <><Copy size={13} /> Copiar HTML</>}
                   </button>
                   <button onClick={() => onSendEmail(emailHtml, emailSubject)}
-                    className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium flex items-center gap-2 transition">
+                    className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-zinc-900 dark:text-white rounded-lg text-xs font-medium flex items-center gap-2 transition">
                     <Mail size={13} /> Usar en Email
                   </button>
                 </div>
@@ -318,7 +318,7 @@ ${report.issues.slice(0, 4).map((issue, i) =>
               <textarea
                 readOnly
                 value={emailHtml}
-                className="flex-1 w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-xs text-zinc-300 font-mono resize-none focus:outline-none"
+                className="flex-1 w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-3 text-xs text-zinc-700 dark:text-zinc-300 font-mono resize-none focus:outline-none"
               />
             </div>
           )}
@@ -327,7 +327,7 @@ ${report.issues.slice(0, 4).map((issue, i) =>
           {mode === 'whatsapp' && (
             <div className="flex flex-col h-full p-6 gap-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm text-zinc-400">Mensaje listo para WhatsApp</p>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">Mensaje listo para WhatsApp</p>
                 <div className="flex gap-2">
                   <button
                     onClick={handleGenerateAI}
@@ -335,8 +335,8 @@ ${report.issues.slice(0, 4).map((issue, i) =>
                     title={aiAvailable === false ? 'Añade ANTHROPIC_API_KEY en .env para activar esta función' : ''}
                     className={`px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition disabled:opacity-60 ${
                       aiAvailable === false
-                        ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed'
-                        : 'bg-purple-600 hover:bg-purple-700 text-white'
+                        ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400 cursor-not-allowed'
+                        : 'bg-purple-600 hover:bg-purple-700 text-zinc-900 dark:text-white'
                     }`}
                   >
                     {generatingAI
@@ -347,14 +347,14 @@ ${report.issues.slice(0, 4).map((issue, i) =>
                     }
                   </button>
                   {aiAvailable === false && (
-                    <span className="text-xs text-zinc-600">Añade <code className="text-zinc-400">ANTHROPIC_API_KEY</code> para activar</span>
+                    <span className="text-xs text-zinc-400 dark:text-zinc-600">Añade <code className="text-zinc-500 dark:text-zinc-400">ANTHROPIC_API_KEY</code> para activar</span>
                   )}
                   <button onClick={() => handleCopy(aiText || whatsappText)}
-                    className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-medium flex items-center gap-2 transition">
+                    className="px-3 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white rounded-lg text-xs font-medium flex items-center gap-2 transition">
                     {copied ? <><Check size={13} /> Copiado</> : <><Copy size={13} /> Copiar</>}
                   </button>
                   <button onClick={() => onSendWhatsApp(aiText || whatsappText)}
-                    className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium flex items-center gap-2 transition">
+                    className="px-3 py-2 bg-green-600 hover:bg-green-700 text-zinc-900 dark:text-white rounded-lg text-xs font-medium flex items-center gap-2 transition">
                     <MessageCircle size={13} /> Usar en WhatsApp
                   </button>
                 </div>
@@ -362,7 +362,7 @@ ${report.issues.slice(0, 4).map((issue, i) =>
               <textarea
                 value={aiText || whatsappText}
                 onChange={e => setAiText(e.target.value)}
-                className="flex-1 w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-sm text-zinc-300 font-mono resize-none focus:outline-none focus:border-green-500"
+                className="flex-1 w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 font-mono resize-none focus:outline-none focus:border-green-500"
               />
             </div>
           )}

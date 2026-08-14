@@ -392,30 +392,30 @@ export function TemplatesAdmin() {
           />
 
           {/* Panel derecho - ocupa todo el ancho disponible */}
-          <div className="flex-1 bg-zinc-900 border-l border-zinc-800 flex flex-col h-full">
+          <div className="flex-1 bg-zinc-50 dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800 flex flex-col h-full">
 
             {/* Header fijo */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 flex-shrink-0">
-              <h3 className="text-lg font-bold text-white">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 flex-shrink-0">
+              <h3 className="text-lg font-bold text-zinc-900 dark:text-white">
                 <span className="flex items-center gap-2">{editing?.id ? <><Pencil size={16} /> Editar Plantilla</> : <><Plus size={16} /> Nueva Plantilla</>}</span>
               </h3>
               <div className="flex gap-2">
                 <button
                   onClick={() => setPreview(!preview)}
-                  className="flex items-center gap-2 px-3 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg text-sm transition"
+                  className="flex items-center gap-2 px-3 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 rounded-lg text-sm transition"
                 >
                   <Eye size={15} />
                   {preview ? 'Ocultar preview' : 'Preview'}
                 </button>
                 <button
                   onClick={handleSave}
-                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition"
+                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-zinc-900 dark:text-white rounded-lg text-sm font-medium transition"
                 >
                   Guardar
                 </button>
                 <button
                   onClick={() => { setShowForm(false); setEditing(null); setPreview(false); }}
-                  className="p-2 hover:bg-zinc-800 rounded-lg transition text-zinc-400 hover:text-white"
+                  className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
                 >
                   ✕
                 </button>
@@ -428,20 +428,20 @@ export function TemplatesAdmin() {
               {/* Nombre, Tipo, Categoría */}
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-2">Nombre</label>
+                  <label className="block text-xs text-zinc-600 dark:text-zinc-500 uppercase tracking-wider font-semibold mb-2">Nombre</label>
                   <input
                     value={editing?.name || ''}
                     onChange={e => setEditing({ ...editing!, name: e.target.value })}
-                    className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2.5 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-3 py-2.5 rounded-lg text-zinc-900 dark:text-white text-sm focus:outline-none focus:border-blue-500"
                     placeholder="ej: Análisis SEO inicial"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-2">Tipo</label>
+                  <label className="block text-xs text-zinc-600 dark:text-zinc-500 uppercase tracking-wider font-semibold mb-2">Tipo</label>
                   <select
                     value={editing?.type || 'email'}
                     onChange={e => setEditing({ ...editing!, type: e.target.value as 'email' | 'whatsapp' })}
-                    className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2.5 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-3 py-2.5 rounded-lg text-zinc-900 dark:text-white text-sm focus:outline-none focus:border-blue-500"
                   >
                     <option value="email">Email</option>
                     <option value="whatsapp">WhatsApp</option>
@@ -449,11 +449,11 @@ export function TemplatesAdmin() {
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="block text-xs text-zinc-500 uppercase tracking-wider font-semibold">Categoría</label>
+                    <label className="block text-xs text-zinc-600 dark:text-zinc-500 uppercase tracking-wider font-semibold">Categoría</label>
                     <button
                       type="button"
                       onClick={() => setShowCategoryManager(true)}
-                      className="text-zinc-500 hover:text-blue-400 transition"
+                      className="text-zinc-600 dark:text-zinc-500 hover:text-blue-700 dark:hover:text-blue-400 transition"
                       title="Gestionar categorías"
                     >
                       <Settings size={13} />
@@ -462,7 +462,7 @@ export function TemplatesAdmin() {
                   <select
                     value={editing?.category || 'GENERAL'}
                     onChange={e => setEditing({ ...editing!, category: e.target.value })}
-                    className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2.5 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-3 py-2.5 rounded-lg text-zinc-900 dark:text-white text-sm focus:outline-none focus:border-blue-500"
                   >
                     {categories.map(cat => (
                       <option key={cat.id} value={cat.name}>{cat.name}</option>
@@ -474,11 +474,11 @@ export function TemplatesAdmin() {
               {/* Asunto (solo email) */}
               {editing?.type === 'email' && (
                 <div>
-                  <label className="block text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-2">Asunto Email</label>
+                  <label className="block text-xs text-zinc-600 dark:text-zinc-500 uppercase tracking-wider font-semibold mb-2">Asunto Email</label>
                   <input
                     value={editing?.subject || ''}
                     onChange={e => setEditing({ ...editing!, subject: e.target.value })}
-                    className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2.5 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-3 py-2.5 rounded-lg text-zinc-900 dark:text-white text-sm focus:outline-none focus:border-blue-500"
                     placeholder="ej: {{business_name}} - Mejora tu posicionamiento SEO"
                   />
                 </div>
@@ -487,8 +487,8 @@ export function TemplatesAdmin() {
               {/* Variables disponibles */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs text-zinc-500 uppercase tracking-wider font-semibold">Variables disponibles</label>
-                  <span className="text-xs text-zinc-600">Click para insertar · Hover para ver descripción</span>
+                  <label className="block text-xs text-zinc-600 dark:text-zinc-500 uppercase tracking-wider font-semibold">Variables disponibles</label>
+                  <span className="text-xs text-zinc-400 dark:text-zinc-600">Click para insertar · Hover para ver descripción</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {AVAILABLE_VARIABLES[editing?.type || 'email'].map(v => (
@@ -511,13 +511,13 @@ export function TemplatesAdmin() {
                         }}
                         onMouseEnter={() => setShowTooltip(v)}
                         onMouseLeave={() => setShowTooltip(null)}
-                        className="px-2 py-1 bg-zinc-800 hover:bg-blue-600 border border-zinc-700 hover:border-blue-500 text-xs rounded text-blue-400 hover:text-white transition"
+                        className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-600 border border-zinc-300 dark:border-zinc-700 hover:border-blue-500 text-xs rounded text-blue-700 dark:text-blue-400 hover:text-zinc-900 dark:hover:text-white transition"
                         type="button"
                       >
                         {`{{${v}}}`}
                       </button>
                       {showTooltip === v && (
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-900 border border-zinc-700 rounded text-xs text-zinc-200 whitespace-nowrap z-50 pointer-events-none shadow-lg">
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded text-xs text-zinc-800 dark:text-zinc-200 whitespace-nowrap z-50 pointer-events-none shadow-lg">
                           {VARIABLE_DESCRIPTIONS[v as keyof typeof VARIABLE_DESCRIPTIONS]}
                         </div>
                       )}
@@ -532,14 +532,14 @@ export function TemplatesAdmin() {
                 {/* Textarea - siempre visible */}
                 <div className="flex flex-col min-h-0 flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <label className="block text-xs text-zinc-500 uppercase tracking-wider font-semibold">Cuerpo del Mensaje</label>
+                    <label className="block text-xs text-zinc-600 dark:text-zinc-500 uppercase tracking-wider font-semibold">Cuerpo del Mensaje</label>
                     <div className="flex items-center gap-1.5">
                       {/* Emojis — desplegable, no ocupa espacio hasta que se abre */}
                       <div className="relative">
                         <button
                           type="button"
                           onClick={() => { setShowEmojiMenu(v => !v); setShowFormatMenu(false); }}
-                          className="p-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-400 hover:text-white transition"
+                          className="p-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition"
                           title="Insertar emoji"
                         >
                           <Smile size={14} />
@@ -547,13 +547,13 @@ export function TemplatesAdmin() {
                         {showEmojiMenu && (
                           <>
                             <div className="fixed inset-0 z-40" onClick={() => setShowEmojiMenu(false)} />
-                            <div className="absolute right-0 top-full mt-1 z-50 w-64 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl p-2 grid grid-cols-8 gap-0.5">
+                            <div className="absolute right-0 top-full mt-1 z-50 w-64 bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg shadow-xl p-2 grid grid-cols-8 gap-0.5">
                               {EMOJI_PICKER_LIST.map(emoji => (
                                 <button
                                   key={emoji}
                                   type="button"
                                   onClick={() => { insertAtCursor(emoji); setShowEmojiMenu(false); }}
-                                  className="text-base hover:bg-zinc-700 rounded p-1 transition"
+                                  className="text-base hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded p-1 transition"
                                 >
                                   {emoji}
                                 </button>
@@ -568,7 +568,7 @@ export function TemplatesAdmin() {
                         <button
                           type="button"
                           onClick={() => { setShowFormatMenu(v => !v); setShowEmojiMenu(false); }}
-                          className="p-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-400 hover:text-white transition"
+                          className="p-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition"
                           title="Formato de texto"
                         >
                           <Type size={14} />
@@ -576,16 +576,16 @@ export function TemplatesAdmin() {
                         {showFormatMenu && (
                           <>
                             <div className="fixed inset-0 z-40" onClick={() => setShowFormatMenu(false)} />
-                            <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl p-1.5">
+                            <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg shadow-xl p-1.5">
                               {MARKDOWN_FORMATS.map(f => (
                                 <button
                                   key={f.label}
                                   type="button"
                                   onClick={() => { wrapSelection(f.before, f.after, f.placeholder); setShowFormatMenu(false); }}
-                                  className="w-full flex items-center justify-between px-2 py-1.5 hover:bg-zinc-700 rounded text-sm text-zinc-200 transition"
+                                  className="w-full flex items-center justify-between px-2 py-1.5 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded text-sm text-zinc-800 dark:text-zinc-200 transition"
                                 >
                                   <span>{f.label}</span>
-                                  <span className="text-xs text-zinc-500 font-mono">{f.before}{f.placeholder}{f.after}</span>
+                                  <span className="text-xs text-zinc-600 dark:text-zinc-500 font-mono">{f.before}{f.placeholder}{f.after}</span>
                                 </button>
                               ))}
                             </div>
@@ -598,7 +598,7 @@ export function TemplatesAdmin() {
                     id="template-body"
                     value={editing?.body || ''}
                     onChange={e => setEditing({ ...editing!, body: e.target.value })}
-                    className="flex-1 w-full bg-zinc-800 border border-zinc-700 px-4 py-3 rounded-lg text-white font-mono text-sm focus:outline-none focus:border-blue-500 resize-none min-h-0"
+                    className="flex-1 w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-4 py-3 rounded-lg text-zinc-900 dark:text-white font-mono text-sm focus:outline-none focus:border-blue-500 resize-none min-h-0"
                     placeholder={editing?.type === 'email'
                       ? "Hola {{business_name}},\n\nHemos detectado {{issue_count}} problemas SEO...\n\nProblema principal: {{top_issue}}\n\nUn saludo."
                       : "Hola {{business_name}} 👋\n\nHemos analizado tu web: {{seo_gap}}\n\nScore: {{audit_score}}/100 🚀"}
@@ -606,8 +606,8 @@ export function TemplatesAdmin() {
                   <div className="flex justify-end mt-1">
                     <span className={`text-xs ${
                       (editing?.body?.length || 0) > MAX_CHARS[editing?.type || 'email']
-                        ? 'text-red-400 font-semibold'
-                        : 'text-zinc-500'
+                        ? 'text-red-700 dark:text-red-400 font-semibold'
+                        : 'text-zinc-600 dark:text-zinc-500'
                     }`}>
                       {(editing?.body?.length || 0)} / {MAX_CHARS[editing?.type || 'email']}
                     </span>
@@ -617,16 +617,16 @@ export function TemplatesAdmin() {
                 {/* Preview en paralelo - solo si activo */}
                 {preview && (
                   <div className="flex flex-col min-h-0 flex-1">
-                    <p className="text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-2">Vista previa</p>
-                    <div className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg p-4 overflow-y-auto">
+                    <p className="text-xs text-zinc-600 dark:text-zinc-500 uppercase tracking-wider font-semibold mb-2">Vista previa</p>
+                    <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-4 overflow-y-auto">
                       {editing.type === 'email' && editing.subject && (
-                        <div className="text-sm border-b border-zinc-700 pb-3 mb-3">
-                          <span className="text-zinc-500 text-xs">Asunto: </span>
-                          <span className="text-white font-medium">{editing.subject}</span>
+                        <div className="text-sm border-b border-zinc-300 dark:border-zinc-700 pb-3 mb-3">
+                          <span className="text-zinc-600 dark:text-zinc-500 text-xs">Asunto: </span>
+                          <span className="text-zinc-900 dark:text-white font-medium">{editing.subject}</span>
                         </div>
                       )}
-                      <div className="text-sm whitespace-pre-wrap text-zinc-300 leading-relaxed font-mono">
-                        {editing.body || <span className="text-zinc-600 italic">El mensaje aparecerá aquí...</span>}
+                      <div className="text-sm whitespace-pre-wrap text-zinc-700 dark:text-zinc-300 leading-relaxed font-mono">
+                        {editing.body || <span className="text-zinc-400 dark:text-zinc-600 italic">El mensaje aparecerá aquí...</span>}
                       </div>
                     </div>
                   </div>
@@ -641,7 +641,7 @@ export function TemplatesAdmin() {
                   onChange={e => setEditing({ ...editing!, is_active: e.target.checked })}
                   className="w-4 h-4 rounded accent-blue-500"
                 />
-                <span className="text-sm text-zinc-300">Plantilla activa</span>
+                <span className="text-sm text-zinc-700 dark:text-zinc-300">Plantilla activa</span>
               </label>
 
             </div>
@@ -658,7 +658,7 @@ export function TemplatesAdmin() {
           </h3>
 
           {/* Pestañas de navegación tipo Chrome */}
-          <div className="flex gap-2 border-b border-zinc-700 mb-6">
+          <div className="flex gap-2 border-b border-zinc-300 dark:border-zinc-700 mb-6">
             {[
               { value: 'whatsapp', label: 'WhatsApp', icon: <MessageCircle size={13} />, count: templates.filter(t => t.type === 'whatsapp').length },
               { value: 'email', label: 'Email', icon: <Mail size={13} />, count: templates.filter(t => t.type === 'email').length },
@@ -670,12 +670,12 @@ export function TemplatesAdmin() {
                 onClick={() => setFilterType(tab.value as any)}
                 className={`px-4 py-3 text-sm font-medium transition-all border-b-2 flex items-center gap-1.5 ${
                   filterType === tab.value
-                    ? 'border-blue-500 text-blue-400 bg-zinc-800/50'
-                    : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/30'
+                    ? 'border-blue-500 text-blue-700 dark:text-blue-400 bg-zinc-100 dark:bg-zinc-800/50'
+                    : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/30'
                 }`}
               >
                 {tab.icon}{tab.label}
-                <span className="ml-2 text-xs bg-zinc-700 px-2 py-0.5 rounded-full">
+                <span className="ml-2 text-xs bg-zinc-200 dark:bg-zinc-700 px-2 py-0.5 rounded-full">
                   {tab.count}
                 </span>
               </button>
@@ -684,24 +684,24 @@ export function TemplatesAdmin() {
 
           {filterType === 'whatsapp-frio' ? (
             <div className="space-y-4">
-              <div className="flex items-start gap-2 bg-blue-950/30 border border-blue-900/50 rounded-lg px-4 py-3 text-sm text-blue-200">
+              <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-900/50 rounded-lg px-4 py-3 text-sm text-blue-800 dark:text-blue-200">
                 <Lock size={15} className="flex-shrink-0 mt-0.5" />
                 <p>
-                  Estas plantillas están fijadas en el código (<code className="bg-zinc-800 px-1 rounded">SendModal.tsx</code>), no en esta base de datos, porque su texto debe coincidir exactamente con lo aprobado por Meta en Twilio. No son editables desde aquí — para cambiarlas hay que tocar el código y volver a desplegar.
+                  Estas plantillas están fijadas en el código (<code className="bg-zinc-100 dark:bg-zinc-800 px-1 rounded">SendModal.tsx</code>), no en esta base de datos, porque su texto debe coincidir exactamente con lo aprobado por Meta en Twilio. No son editables desde aquí — para cambiarlas hay que tocar el código y volver a desplegar.
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {WHATSAPP_TEMPLATES.map((tmpl, i) => (
-                  <div key={tmpl.sid || i} className="rounded-lg border border-zinc-700 bg-zinc-800 p-4 space-y-2">
+                  <div key={tmpl.sid || i} className="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 p-4 space-y-2">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-medium text-white">{tmpl.name}</p>
+                      <p className="text-sm font-medium text-zinc-900 dark:text-white">{tmpl.name}</p>
                       <span className={`text-xs px-1.5 py-0.5 rounded font-mono flex-shrink-0 ${
-                        tmpl.sid ? 'bg-green-600/30 text-green-300' : 'bg-zinc-700 text-zinc-400'
+                        tmpl.sid ? 'bg-green-600/30 text-green-700 dark:text-green-300' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400'
                       }`}>
                         {tmpl.sid || 'pendiente de aprobación'}
                       </span>
                     </div>
-                    <p className="text-xs whitespace-pre-wrap text-zinc-400 font-mono leading-relaxed max-h-40 overflow-y-auto">
+                    <p className="text-xs whitespace-pre-wrap text-zinc-500 dark:text-zinc-400 font-mono leading-relaxed max-h-40 overflow-y-auto">
                       {tmpl.body}
                     </p>
                   </div>
@@ -709,7 +709,7 @@ export function TemplatesAdmin() {
               </div>
             </div>
           ) : templates.length === 0 ? (
-            <p className="text-zinc-400 text-center py-8">No hay plantillas creadas</p>
+            <p className="text-zinc-500 dark:text-zinc-400 text-center py-8">No hay plantillas creadas</p>
           ) : (
             <div className="space-y-8">
               {categories.map(({ name: category }) => {
@@ -724,7 +724,7 @@ export function TemplatesAdmin() {
 
                 return (
                   <div key={category}>
-                    <h4 className="text-sm font-semibold text-zinc-300 uppercase mb-4 px-2 border-l-4 border-blue-500 pl-3 flex items-center gap-1.5">
+                    <h4 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 uppercase mb-4 px-2 border-l-4 border-blue-500 pl-3 flex items-center gap-1.5">
                       <FolderOpen size={13} /> {category}
                     </h4>
                     <div className="grid grid-cols-4 gap-2">
@@ -741,44 +741,44 @@ export function TemplatesAdmin() {
                           className={`rounded-lg border px-3 py-2.5 flex items-center justify-between gap-2 transition-all ${
                             isLegacyBulkOnly
                               ? template.is_active
-                                ? 'bg-red-950/30 border-red-900/60 hover:border-red-500'
-                                : 'bg-red-950/10 border-red-900/30 opacity-50'
+                                ? 'bg-red-50 dark:bg-red-950/30 border-red-900/60 hover:border-red-500'
+                                : 'bg-red-50 dark:bg-red-950/10 border-red-900/30 opacity-50'
                               : template.is_active
-                                ? 'bg-zinc-800 border-zinc-700 hover:border-blue-500'
-                                : 'bg-zinc-900 border-zinc-800 opacity-50'
+                                ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 hover:border-blue-500'
+                                : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 opacity-50'
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0 flex-1">
                             <span className={`text-xs px-1.5 py-0.5 rounded font-medium flex-shrink-0 ${
                               template.type === 'email'
-                                ? 'bg-blue-600/30 text-blue-300'
-                                : 'bg-green-600/30 text-green-300'
+                                ? 'bg-blue-600/30 text-blue-700 dark:text-blue-300'
+                                : 'bg-green-600/30 text-green-700 dark:text-green-300'
                             }`}>
                               {template.type === 'email' ? <Mail size={11} /> : <MessageCircle size={11} />}
                             </span>
                             {isLegacyBulkOnly && (
-                              <AlertTriangle size={12} className="text-red-400 flex-shrink-0" />
+                              <AlertTriangle size={12} className="text-red-700 dark:text-red-400 flex-shrink-0" />
                             )}
-                            <p className="text-sm font-medium text-white truncate">{template.name}</p>
+                            <p className="text-sm font-medium text-zinc-900 dark:text-white truncate">{template.name}</p>
                           </div>
                           <div className="flex items-center gap-1 flex-shrink-0">
                             <button
                               onClick={() => { setEditing(template); setShowForm(true); }}
-                              className="p-1.5 hover:bg-blue-600/30 text-blue-400 rounded transition"
+                              className="p-1.5 hover:bg-blue-600/30 text-blue-700 dark:text-blue-400 rounded transition"
                               title="Editar"
                             >
                               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                             </button>
                             <button
                               onClick={() => handleDuplicate(template)}
-                              className="p-1.5 hover:bg-zinc-600/30 text-zinc-400 hover:text-white rounded transition"
+                              className="p-1.5 hover:bg-zinc-300 dark:hover:bg-zinc-600/30 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white rounded transition"
                               title="Duplicar"
                             >
                               <Copy size={13} />
                             </button>
                             <button
                               onClick={() => setConfirmDelId(template.id)}
-                              className="p-1.5 hover:bg-red-600/30 text-red-400 rounded transition"
+                              className="p-1.5 hover:bg-red-600/30 text-red-700 dark:text-red-400 rounded transition"
                               title="Eliminar"
                             >
                               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
@@ -808,14 +808,14 @@ export function TemplatesAdmin() {
       {/* Gestión de categorías */}
       {showCategoryManager && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4">
-          <div className="bg-zinc-900 border border-zinc-700 rounded-xl w-full max-w-md">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl w-full max-w-md">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-200 dark:border-zinc-800">
+              <h3 className="text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2">
                 <Settings size={15} /> Gestionar categorías
               </h3>
               <button
                 onClick={() => { setShowCategoryManager(false); setEditingCategoryId(null); }}
-                className="p-1 hover:bg-zinc-800 rounded text-zinc-400 hover:text-white transition"
+                className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition"
               >
                 <X size={16} />
               </button>
@@ -823,7 +823,7 @@ export function TemplatesAdmin() {
 
             <div className="p-5 space-y-2 max-h-80 overflow-y-auto">
               {categories.map(cat => (
-                <div key={cat.id} className="flex items-center gap-2 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2">
+                <div key={cat.id} className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2">
                   {editingCategoryId === cat.id ? (
                     <>
                       <input
@@ -831,31 +831,31 @@ export function TemplatesAdmin() {
                         onChange={e => setEditingCategoryName(e.target.value)}
                         onKeyDown={e => { if (e.key === 'Enter') handleRenameCategory(cat); if (e.key === 'Escape') setEditingCategoryId(null); }}
                         autoFocus
-                        className="flex-1 bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-blue-500"
+                        className="flex-1 bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-600 rounded px-2 py-1 text-sm text-zinc-900 dark:text-white focus:outline-none focus:border-blue-500"
                       />
-                      <button onClick={() => handleRenameCategory(cat)} className="p-1 text-green-400 hover:bg-green-600/20 rounded transition" title="Guardar">
+                      <button onClick={() => handleRenameCategory(cat)} className="p-1 text-green-700 dark:text-green-400 hover:bg-green-600/20 rounded transition" title="Guardar">
                         <Check size={14} />
                       </button>
-                      <button onClick={() => setEditingCategoryId(null)} className="p-1 text-zinc-400 hover:bg-zinc-700 rounded transition" title="Cancelar">
+                      <button onClick={() => setEditingCategoryId(null)} className="p-1 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded transition" title="Cancelar">
                         <X size={14} />
                       </button>
                     </>
                   ) : (
                     <>
-                      <span className="flex-1 text-sm text-white truncate">{cat.name}</span>
-                      <span className="text-xs text-zinc-500 flex-shrink-0">
+                      <span className="flex-1 text-sm text-zinc-900 dark:text-white truncate">{cat.name}</span>
+                      <span className="text-xs text-zinc-600 dark:text-zinc-500 flex-shrink-0">
                         {templates.filter(t => t.category === cat.name).length} plantilla(s)
                       </span>
                       <button
                         onClick={() => { setEditingCategoryId(cat.id); setEditingCategoryName(cat.name); }}
-                        className="p-1 text-blue-400 hover:bg-blue-600/20 rounded transition flex-shrink-0"
+                        className="p-1 text-blue-700 dark:text-blue-400 hover:bg-blue-600/20 rounded transition flex-shrink-0"
                         title="Renombrar"
                       >
                         <Pencil size={13} />
                       </button>
                       <button
                         onClick={() => setConfirmDelCategoryId(cat.id)}
-                        className="p-1 text-red-400 hover:bg-red-600/20 rounded transition flex-shrink-0"
+                        className="p-1 text-red-700 dark:text-red-400 hover:bg-red-600/20 rounded transition flex-shrink-0"
                         title="Eliminar"
                       >
                         <Trash2 size={13} />
@@ -865,22 +865,22 @@ export function TemplatesAdmin() {
                 </div>
               ))}
               {categories.length === 0 && (
-                <p className="text-sm text-zinc-500 text-center py-4">No hay categorías todavía</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-500 text-center py-4">No hay categorías todavía</p>
               )}
             </div>
 
-            <div className="px-5 py-4 border-t border-zinc-800 flex gap-2">
+            <div className="px-5 py-4 border-t border-zinc-200 dark:border-zinc-800 flex gap-2">
               <input
                 value={newCategoryName}
                 onChange={e => setNewCategoryName(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') handleAddCategory(); }}
                 placeholder="Nueva categoría..."
-                className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-blue-500"
+                className="flex-1 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-blue-500"
               />
               <button
                 onClick={handleAddCategory}
                 disabled={!newCategoryName.trim()}
-                className="flex items-center gap-1.5 px-3 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition"
+                className="flex items-center gap-1.5 px-3 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-40 text-zinc-900 dark:text-white text-sm font-medium rounded-lg transition"
               >
                 <Plus size={14} /> Añadir
               </button>

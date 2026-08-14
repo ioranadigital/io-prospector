@@ -361,31 +361,31 @@ export function SendModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-6 max-w-2xl w-full mx-4 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg p-6 max-w-2xl w-full mx-4 space-y-4 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-xl font-semibold flex items-center gap-2">
               {type === 'email' ? <Mail size={18} /> : <MessageCircle size={18} />}
               {type === 'email' ? 'Enviar Email' : 'Enviar WhatsApp'}
             </h2>
-            <p className="text-sm text-zinc-400 mt-1">
-              Destinatario: <span className="text-zinc-200 font-medium">{leadName}</span>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+              Destinatario: <span className="text-zinc-800 dark:text-zinc-200 font-medium">{leadName}</span>
             </p>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-zinc-700 rounded">
+          <button onClick={onClose} className="p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded">
             <X size={20} />
           </button>
         </div>
 
-        <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4 space-y-2">
-          <p className="text-xs font-semibold text-zinc-400 uppercase">Contacto</p>
+        <div className="bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-300 dark:border-zinc-700 rounded-lg p-4 space-y-2">
+          <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">Contacto</p>
           {type === 'email' ? (
             <div className="flex items-center gap-2">
-              <span className="text-blue-400 font-mono text-sm">{email || 'No disponible'}</span>
+              <span className="text-blue-700 dark:text-blue-400 font-mono text-sm">{email || 'No disponible'}</span>
               {email && (
                 <button
                   onClick={() => navigator.clipboard.writeText(email)}
-                  className="text-blue-400 hover:text-blue-300 text-xs"
+                  className="text-blue-700 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs"
                 >
                   <Copy size={12} />
                 </button>
@@ -393,11 +393,11 @@ export function SendModal({
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <span className="text-green-400 font-mono text-sm">{phone || 'No disponible'}</span>
+              <span className="text-green-700 dark:text-green-400 font-mono text-sm">{phone || 'No disponible'}</span>
               {phone && (
                 <button
                   onClick={() => navigator.clipboard.writeText(phone)}
-                  className="text-green-400 hover:text-green-300 text-xs"
+                  className="text-green-700 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 text-xs"
                 >
                   <Copy size={12} />
                 </button>
@@ -415,7 +415,7 @@ export function SendModal({
                 setSelectedTemplate(e.target.value);
                 generatePreview(e.target.value);
               }}
-              className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2 rounded text-white"
+              className="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-3 py-2 rounded text-zinc-900 dark:text-white"
             >
               {templates.map(t => (
                 <option key={t.id} value={t.id}>
@@ -428,7 +428,7 @@ export function SendModal({
 
         {type === 'whatsapp' && isFreeTextWindow && (
           <div className="space-y-3">
-            <p className="text-xs text-emerald-400">
+            <p className="text-xs text-emerald-700 dark:text-emerald-400">
               El lead respondió por WhatsApp — modo texto libre disponible durante 24h desde su última respuesta.
             </p>
             {templates.length > 0 && (
@@ -437,7 +437,7 @@ export function SendModal({
                 <select
                   value={selectedTemplate}
                   onChange={e => applyFollowupTemplate(e.target.value)}
-                  className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2 rounded text-white"
+                  className="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-3 py-2 rounded text-zinc-900 dark:text-white"
                 >
                   <option value="">Texto libre (sin plantilla)</option>
                   {Object.entries(templatesByCategory).map(([cat, items]) => (
@@ -459,7 +459,7 @@ export function SendModal({
                 onChange={e => setFreeText(e.target.value)}
                 rows={6}
                 placeholder="Escribe el mensaje..."
-                className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2 rounded text-white text-sm"
+                className="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-3 py-2 rounded text-zinc-900 dark:text-white text-sm"
               />
             </div>
           </div>
@@ -475,7 +475,7 @@ export function SendModal({
                 const tmpl = availableWhatsappTemplates.find(t => t.sid === e.target.value);
                 if (tmpl) setPreview(renderWhatsappPreview(tmpl));
               }}
-              className="w-full bg-zinc-800 border border-zinc-700 px-3 py-2 rounded text-white"
+              className="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-3 py-2 rounded text-zinc-900 dark:text-white"
             >
               {availableWhatsappTemplates.map(t => (
                 <option key={t.sid} value={t.sid!}>
@@ -483,24 +483,24 @@ export function SendModal({
                 </option>
               ))}
             </select>
-            <p className="text-xs text-zinc-400 mt-2">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
               Primer contacto — solo se rellenan las variables cortas; el resto del texto es fijo y aprobado por Meta.
             </p>
           </div>
         )}
 
         {((type === 'email' && template) || (type === 'whatsapp' && !isFreeTextWindow)) && (
-          <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 space-y-3">
-            <p className="text-xs font-semibold text-zinc-400 uppercase">Vista previa</p>
+          <div className="bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-4 space-y-3">
+            <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">Vista previa</p>
             {type === 'email' && template?.subject && (
-              <div className="bg-zinc-900 p-3 rounded border border-zinc-700">
-                <p className="text-xs font-semibold text-zinc-400 mb-1">Asunto:</p>
-                <p className="text-sm text-white">{preview.split('\n')[0] || template.subject}</p>
+              <div className="bg-zinc-50 dark:bg-zinc-900 p-3 rounded border border-zinc-300 dark:border-zinc-700">
+                <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1">Asunto:</p>
+                <p className="text-sm text-zinc-900 dark:text-white">{preview.split('\n')[0] || template.subject}</p>
               </div>
             )}
-            <div className="bg-zinc-900 p-3 rounded border border-zinc-700 max-h-48 overflow-y-auto">
-              <p className="text-xs font-semibold text-zinc-400 mb-2">Contenido:</p>
-              <p className="text-xs text-zinc-200 whitespace-pre-wrap leading-relaxed">
+            <div className="bg-zinc-50 dark:bg-zinc-900 p-3 rounded border border-zinc-300 dark:border-zinc-700 max-h-48 overflow-y-auto">
+              <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-2">Contenido:</p>
+              <p className="text-xs text-zinc-800 dark:text-zinc-200 whitespace-pre-wrap leading-relaxed">
                 {preview || template?.body || 'Sin contenido'}
               </p>
             </div>
@@ -520,7 +520,7 @@ export function SendModal({
               type === 'email'
                 ? 'bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50'
                 : 'bg-green-600 hover:bg-green-700 disabled:bg-green-600/50'
-            } disabled:opacity-50 text-white`}
+            } disabled:opacity-50 text-zinc-900 dark:text-white`}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
@@ -533,7 +533,7 @@ export function SendModal({
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-2.5 bg-zinc-700 hover:bg-zinc-600 rounded-lg font-medium transition-colors"
+            className="px-4 py-2.5 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 rounded-lg font-medium transition-colors"
           >
             Cancelar
           </button>

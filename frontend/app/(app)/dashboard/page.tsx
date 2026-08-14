@@ -19,15 +19,15 @@ const TABS: { id: Tab; label: string; icon: React.FC<any>; accent: string }[] = 
 ];
 
 // ── Componentes reutilizables ─────────────────────────────
-function StatCard({ icon: Icon, label, value, sub, color = 'text-white' }:
+function StatCard({ icon: Icon, label, value, sub, color = 'text-zinc-900 dark:text-white' }:
   { icon: React.FC<any>; label: string; value: React.ReactNode; sub?: string; color?: string }) {
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-      <div className="flex items-center gap-2 text-zinc-400 text-sm mb-1">
+    <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4">
+      <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400 text-sm mb-1">
         <Icon size={14} /> {label}
       </div>
       <p className={`text-2xl font-bold ${color}`}>{value}</p>
-      {sub && <p className="text-xs text-zinc-600 mt-1">{sub}</p>}
+      {sub && <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-1">{sub}</p>}
     </div>
   );
 }
@@ -37,11 +37,11 @@ function BarRow({ label, value, max, suffix, barClass, labelWidth = 'w-40' }:
   const widthPct = max > 0 ? Math.round((value / max) * 100) : 0;
   return (
     <div className="flex items-center gap-3">
-      <div className={`${labelWidth} text-xs font-semibold text-zinc-300 truncate`}>{label}</div>
-      <div className="flex-1 bg-zinc-800 rounded-full h-3 overflow-hidden">
+      <div className={`${labelWidth} text-xs font-semibold text-zinc-700 dark:text-zinc-300 truncate`}>{label}</div>
+      <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-full h-3 overflow-hidden">
         <div className={`${barClass} h-full transition-all duration-300`} style={{ width: `${widthPct}%` }} />
       </div>
-      <span className="text-sm font-bold text-white w-16 text-right">
+      <span className="text-sm font-bold text-zinc-900 dark:text-white w-16 text-right">
         {value}{suffix || ''}
       </span>
     </div>
@@ -55,8 +55,8 @@ function SectionCard({ title, accent, children }:
     purple: 'border-purple-500', pink: 'border-pink-500', amber: 'border-amber-500',
   };
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-      <h2 className={`text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4 border-l-4 ${borderColor[accent] || 'border-zinc-500'} pl-3`}>
+    <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
+      <h2 className={`text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-4 border-l-4 ${borderColor[accent] || 'border-zinc-400 dark:border-zinc-500'} pl-3`}>
         {title}
       </h2>
       {children}
@@ -94,13 +94,13 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96 text-zinc-400">
+      <div className="flex items-center justify-center h-96 text-zinc-500 dark:text-zinc-400">
         <RefreshCw size={20} className="animate-spin mr-2" /> Cargando análisis...
       </div>
     );
   }
   if (!data) {
-    return <div className="flex items-center justify-center h-96 text-zinc-400">No hay datos disponibles</div>;
+    return <div className="flex items-center justify-center h-96 text-zinc-500 dark:text-zinc-400">No hay datos disponibles</div>;
   }
 
   const crmTotal = Object.values(data.crm as Record<string, number>).reduce((a: number, b: number) => a + b, 0);
@@ -111,21 +111,21 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white flex items-center gap-2"><BarChart3 size={22} className="text-white" /> Dashboard de Análisis</h1>
-          <p className="text-zinc-400 text-sm mt-1">Control analítico de SEO, prospecting y leads</p>
+          <h1 className="text-3xl font-bold text-zinc-900 dark:text-white flex items-center gap-2"><BarChart3 size={22} className="text-zinc-900 dark:text-white" /> Dashboard de Análisis</h1>
+          <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">Control analítico de SEO, prospecting y leads</p>
         </div>
         <button onClick={loadAnalytics}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-zinc-900 dark:text-white rounded-lg text-sm font-medium transition-colors">
           <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Actualizar
         </button>
       </div>
 
       {/* Tabs (ancho completo) */}
-      <div className="flex w-full gap-1 bg-zinc-900 border border-zinc-800 rounded-xl p-1">
+      <div className="flex w-full gap-1 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button key={id} onClick={() => setTab(id)}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-              tab === id ? 'bg-blue-600 text-white' : 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
+              tab === id ? 'bg-blue-600 text-zinc-900 dark:text-white' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
             }`}>
             <Icon size={15} /> {label}
           </button>
@@ -137,10 +137,10 @@ export default function DashboardPage() {
         <div className="space-y-6">
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
             <StatCard icon={Users} label="Total Leads" value={data.leads?.total || 0} sub="En el sistema" />
-            <StatCard icon={Gauge} label="Score SEO medio" value={data.seo?.avg_audit_score || 0} sub={`${data.seo?.scored_leads || 0} con score`} color="text-green-400" />
-            <StatCard icon={Search} label="Prospecciones" value={data.prospections?.total_sessions || 0} sub={`${data.prospections?.total_leads_found || 0} leads encontrados`} color="text-sky-400" />
-            <StatCard icon={CheckCircle} label="Auditorías" value={data.audits?.total_audits || 0} sub="Guardadas en histórico" color="text-emerald-400" />
-            <StatCard icon={Mail} label="Contactos" value={emailsTotal} sub={`${data.activity?.recent_7d || 0} últimos 7 días`} color="text-purple-400" />
+            <StatCard icon={Gauge} label="Score SEO medio" value={data.seo?.avg_audit_score || 0} sub={`${data.seo?.scored_leads || 0} con score`} color="text-green-700 dark:text-green-400" />
+            <StatCard icon={Search} label="Prospecciones" value={data.prospections?.total_sessions || 0} sub={`${data.prospections?.total_leads_found || 0} leads encontrados`} color="text-sky-700 dark:text-sky-400" />
+            <StatCard icon={CheckCircle} label="Auditorías" value={data.audits?.total_audits || 0} sub="Guardadas en histórico" color="text-emerald-700 dark:text-emerald-400" />
+            <StatCard icon={Mail} label="Contactos" value={emailsTotal} sub={`${data.activity?.recent_7d || 0} últimos 7 días`} color="text-purple-700 dark:text-purple-400" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -151,13 +151,13 @@ export default function DashboardPage() {
                   const p = crmTotal > 0 ? Math.round((count / crmTotal) * 100) : 0;
                   return (
                     <div key={key} className="flex items-center gap-3">
-                      <div className="w-24 text-xs font-semibold text-zinc-300">{label}</div>
-                      <div className="flex-1 bg-zinc-800 rounded-full h-3 overflow-hidden">
+                      <div className="w-24 text-xs font-semibold text-zinc-700 dark:text-zinc-300">{label}</div>
+                      <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-full h-3 overflow-hidden">
                         <div className={`${CRM_COLORS[key]} h-full transition-all duration-300`} style={{ width: `${p}%` }} />
                       </div>
                       <div className="w-20 text-right">
-                        <span className="text-sm font-bold text-white">{count}</span>
-                        <span className="text-xs text-zinc-500 ml-1">({p}%)</span>
+                        <span className="text-sm font-bold text-zinc-900 dark:text-white">{count}</span>
+                        <span className="text-xs text-zinc-600 dark:text-zinc-500 ml-1">({p}%)</span>
                       </div>
                     </div>
                   );
@@ -176,11 +176,11 @@ export default function DashboardPage() {
       {tab === 'seo' && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-            <StatCard icon={Gauge} label="Score medio" value={data.seo?.avg_audit_score || 0} sub="/ 100" color="text-green-400" />
+            <StatCard icon={Gauge} label="Score medio" value={data.seo?.avg_audit_score || 0} sub="/ 100" color="text-green-700 dark:text-green-400" />
             <StatCard icon={BarChart3} label="Leads con score" value={data.seo?.scored_leads || 0} sub={`de ${data.seo?.total_leads || 0} totales`} />
-            <StatCard icon={CheckCircle} label="Auditorías" value={data.audits?.total_audits || 0} sub="Guardadas" color="text-emerald-400" />
-            <StatCard icon={Link2} label="Enlaces rotos" value={data.seo?.avg_broken_links || 0} sub="Media por lead" color="text-red-400" />
-            <StatCard icon={Star} label="Rating GMB" value={data.seo?.avg_gmb_rating || 0} sub="Media" color="text-amber-400" />
+            <StatCard icon={CheckCircle} label="Auditorías" value={data.audits?.total_audits || 0} sub="Guardadas" color="text-emerald-700 dark:text-emerald-400" />
+            <StatCard icon={Link2} label="Enlaces rotos" value={data.seo?.avg_broken_links || 0} sub="Media por lead" color="text-red-700 dark:text-red-400" />
+            <StatCard icon={Star} label="Rating GMB" value={data.seo?.avg_gmb_rating || 0} sub="Media" color="text-amber-700 dark:text-amber-400" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -206,9 +206,9 @@ export default function DashboardPage() {
           {data.audits?.total_audits > 0 && (
             <SectionCard title="Auditorías guardadas (checks acumulados)" accent="green">
               <div className="grid grid-cols-3 gap-4">
-                <MiniStat label="Correctos" value={data.audits.total_pass} color="text-green-400" />
-                <MiniStat label="Avisos" value={data.audits.total_warn} color="text-yellow-400" />
-                <MiniStat label="Errores" value={data.audits.total_fail} color="text-red-400" />
+                <MiniStat label="Correctos" value={data.audits.total_pass} color="text-green-700 dark:text-green-400" />
+                <MiniStat label="Avisos" value={data.audits.total_warn} color="text-yellow-700 dark:text-yellow-400" />
+                <MiniStat label="Errores" value={data.audits.total_fail} color="text-red-700 dark:text-red-400" />
               </div>
             </SectionCard>
           )}
@@ -219,9 +219,9 @@ export default function DashboardPage() {
       {tab === 'prospecting' && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-            <StatCard icon={Search} label="Sesiones de prospección" value={data.prospections?.total_sessions || 0} sub="Totales" color="text-sky-400" />
+            <StatCard icon={Search} label="Sesiones de prospección" value={data.prospections?.total_sessions || 0} sub="Totales" color="text-sky-700 dark:text-sky-400" />
             <StatCard icon={TrendingUp} label="Leads encontrados" value={data.prospections?.total_leads_found || 0} sub="Acumulados" />
-            <StatCard icon={Activity} label="Media por sesión" value={data.prospections?.avg_per_session || 0} sub="Leads / búsqueda" color="text-cyan-400" />
+            <StatCard icon={Activity} label="Media por sesión" value={data.prospections?.avg_per_session || 0} sub="Leads / búsqueda" color="text-cyan-700 dark:text-cyan-400" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -239,7 +239,7 @@ export default function DashboardPage() {
       {tab === 'leads' && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard icon={Users} label="Total Leads" value={data.leads?.total || 0} sub="En el CRM" color="text-purple-400" />
+            <StatCard icon={Users} label="Total Leads" value={data.leads?.total || 0} sub="En el CRM" color="text-purple-700 dark:text-purple-400" />
             <StatCard icon={Mail} label="Con email" value={`${data.leads?.contactability?.pct_email || 0}%`} sub={`${data.leads?.contactability?.with_email || 0} leads`} />
             <StatCard icon={Phone} label="Con teléfono" value={`${data.leads?.contactability?.pct_phone || 0}%`} sub={`${data.leads?.contactability?.with_phone || 0} leads`} />
             <StatCard icon={Globe} label="Con sitio web" value={`${data.leads?.contactability?.pct_website || 0}%`} sub={`${data.leads?.contactability?.with_website || 0} leads`} />
@@ -253,13 +253,13 @@ export default function DashboardPage() {
                   const p = crmTotal > 0 ? Math.round((count / crmTotal) * 100) : 0;
                   return (
                     <div key={key} className="flex items-center gap-3">
-                      <div className="w-24 text-xs font-semibold text-zinc-300">{label}</div>
-                      <div className="flex-1 bg-zinc-800 rounded-full h-3 overflow-hidden">
+                      <div className="w-24 text-xs font-semibold text-zinc-700 dark:text-zinc-300">{label}</div>
+                      <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-full h-3 overflow-hidden">
                         <div className={`${CRM_COLORS[key]} h-full transition-all duration-300`} style={{ width: `${p}%` }} />
                       </div>
                       <div className="w-20 text-right">
-                        <span className="text-sm font-bold text-white">{count}</span>
-                        <span className="text-xs text-zinc-500 ml-1">({p}%)</span>
+                        <span className="text-sm font-bold text-zinc-900 dark:text-white">{count}</span>
+                        <span className="text-xs text-zinc-600 dark:text-zinc-500 ml-1">({p}%)</span>
                       </div>
                     </div>
                   );
@@ -274,18 +274,18 @@ export default function DashboardPage() {
 
           <SectionCard title="Actividad de Contacto" accent="pink">
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-              <MiniStat icon={Mail} label="Emails enviados" value={data.activity?.total_emails || 0} color="text-blue-400" />
-              <MiniStat icon={MessageCircle} label="WhatsApps enviados" value={data.activity?.total_whatsapp_sent || 0} color="text-green-400" />
-              <MiniStat icon={Phone} label="Llamadas" value={data.activity?.total_calls || 0} color="text-amber-400" />
-              <MiniStat icon={ArrowDownLeft} label="Respuestas WhatsApp" value={data.activity?.total_whatsapp_received || 0} color="text-amber-400" />
+              <MiniStat icon={Mail} label="Emails enviados" value={data.activity?.total_emails || 0} color="text-blue-700 dark:text-blue-400" />
+              <MiniStat icon={MessageCircle} label="WhatsApps enviados" value={data.activity?.total_whatsapp_sent || 0} color="text-green-700 dark:text-green-400" />
+              <MiniStat icon={Phone} label="Llamadas" value={data.activity?.total_calls || 0} color="text-amber-700 dark:text-amber-400" />
+              <MiniStat icon={ArrowDownLeft} label="Respuestas WhatsApp" value={data.activity?.total_whatsapp_received || 0} color="text-amber-700 dark:text-amber-400" />
               <MiniStat
                 icon={TrendingUp}
                 label="Tasa de respuesta WhatsApp"
                 value={`${data.activity?.whatsapp_response_rate || 0}%`}
                 sub={`${data.activity?.whatsapp_replied_leads || 0} de ${data.activity?.whatsapp_contacted_leads || 0} leads contactados`}
-                color="text-emerald-400"
+                color="text-emerald-700 dark:text-emerald-400"
               />
-              <MiniStat icon={Activity} label="Últimos 7 días" value={data.activity?.recent_7d || 0} color="text-purple-400" />
+              <MiniStat icon={Activity} label="Últimos 7 días" value={data.activity?.recent_7d || 0} color="text-purple-700 dark:text-purple-400" />
             </div>
           </SectionCard>
         </div>
@@ -303,7 +303,7 @@ function ScoreDistribution({ dist }: { dist?: { excelente: number; mejorable: nu
     { label: 'Mejorable (50-79)', value: d.mejorable, bar: 'bg-yellow-500' },
     { label: 'Crítico (0-49)', value: d.critico, bar: 'bg-red-500' },
   ];
-  if (total === 0) return <p className="text-xs text-zinc-600">Sin leads con puntuación todavía</p>;
+  if (total === 0) return <p className="text-xs text-zinc-400 dark:text-zinc-600">Sin leads con puntuación todavía</p>;
   return (
     <div className="space-y-3">
       {rows.map(r => (
@@ -316,7 +316,7 @@ function ScoreDistribution({ dist }: { dist?: { excelente: number; mejorable: nu
 function TopList({ items, nameKey, barClass, empty }:
   { items?: any[]; nameKey: string; barClass: string; empty: string }) {
   const list = items || [];
-  if (list.length === 0) return <p className="text-xs text-zinc-600">{empty}</p>;
+  if (list.length === 0) return <p className="text-xs text-zinc-400 dark:text-zinc-600">{empty}</p>;
   const max = Math.max(...list.map(i => i.count));
   return (
     <div className="space-y-3">
@@ -330,14 +330,14 @@ function TopList({ items, nameKey, barClass, empty }:
 function PriorityList({ priority }: { priority?: Record<string, number> }) {
   const p = priority || {};
   const entries = Object.entries(p);
-  if (entries.length === 0) return <p className="text-xs text-zinc-600">Sin datos</p>;
+  if (entries.length === 0) return <p className="text-xs text-zinc-400 dark:text-zinc-600">Sin datos</p>;
   const max = Math.max(...entries.map(([, v]) => v));
   const labels: Record<string, string> = {
     web_design: 'Diseño web', seo: 'SEO', normal: 'Normal',
     medium: 'Media', high: 'Alta', low: 'Baja', 'sin definir': 'Sin definir',
   };
   const colors: Record<string, string> = {
-    web_design: 'bg-red-500', seo: 'bg-amber-400', high: 'bg-red-500', medium: 'bg-blue-500', low: 'bg-zinc-500',
+    web_design: 'bg-red-500', seo: 'bg-amber-400', high: 'bg-red-500', medium: 'bg-blue-500', low: 'bg-zinc-400 dark:bg-zinc-500',
   };
   return (
     <div className="space-y-3">
@@ -351,12 +351,12 @@ function PriorityList({ priority }: { priority?: Record<string, number> }) {
 function MiniStat({ icon: Icon, label, value, color, sub }:
   { icon?: React.FC<any>; label: string; value: React.ReactNode; color: string; sub?: string }) {
   return (
-    <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
-      <div className="text-xs font-semibold text-zinc-400 uppercase mb-2 flex items-center gap-1.5">
+    <div className="bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-4">
+      <div className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase mb-2 flex items-center gap-1.5">
         {Icon && <Icon size={13} />} {label}
       </div>
       <p className={`text-3xl font-bold ${color}`}>{value}</p>
-      {sub && <p className="text-xs text-zinc-500 mt-1">{sub}</p>}
+      {sub && <p className="text-xs text-zinc-600 dark:text-zinc-500 mt-1">{sub}</p>}
     </div>
   );
 }

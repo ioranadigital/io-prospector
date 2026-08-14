@@ -3,8 +3,9 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Search, BarChart3, Settings, Database, Zap,
-  ClipboardList, Activity, Users, BookOpen, SlidersHorizontal, Code, Wrench, ChevronDown, LogOut
+  ClipboardList, Activity, Users, BookOpen, SlidersHorizontal, Code, Wrench, ChevronDown, LogOut, Sun, Moon
 } from 'lucide-react';
+import { useTheme } from '@/lib/theme-context';
 
 const NAV_SECTIONS = [
   {
@@ -58,6 +59,7 @@ const NAV_SECTIONS = [
 export function Sidebar() {
   const path = usePathname() || '';
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -66,16 +68,16 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="fixed top-0 left-0 h-screen w-60 bg-zinc-900 border-r border-zinc-800 flex flex-col z-40">
+    <aside className="fixed top-0 left-0 h-screen w-60 bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col z-40">
       {/* Logo */}
-      <div className="px-5 py-5 border-b border-zinc-800">
+      <div className="px-5 py-5 border-b border-zinc-200 dark:border-zinc-800">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
-            <Zap size={14} className="text-white" />
+            <Zap size={14} className="text-zinc-900 dark:text-white" />
           </div>
           <div>
-            <p className="text-sm font-bold text-white leading-none">IO Prospector</p>
-            <p className="text-[10px] text-zinc-500 mt-0.5">Iorana Digital</p>
+            <p className="text-sm font-bold text-zinc-900 dark:text-white leading-none">IO Prospector</p>
+            <p className="text-[10px] text-zinc-600 dark:text-zinc-500 mt-0.5">Iorana Digital</p>
           </div>
         </div>
       </div>
@@ -84,7 +86,7 @@ export function Sidebar() {
       <nav className="flex-1 px-3 py-4 overflow-y-auto">
         {NAV_SECTIONS.map((section, idx) => (
           <div key={section.title} className={idx > 0 ? 'mt-4' : ''}>
-            <p className="text-[11px] font-semibold text-zinc-500 uppercase tracking-widest px-2 mb-1.5">
+            <p className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-500 uppercase tracking-widest px-2 mb-1.5">
               {section.title}
             </p>
             <div className="space-y-0.5">
@@ -97,14 +99,14 @@ export function Sidebar() {
                     href={href}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
                       active
-                        ? 'bg-blue-600/20 text-blue-400 border border-blue-600/30'
-                        : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200'
+                        ? 'bg-blue-600/20 text-blue-700 dark:text-blue-400 border border-blue-600/30'
+                        : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200'
                     }`}
                   >
                     <Icon size={15} strokeWidth={active ? 2 : 1.5} className="flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{label}</p>
-                      <p className="text-[11px] text-zinc-500 truncate">{desc}</p>
+                      <p className="text-[11px] text-zinc-600 dark:text-zinc-500 truncate">{desc}</p>
                     </div>
                   </Link>
                 );
@@ -114,10 +116,10 @@ export function Sidebar() {
             {/* Subsecciones */}
             {section.subsections && section.subsections.map((subsection) => (
               <div key={subsection.title} className="mt-3 ml-2">
-                <p className="text-[10px] font-semibold text-zinc-600 uppercase tracking-widest px-2 mb-1">
+                <p className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest px-2 mb-1">
                   {subsection.title}
                 </p>
-                <div className="space-y-0.5 border-l border-zinc-700/50 ml-3 pl-3">
+                <div className="space-y-0.5 border-l border-zinc-300 dark:border-zinc-700/50 ml-3 pl-3">
                   {subsection.items.map(({ href, icon: Icon, label, desc }) => {
                     const active = path === href || (href !== '/admin' && path.startsWith(href + '/'));
                     return (
@@ -126,14 +128,14 @@ export function Sidebar() {
                         href={href}
                         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
                           active
-                            ? 'bg-blue-600/20 text-blue-400 border border-blue-600/30'
-                            : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200'
+                            ? 'bg-blue-600/20 text-blue-700 dark:text-blue-400 border border-blue-600/30'
+                            : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-200'
                         }`}
                       >
                         <Icon size={14} strokeWidth={active ? 2 : 1.5} className="flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                           <p className="font-medium truncate text-xs">{label}</p>
-                          <p className="text-[10px] text-zinc-600 truncate">{desc}</p>
+                          <p className="text-[10px] text-zinc-400 dark:text-zinc-600 truncate">{desc}</p>
                         </div>
                       </Link>
                     );
@@ -143,21 +145,29 @@ export function Sidebar() {
             ))}
 
             {idx < NAV_SECTIONS.length - 1 && (
-              <div className="mt-4 border-t border-zinc-800/60" />
+              <div className="mt-4 border-t border-zinc-200 dark:border-zinc-800/60" />
             )}
           </div>
         ))}
       </nav>
 
       {/* Footer */}
-      <div className="px-5 py-4 border-t border-zinc-800 space-y-2">
+      <div className="px-5 py-4 border-t border-zinc-200 dark:border-zinc-800 space-y-2">
+        <button
+          onClick={toggleTheme}
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-zinc-600 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:text-zinc-700 dark:hover:text-zinc-300 transition"
+          title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+        >
+          {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+          {theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+        </button>
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-zinc-500 hover:bg-zinc-800/50 hover:text-zinc-300 transition"
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-zinc-600 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:text-zinc-700 dark:hover:text-zinc-300 transition"
         >
           <LogOut size={14} /> Cerrar sesión
         </button>
-        <p className="text-[11px] text-zinc-600">v1.0.0 · Local</p>
+        <p className="text-[11px] text-zinc-400 dark:text-zinc-600">v1.0.0 · Local</p>
       </div>
     </aside>
   );

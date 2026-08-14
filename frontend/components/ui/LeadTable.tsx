@@ -7,19 +7,19 @@ import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 
 const STATUS_COLORS: Record<string, string> = {
-  new:         'bg-zinc-700 text-zinc-300',
-  contacted:   'bg-blue-900/60 text-blue-300',
-  interested:  'bg-amber-900/60 text-amber-300',
-  reserved:    'bg-violet-900/60 text-violet-300',
-  sold:        'bg-green-900/60 text-green-300',
-  upselling:   'bg-emerald-900/60 text-emerald-300',
-  lost:        'bg-red-900/60 text-red-300',
+  new:         'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300',
+  contacted:   'bg-blue-50 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300',
+  interested:  'bg-amber-50 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300',
+  reserved:    'bg-violet-50 dark:bg-violet-900/60 text-violet-700 dark:text-violet-300',
+  sold:        'bg-green-50 dark:bg-green-900/60 text-green-700 dark:text-green-300',
+  upselling:   'bg-emerald-50 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300',
+  lost:        'bg-red-50 dark:bg-red-900/60 text-red-700 dark:text-red-300',
 };
 
 const PRIORITY_DOT: Record<string, string> = {
   web_design: 'bg-red-500',
   seo:        'bg-amber-400',
-  normal:     'bg-zinc-600',
+  normal:     'bg-zinc-300 dark:bg-zinc-600',
 };
 
 type Lead = {
@@ -84,16 +84,16 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
   }
 
   function SortIcon({ field }: { field: keyof Lead }) {
-    if (sortField !== field) return <ChevronUp size={12} className="text-zinc-600" />;
+    if (sortField !== field) return <ChevronUp size={12} className="text-zinc-400 dark:text-zinc-600" />;
     return sortAsc ? <ChevronUp size={12} className="text-brand-400" /> : <ChevronDown size={12} className="text-brand-400" />;
   }
 
   return (
     <>
-      <div className="overflow-x-auto rounded-xl border border-zinc-800">
+      <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-zinc-800 bg-zinc-900/60">
+            <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60">
               {[
                 { label: 'Negocio',    field: 'business_name' },
                 { label: 'Score',      field: 'audit_score' },
@@ -103,7 +103,7 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
               ].map(({ label, field }) => (
                 <th
                   key={field}
-                  className="px-4 py-3 text-left font-medium text-zinc-400 cursor-pointer hover:text-zinc-200 select-none"
+                  className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400 cursor-pointer hover:text-zinc-800 dark:hover:text-zinc-200 select-none"
                   onClick={() => toggleSort(field as keyof Lead)}
                 >
                   <span className="flex items-center gap-1.5">
@@ -111,21 +111,21 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
                   </span>
                 </th>
               ))}
-              <th className="px-4 py-3 text-left font-medium text-zinc-400">Contacto</th>
-              <th className="px-4 py-3 text-right font-medium text-zinc-400">Acciones</th>
+              <th className="px-4 py-3 text-left font-medium text-zinc-500 dark:text-zinc-400">Contacto</th>
+              <th className="px-4 py-3 text-right font-medium text-zinc-500 dark:text-zinc-400">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-800/60">
+          <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800/60">
             {sorted.map(lead => (
-              <tr key={lead.id} className="hover:bg-zinc-800/30 transition-colors group">
+              <tr key={lead.id} className="hover:bg-zinc-100 dark:hover:bg-zinc-800/30 transition-colors group">
                 {/* Negocio */}
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${PRIORITY_DOT[lead.priority] || 'bg-zinc-600'}`} />
+                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${PRIORITY_DOT[lead.priority] || 'bg-zinc-300 dark:bg-zinc-600'}`} />
                     <div>
-                      <p className="font-medium text-zinc-100 leading-none">{lead.business_name}</p>
+                      <p className="font-medium text-zinc-800 dark:text-zinc-100 leading-none">{lead.business_name}</p>
                       {lead.website_url
-                        ? <a href={lead.website_url} target="_blank" className="text-[11px] text-zinc-500 hover:text-brand-400 flex items-center gap-1 mt-0.5">
+                        ? <a href={lead.website_url} target="_blank" className="text-[11px] text-zinc-600 dark:text-zinc-500 hover:text-brand-400 flex items-center gap-1 mt-0.5">
                             <Globe size={10} /> {new URL(lead.website_url).hostname}
                           </a>
                         : <span className="text-[11px] text-red-500">Sin web</span>
@@ -138,7 +138,7 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
                 <td className="px-4 py-3">
                   {lead.has_website ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+                      <div className="w-16 h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${
                             (lead.audit_score ?? 0) >= 70 ? 'bg-green-500' :
@@ -148,21 +148,21 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
                         />
                       </div>
                       <span className={`text-xs font-mono font-semibold ${
-                        (lead.audit_score ?? 0) >= 70 ? 'text-green-400' :
-                        (lead.audit_score ?? 0) >= 40 ? 'text-amber-400' : 'text-red-400'
+                        (lead.audit_score ?? 0) >= 70 ? 'text-green-700 dark:text-green-400' :
+                        (lead.audit_score ?? 0) >= 40 ? 'text-amber-700 dark:text-amber-400' : 'text-red-700 dark:text-red-400'
                       }`}>{lead.audit_score}</span>
                     </div>
                   ) : (
-                    <span className="text-xs text-zinc-600">—</span>
+                    <span className="text-xs text-zinc-400 dark:text-zinc-600">—</span>
                   )}
                 </td>
 
                 {/* Ciudad */}
-                <td className="px-4 py-3 text-zinc-400 text-xs">{lead.city || '—'}</td>
+                <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400 text-xs">{lead.city || '—'}</td>
 
                 {/* Estado */}
                 <td className="px-4 py-3">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ${STATUS_COLORS[lead.crm_status] || 'bg-zinc-700 text-zinc-300'}`}>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ${STATUS_COLORS[lead.crm_status] || 'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300'}`}>
                     {lead.crm_status}
                   </span>
                 </td>
@@ -170,8 +170,8 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
                 {/* Prioridad */}
                 <td className="px-4 py-3">
                   <span className={`text-xs ${
-                    lead.priority === 'web_design' ? 'text-red-400' :
-                    lead.priority === 'seo'        ? 'text-amber-400' : 'text-zinc-500'
+                    lead.priority === 'web_design' ? 'text-red-700 dark:text-red-400' :
+                    lead.priority === 'seo'        ? 'text-amber-700 dark:text-amber-400' : 'text-zinc-600 dark:text-zinc-500'
                   }`}>
                     {lead.priority === 'web_design' ? 'Diseño web' :
                      lead.priority === 'seo'        ? 'SEO' : 'Normal'}
@@ -182,12 +182,12 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-1.5">
                     {lead.phone && (
-                      <a href={`tel:${lead.phone}`} className="p-1.5 rounded-md text-zinc-500 hover:text-green-400 hover:bg-green-400/10 transition-colors" title={lead.phone}>
+                      <a href={`tel:${lead.phone}`} className="p-1.5 rounded-md text-zinc-600 dark:text-zinc-500 hover:text-green-700 dark:hover:text-green-400 hover:bg-green-400/10 transition-colors" title={lead.phone}>
                         <Phone size={13} />
                       </a>
                     )}
                     {lead.email && (
-                      <a href={`mailto:${lead.email}`} className="p-1.5 rounded-md text-zinc-500 hover:text-blue-400 hover:bg-blue-400/10 transition-colors" title={lead.email}>
+                      <a href={`mailto:${lead.email}`} className="p-1.5 rounded-md text-zinc-600 dark:text-zinc-500 hover:text-blue-700 dark:hover:text-blue-400 hover:bg-blue-400/10 transition-colors" title={lead.email}>
                         <Mail size={13} />
                       </a>
                     )}
@@ -195,7 +195,7 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
                       <a
                         href={`https://wa.me/${lead.phone.replace(/\D/g,'')}`}
                         target="_blank"
-                        className="p-1.5 rounded-md text-zinc-500 hover:text-emerald-400 hover:bg-emerald-400/10 transition-colors"
+                        className="p-1.5 rounded-md text-zinc-600 dark:text-zinc-500 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-emerald-400/10 transition-colors"
                         title="WhatsApp"
                       >
                         <MessageCircle size={13} />
@@ -209,7 +209,7 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
                   <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => setAuditLead(lead)}
-                      className="px-2.5 py-1.5 text-[11px] font-medium rounded-md bg-zinc-700 hover:bg-zinc-600 text-zinc-200 transition-colors flex items-center gap-1"
+                      className="px-2.5 py-1.5 text-[11px] font-medium rounded-md bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-800 dark:text-zinc-200 transition-colors flex items-center gap-1"
                     >
                       <Eye size={11} /> Análisis
                     </button>
@@ -221,7 +221,7 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
                     </button>
                     <button
                       onClick={() => setConfirmDel({ id: lead.id, name: lead.business_name })}
-                      className="p-1.5 rounded-md text-zinc-600 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                      className="p-1.5 rounded-md text-zinc-400 dark:text-zinc-600 hover:text-red-700 dark:hover:text-red-400 hover:bg-red-400/10 transition-colors"
                     >
                       <Trash2 size={13} />
                     </button>
@@ -232,7 +232,7 @@ export function LeadTable({ leads, onRefresh }: { leads: Lead[]; onRefresh: () =
           </tbody>
         </table>
         {leads.length === 0 && (
-          <div className="text-center py-16 text-zinc-600">
+          <div className="text-center py-16 text-zinc-400 dark:text-zinc-600">
             <p className="text-lg">No hay leads aún</p>
             <p className="text-sm mt-1">Inicia una prospección desde el módulo Prospector</p>
           </div>

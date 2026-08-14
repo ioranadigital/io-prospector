@@ -63,14 +63,14 @@ export function TierSummaryModal({ lead, isOpen, onClose }: TierSummaryModalProp
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-zinc-900 border border-zinc-700 rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-zinc-900 border-b border-zinc-700 p-6 flex justify-between items-center">
+        <div className="sticky top-0 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-300 dark:border-zinc-700 p-6 flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-white flex items-center gap-2"><BarChart2 size={22} className="text-white" /> Resumen de TIERS</h2>
-            <p className="text-sm text-zinc-400 mt-1">{lead.business_name}</p>
+            <h2 className="text-2xl font-bold text-zinc-900 dark:text-white flex items-center gap-2"><BarChart2 size={22} className="text-zinc-900 dark:text-white" /> Resumen de TIERS</h2>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{lead.business_name}</p>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-zinc-700 rounded">
+          <button onClick={onClose} className="p-1 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded">
             <X size={24} />
           </button>
         </div>
@@ -83,21 +83,21 @@ export function TierSummaryModal({ lead, isOpen, onClose }: TierSummaryModalProp
             const percentage = Math.round((completed / total) * 100);
 
             return (
-              <div key={tier.label} className="border border-zinc-700 rounded-lg p-4">
+              <div key={tier.label} className="border border-zinc-300 dark:border-zinc-700 rounded-lg p-4">
                 {/* Tier Header */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className={`${tier.color} w-4 h-4 rounded-full`} />
-                    <h3 className="text-lg font-semibold text-white">{tier.label}</h3>
+                    <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">{tier.label}</h3>
                   </div>
                   <div className="text-right">
-                    <p className="text-2xl font-bold text-white">{completed}/{total}</p>
-                    <p className="text-sm text-zinc-400">{percentage}%</p>
+                    <p className="text-2xl font-bold text-zinc-900 dark:text-white">{completed}/{total}</p>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">{percentage}%</p>
                   </div>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="bg-zinc-700 rounded h-3 overflow-hidden mb-4">
+                <div className="bg-zinc-200 dark:bg-zinc-700 rounded h-3 overflow-hidden mb-4">
                   <div
                     className={`${tier.color} h-full transition-all`}
                     style={{ width: `${percentage}%` }}
@@ -111,13 +111,13 @@ export function TierSummaryModal({ lead, isOpen, onClose }: TierSummaryModalProp
                       key={idx}
                       className={`p-2 rounded text-sm flex items-center gap-2 ${
                         item.has
-                          ? 'bg-green-900/30 text-green-300'
-                          : 'bg-zinc-800 text-zinc-400'
+                          ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
                       }`}
                     >
                       {item.has
-                        ? <CheckCircle size={14} className="text-green-400 flex-shrink-0" />
-                        : <XCircle size={14} className="text-red-400 flex-shrink-0" />}
+                        ? <CheckCircle size={14} className="text-green-700 dark:text-green-400 flex-shrink-0" />
+                        : <XCircle size={14} className="text-red-700 dark:text-red-400 flex-shrink-0" />}
                       <span>{item.label}</span>
                     </div>
                   ))}
@@ -127,9 +127,9 @@ export function TierSummaryModal({ lead, isOpen, onClose }: TierSummaryModalProp
           })}
 
           {/* Score Summary */}
-          <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4">
-            <h3 className="text-sm font-semibold text-zinc-400 uppercase mb-3 flex items-center gap-1.5"><TrendingUp size={14} /> Puntuación General</h3>
-            <p className="text-3xl font-bold text-white">{lead.audit_score || 0}/100</p>
+          <div className="bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-300 dark:border-zinc-700 rounded-lg p-4">
+            <h3 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase mb-3 flex items-center gap-1.5"><TrendingUp size={14} /> Puntuación General</h3>
+            <p className="text-3xl font-bold text-zinc-900 dark:text-white">{lead.audit_score || 0}/100</p>
           </div>
         </div>
       </div>

@@ -25,11 +25,11 @@ export default function KanbanPage() {
   return (
     <div className="space-y-6 fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-white">Kanban CRM</h1>
-        <p className="text-zinc-400 text-sm mt-0.5">Arrastra los leads entre columnas para actualizar su estado</p>
+        <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">Kanban CRM</h1>
+        <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-0.5">Arrastra los leads entre columnas para actualizar su estado</p>
       </div>
       {loading
-        ? <div className="flex items-center justify-center py-24 text-zinc-600">Cargando...</div>
+        ? <div className="flex items-center justify-center py-24 text-zinc-400 dark:text-zinc-600">Cargando...</div>
         : <div className="grid gap-3 pb-4" style={{ gridTemplateColumns: `repeat(${STATUSES.length}, minmax(180px, 1fr))`, minWidth: '1100px', overflowX: 'auto' }}>
             {STATUSES.map(s => <KanbanColumn key={s} status={s} leads={kanban[s] || []} onStatusChange={handleStatusChange} />)}
           </div>

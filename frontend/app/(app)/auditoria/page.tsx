@@ -45,20 +45,20 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
 };
 
 const CATEGORY_STYLES: Record<string, { bg: string; border: string; textColor: string }> = {
-  seo: { bg: 'bg-blue-950/30 border-blue-800/50', border: 'border-blue-700', textColor: 'text-blue-400' },
-  headings: { bg: 'bg-yellow-950/30 border-yellow-800/50', border: 'border-yellow-700', textColor: 'text-yellow-400' },
-  images: { bg: 'bg-purple-950/30 border-purple-800/50', border: 'border-purple-700', textColor: 'text-purple-400' },
-  links: { bg: 'bg-cyan-950/30 border-cyan-800/50', border: 'border-cyan-700', textColor: 'text-cyan-400' },
-  technical: { bg: 'bg-red-950/30 border-red-800/50', border: 'border-red-700', textColor: 'text-red-400' },
-  performance: { bg: 'bg-orange-950/30 border-orange-800/50', border: 'border-orange-700', textColor: 'text-orange-400' },
-  content: { bg: 'bg-green-950/30 border-green-800/50', border: 'border-green-700', textColor: 'text-green-400' },
-  a11y: { bg: 'bg-cyan-950/30 border-cyan-800/50', border: 'border-cyan-700', textColor: 'text-cyan-400' },
-  local: { bg: 'bg-green-950/30 border-green-800/50', border: 'border-green-700', textColor: 'text-green-400' },
-  mobile: { bg: 'bg-yellow-950/30 border-yellow-800/50', border: 'border-yellow-700', textColor: 'text-yellow-400' },
-  schema: { bg: 'bg-indigo-950/30 border-indigo-800/50', border: 'border-indigo-700', textColor: 'text-indigo-400' },
-  crawl: { bg: 'bg-rose-950/30 border-rose-800/50', border: 'border-rose-700', textColor: 'text-rose-400' },
-  compliance: { bg: 'bg-emerald-950/30 border-emerald-800/50', border: 'border-emerald-700', textColor: 'text-emerald-400' },
-  analytics: { bg: 'bg-sky-950/30 border-sky-800/50', border: 'border-sky-700', textColor: 'text-sky-400' },
+  seo: { bg: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800/50', border: 'border-blue-300 dark:border-blue-700', textColor: 'text-blue-700 dark:text-blue-400' },
+  headings: { bg: 'bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200 dark:border-yellow-800/50', border: 'border-yellow-300 dark:border-yellow-700', textColor: 'text-yellow-700 dark:text-yellow-400' },
+  images: { bg: 'bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800/50', border: 'border-purple-300 dark:border-purple-700', textColor: 'text-purple-700 dark:text-purple-400' },
+  links: { bg: 'bg-cyan-50 dark:bg-cyan-950/30 border-cyan-200 dark:border-cyan-800/50', border: 'border-cyan-300 dark:border-cyan-700', textColor: 'text-cyan-700 dark:text-cyan-400' },
+  technical: { bg: 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800/50', border: 'border-red-300 dark:border-red-700', textColor: 'text-red-700 dark:text-red-400' },
+  performance: { bg: 'bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800/50', border: 'border-orange-300 dark:border-orange-700', textColor: 'text-orange-700 dark:text-orange-400' },
+  content: { bg: 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800/50', border: 'border-green-300 dark:border-green-700', textColor: 'text-green-700 dark:text-green-400' },
+  a11y: { bg: 'bg-cyan-50 dark:bg-cyan-950/30 border-cyan-200 dark:border-cyan-800/50', border: 'border-cyan-300 dark:border-cyan-700', textColor: 'text-cyan-700 dark:text-cyan-400' },
+  local: { bg: 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800/50', border: 'border-green-300 dark:border-green-700', textColor: 'text-green-700 dark:text-green-400' },
+  mobile: { bg: 'bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200 dark:border-yellow-800/50', border: 'border-yellow-300 dark:border-yellow-700', textColor: 'text-yellow-700 dark:text-yellow-400' },
+  schema: { bg: 'bg-indigo-50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-800/50', border: 'border-indigo-300 dark:border-indigo-700', textColor: 'text-indigo-700 dark:text-indigo-400' },
+  crawl: { bg: 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-800/50', border: 'border-rose-300 dark:border-rose-700', textColor: 'text-rose-700 dark:text-rose-400' },
+  compliance: { bg: 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/50', border: 'border-emerald-300 dark:border-emerald-700', textColor: 'text-emerald-700 dark:text-emerald-400' },
+  analytics: { bg: 'bg-sky-50 dark:bg-sky-950/30 border-sky-200 dark:border-sky-800/50', border: 'border-sky-300 dark:border-sky-700', textColor: 'text-sky-700 dark:text-sky-400' },
 };
 
 export default function AuditoriaPage() {
@@ -87,8 +87,8 @@ function AuditoriaPageContent() {
       description: 'La base del proyecto. Si los buscadores no pueden acceder, procesar o proteger el sitio, el resto del SEO no importa.',
       icon: Lock,
       categories: ['technical', 'crawl', 'security'],
-      bgColor: 'bg-red-950/30',
-      borderColor: 'border-red-800/50',
+      bgColor: 'bg-red-50 dark:bg-red-950/30',
+      borderColor: 'border-red-200 dark:border-red-800/50',
     },
     {
       id: 'bloque-2',
@@ -96,8 +96,8 @@ function AuditoriaPageContent() {
       description: 'Optimización geográfica y cumplimiento normativo para negocios y pymes.',
       icon: Globe,
       categories: ['local', 'compliance'],
-      bgColor: 'bg-green-950/30',
-      borderColor: 'border-green-800/50',
+      bgColor: 'bg-green-50 dark:bg-green-950/30',
+      borderColor: 'border-green-200 dark:border-green-800/50',
     },
     {
       id: 'bloque-3',
@@ -105,8 +105,8 @@ function AuditoriaPageContent() {
       description: 'El núcleo semántico. Fundamental tanto para SEO tradicional como para alimentar los motores de respuestas de IA.',
       icon: FileText,
       categories: ['meta', 'headings', 'content', 'images', 'links'],
-      bgColor: 'bg-blue-950/30',
-      borderColor: 'border-blue-800/50',
+      bgColor: 'bg-blue-50 dark:bg-blue-950/30',
+      borderColor: 'border-blue-200 dark:border-blue-800/50',
     },
     {
       id: 'bloque-4',
@@ -114,8 +114,8 @@ function AuditoriaPageContent() {
       description: 'Factores de retención humana y señales técnicas que Google y los usuarios exigen por igual.',
       icon: Zap,
       categories: ['performance', 'mobile', 'a11y'],
-      bgColor: 'bg-orange-950/30',
-      borderColor: 'border-orange-800/50',
+      bgColor: 'bg-orange-50 dark:bg-orange-950/30',
+      borderColor: 'border-orange-200 dark:border-orange-800/50',
     },
     {
       id: 'bloque-5',
@@ -123,8 +123,8 @@ function AuditoriaPageContent() {
       description: 'El idioma de las máquinas. Crítico para destacar, ya que los LLMs extraen información directamente de aquí.',
       icon: Bot,
       categories: ['schema', 'analytics'],
-      bgColor: 'bg-indigo-950/30',
-      borderColor: 'border-indigo-800/50',
+      bgColor: 'bg-indigo-50 dark:bg-indigo-950/30',
+      borderColor: 'border-indigo-200 dark:border-indigo-800/50',
     },
   ];
 
@@ -215,12 +215,12 @@ function AuditoriaPageContent() {
     <div className="w-full space-y-4">
 
       {/* CONTENEDOR ÚNICO: Auditoría SEO + URL + Selecciona qué auditar */}
-      <div className="w-full bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
+      <div className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
 
         {/* Header + URL */}
-        <div className="px-6 py-5 border-b border-zinc-800">
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2"><Search size={22} className="text-white" /> Auditoría SEO</h1>
-          <p className="text-zinc-400 text-sm mt-1 mb-4">Analiza cualquier sitio web</p>
+        <div className="px-6 py-5 border-b border-zinc-200 dark:border-zinc-800">
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-white flex items-center gap-2"><Search size={22} className="text-zinc-900 dark:text-white" /> Auditoría SEO</h1>
+          <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1 mb-4">Analiza cualquier sitio web</p>
           <form onSubmit={handleAudit} className="w-full">
             <div className="w-full flex flex-row gap-2 items-center">
               <input
@@ -228,12 +228,12 @@ function AuditoriaPageContent() {
                 value={url}
                 onChange={e => setUrl(e.target.value)}
                 placeholder="example.com o https://example.com"
-                className="flex-1 bg-zinc-950 border border-zinc-700 rounded-lg px-5 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500"
+                className="flex-1 bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 rounded-lg px-5 py-3 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-blue-500"
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-wait text-white rounded-lg font-medium flex items-center gap-2 transition whitespace-nowrap flex-shrink-0"
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-100 dark:disabled:bg-blue-800 disabled:cursor-wait text-zinc-900 dark:text-white rounded-lg font-medium flex items-center gap-2 transition whitespace-nowrap flex-shrink-0"
               >
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}
                 {loading ? 'Auditando...' : 'Auditar'}
@@ -243,12 +243,12 @@ function AuditoriaPageContent() {
         </div>
 
         {/* Selecciona qué auditar */}
-        <div className="px-6 py-4 border-b border-zinc-800">
+        <div className="px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
           <div className="flex items-center gap-3 mb-4">
-            <Target size={20} className="text-blue-400" />
+            <Target size={20} className="text-blue-700 dark:text-blue-400" />
             <div>
-              <h3 className="font-bold text-white text-lg">Selecciona qué auditar</h3>
-              <p className="text-xs text-zinc-500">5 bloques temáticos · Configura tu auditoría</p>
+              <h3 className="font-bold text-zinc-900 dark:text-white text-lg">Selecciona qué auditar</h3>
+              <p className="text-xs text-zinc-600 dark:text-zinc-500">5 bloques temáticos · Configura tu auditoría</p>
             </div>
           </div>
         </div>
@@ -264,11 +264,11 @@ function AuditoriaPageContent() {
             return (
               <div
                 key={block.id}
-                className={`border rounded-xl overflow-hidden transition ${block.bgColor} border-white/10`}
+                className={`border rounded-xl overflow-hidden transition ${block.bgColor} border-black/10 dark:border-white/10`}
               >
                 {/* Block Header */}
                 <div
-                  className="w-full px-6 py-4 flex items-start justify-between hover:bg-white/5 transition cursor-pointer"
+                  className="w-full px-6 py-4 flex items-start justify-between hover:bg-black/5 dark:hover:bg-white/5 transition cursor-pointer"
                   onClick={() => {
                     setExpandedBlocks(prev => {
                       const next = new Set(prev);
@@ -278,12 +278,12 @@ function AuditoriaPageContent() {
                   }}
                 >
                   <div className="flex items-start gap-4">
-                    <block.icon size={28} className="text-white" />
+                    <block.icon size={28} className="text-zinc-900 dark:text-white" />
                     <div className="text-left">
-                      <h3 className="font-bold text-lg text-white">{block.title}</h3>
-                      <p className="text-xs text-zinc-400 mt-1">{block.description}</p>
-                      <p className="text-xs text-zinc-600 mt-2">
-                        <span className="text-blue-400 font-semibold">{blockSelectedCount}/{blockRulesCount}</span> reglas seleccionadas
+                      <h3 className="font-bold text-lg text-zinc-900 dark:text-white">{block.title}</h3>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{block.description}</p>
+                      <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-2">
+                        <span className="text-blue-700 dark:text-blue-400 font-semibold">{blockSelectedCount}/{blockRulesCount}</span> reglas seleccionadas
                       </p>
                     </div>
                   </div>
@@ -309,7 +309,7 @@ function AuditoriaPageContent() {
                         return next;
                       });
                     }}
-                    className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-medium whitespace-nowrap transition cursor-pointer"
+                    className="px-4 py-2 rounded-lg bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 text-zinc-900 dark:text-white text-sm font-medium whitespace-nowrap transition cursor-pointer"
                   >
                     {blockCategories.every(cat => selectedCategories.has(cat)) ? 'Desmarcar todo' : 'Marcar todo'}
                   </div>
@@ -317,17 +317,17 @@ function AuditoriaPageContent() {
 
                 {/* Block Content - Categorías */}
                 {isExpanded && (
-                  <div className="border-t border-white/10 px-6 py-4 space-y-3">
+                  <div className="border-t border-black/10 dark:border-white/10 px-6 py-4 space-y-3">
                     {blockCategories.map(cat => {
                       const catRules = groupedRules[cat] || [];
                       const catEnabled = selectedCategories.has(cat);
                       const selectedInCat = catRules.filter(r => selectedRules.has(r.check_id)).length;
-                      const style = CATEGORY_STYLES[cat] || { bg: 'bg-zinc-950/30', border: 'border-zinc-800/50', textColor: 'text-zinc-400' };
+                      const style = CATEGORY_STYLES[cat] || { bg: 'bg-white dark:bg-zinc-950/30', border: 'border-zinc-200 dark:border-zinc-800/50', textColor: 'text-zinc-500 dark:text-zinc-400' };
 
                       return (
                         <div key={cat} className="space-y-2">
                           {/* Categoría checkbox */}
-                          <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-white/5 transition">
+                          <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition">
                             <input
                               type="checkbox"
                               checked={catEnabled}
@@ -336,8 +336,8 @@ function AuditoriaPageContent() {
                             />
                             <div className="flex-1">
                               <p className={`font-semibold text-sm ${style.textColor}`}>{CATEGORY_LABELS[cat]}</p>
-                              <p className="text-xs text-zinc-400 mt-0.5">{CATEGORY_DESCRIPTIONS[cat] || ''}</p>
-                              <p className="text-xs text-zinc-600 mt-1">{selectedInCat}/{catRules.length} reglas</p>
+                              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{CATEGORY_DESCRIPTIONS[cat] || ''}</p>
+                              <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-1">{selectedInCat}/{catRules.length} reglas</p>
                             </div>
                           </label>
 
@@ -347,7 +347,7 @@ function AuditoriaPageContent() {
                               {catRules.map(rule => (
                                 <label
                                   key={rule.check_id}
-                                  className="flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded bg-white/5 hover:bg-white/10 transition text-xs"
+                                  className="flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition text-xs"
                                 >
                                   <input
                                     type="checkbox"
@@ -355,7 +355,7 @@ function AuditoriaPageContent() {
                                     onChange={() => toggleRule(rule.check_id, cat)}
                                     className="w-4 h-4 rounded accent-blue-500 cursor-pointer flex-shrink-0"
                                   />
-                                  <span className="text-zinc-300">{rule.check_id}</span>
+                                  <span className="text-zinc-700 dark:text-zinc-300">{rule.check_id}</span>
                                 </label>
                               ))}
                             </div>
@@ -375,24 +375,24 @@ function AuditoriaPageContent() {
       {errorModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm"
           onClick={() => setErrorModal(null)}>
-          <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl"
+          <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl"
             onClick={e => e.stopPropagation()}>
             <div className="flex items-start gap-3">
-              <div className="p-2 bg-red-900/30 rounded-lg flex-shrink-0">
-                <AlertTriangle size={20} className="text-red-400" />
+              <div className="p-2 bg-red-50 dark:bg-red-900/30 rounded-lg flex-shrink-0">
+                <AlertTriangle size={20} className="text-red-700 dark:text-red-400" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-white">No se pudo auditar la URL</h3>
-                <p className="text-sm text-zinc-400 mt-1">{errorModal}</p>
-                {url && <p className="text-xs text-zinc-600 mt-2 font-mono break-all">{url.startsWith('http') ? url : `https://${url}`}</p>}
+                <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">No se pudo auditar la URL</h3>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{errorModal}</p>
+                {url && <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-2 font-mono break-all">{url.startsWith('http') ? url : `https://${url}`}</p>}
               </div>
-              <button onClick={() => setErrorModal(null)} className="text-zinc-500 hover:text-white">
+              <button onClick={() => setErrorModal(null)} className="text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
                 <X size={18} />
               </button>
             </div>
             <div className="flex justify-end gap-3 mt-6">
               <button onClick={() => setErrorModal(null)}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition">
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-zinc-900 dark:text-white rounded-lg text-sm font-medium transition">
                 Entendido
               </button>
             </div>
