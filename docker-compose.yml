@@ -3,6 +3,13 @@ version: '3.8'
 services:
   redis:
     image: redis:7-alpine
+    # Nombre fijo — el backend está también en la red "coolify" compartida,
+    # donde el Redis propio de Coolify se registra con el alias "redis" y
+    # colisiona con el alias corto de este servicio (causaba NOAUTH: el
+    # backend acababa hablando con el Redis de Coolify, que requiere
+    # contraseña, en vez de con este). Referenciar el nombre completo evita
+    # la ambigüedad pase lo que pase con el nombre del proyecto Compose.
+    container_name: io-prospector-redis-1
     restart: unless-stopped
     networks:
       - default
@@ -19,7 +26,7 @@ services:
       - FRONTEND_URL=http://localhost:3004,http://10.0.7.3:3004,https://pros.iorana.dev
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
-      - REDIS_URL=redis://redis:6379
+      - REDIS_URL=redis://io-prospector-redis-1:6379
       - SERP_API_KEY=${SERP_API_KEY}
       - GOOGLE_PLACES_API_KEY=${GOOGLE_PLACES_API_KEY}
       - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}

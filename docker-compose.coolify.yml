@@ -25,7 +25,11 @@ services:
       - FRONTEND_URL=${FRONTEND_URL:-https://pros.iorana.dev}
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
-      - REDIS_URL=redis://redis:6379
+      # Nombre completo del contenedor, no el alias corto "redis" — en la red
+      # "coolify" compartida, el Redis propio de Coolify también se registra
+      # como "redis" y gana la resolución, causando NOAUTH (ver comentario en
+      # el servicio "redis" de docker-compose.yml).
+      - REDIS_URL=redis://io-prospector-redis:6379
       - BULL_QUEUE_PREFIX=${BULL_QUEUE_PREFIX:-io_prospector}
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - EMAIL_FROM=${EMAIL_FROM}
