@@ -7,6 +7,14 @@ const PUBLIC_PATHS = ['/login', '/auth', '/auth/reset-password'];
 // token de la cookie) y redirige a /login si no hay usuario autenticado.
 // Basado en el patrón oficial de @supabase/ssr para Next.js App Router.
 export async function updateSession(request: NextRequest) {
+  // Permitir acceso directo a rutas públicas sin verificar autenticación
+  const pathname = request.nextUrl.pathname;
+  const isPublicPath = PUBLIC_PATHS.some(path => pathname.startsWith(path));
+
+  if (isPublicPath) {
+    return NextResponse.next({ request });
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -32,11 +40,9 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isPublicPath = PUBLIC_PATHS.some(path => request.nextUrl.pathname.startsWith(path));
-
-  if (!user && !isPublicPath) {
+  if (!user) {
     const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('from', request.nextUrl.pathname);
+    loginUrl.searchParams.set('from', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
