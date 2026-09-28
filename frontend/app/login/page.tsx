@@ -102,6 +102,13 @@ function LoginForm() {
             {loading ? <Loader2 size={16} className="animate-spin" /> : <Lock size={15} />}
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
+
+          <a
+            href="/auth/reset-password"
+            className="w-full mt-3 px-4 py-2 text-center text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition"
+          >
+            ¿Olvidaste tu contraseña?
+          </a>
         </form>
 
         <p className="text-xs text-zinc-400 dark:text-zinc-600 text-center mt-4">
