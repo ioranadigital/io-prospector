@@ -9,6 +9,8 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Proteger todas las rutas excepto: api, _next/*, favicon, login, /auth/*
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|login|auth).*)'],
+  matcher: [
+    // Excluir explícitamente estas rutas públicas
+    '/((?!api|_next/static|_next/image|favicon\\.ico|login|auth/).*)/',
+  ],
 };
