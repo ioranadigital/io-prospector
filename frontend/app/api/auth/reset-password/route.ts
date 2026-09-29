@@ -22,12 +22,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Configuración de Supabase incompleta' }, { status: 500 });
     }
 
-    // Obtener ID del usuario usando PostgREST API
+    // Obtener TODOS los usuarios de la Admin API y filtrar por email
     console.log(`Buscando usuario: ${email}`);
-    const usersTableUrl = `${supabaseUrl}/rest/v1/auth.users?email=eq.${encodeURIComponent(email)}&select=id`;
-    console.log(`URL: ${usersTableUrl.split('?')[0]}?...`);
+    const adminUsersUrl = `${supabaseUrl}/auth/v1/admin/users`;
+    console.log(`URL: ${adminUsersUrl}`);
 
-    const usersResponse = await fetch(usersTableUrl, {
+    const allUsersResponse = await fetch(adminUsersUrl, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${supabaseServiceRoleKey}`,
@@ -36,16 +36,21 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    console.log(`Users response status: ${usersResponse.status}`);
-    const usersData = await usersResponse.json();
-    console.log(`Users data:`, usersData);
+    console.log(`Admin API response status: ${allUsersResponse.status}`);
+    const allUsersData = await allUsersResponse.json();
 
-    if (!usersResponse.ok || !usersData || usersData.length === 0) {
+    if (!allUsersResponse.ok) {
+      console.error('Error from Admin API:', allUsersData);
+      return NextResponse.json({ error: 'Error al buscar usuario' }, { status: 500 });
+    }
+
+    const user = allUsersData.users?.find((u: any) => u.email === email);
+    if (!user) {
       console.error('User not found:', email);
       return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
     }
 
-    const userId = usersData[0].id;
+    const userId = user.id;
     console.log(`User found: ${userId}`);
 
     // Actualizar contraseña
