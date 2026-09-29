@@ -22,36 +22,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Configuración de Supabase incompleta' }, { status: 500 });
     }
 
-    // Obtener todos los usuarios y filtrar por email
+    // Obtener ID del usuario usando PostgREST API
     console.log(`Buscando usuario: ${email}`);
-    const allUsersUrl = `${supabaseUrl}/auth/v1/admin/users`;
-    console.log(`URL: ${allUsersUrl}`);
+    const usersTableUrl = `${supabaseUrl}/rest/v1/auth.users?email=eq.${encodeURIComponent(email)}&select=id`;
+    console.log(`URL: ${usersTableUrl.split('?')[0]}?...`);
 
-    const allUsersResponse = await fetch(allUsersUrl, {
+    const usersResponse = await fetch(usersTableUrl, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${supabaseServiceRoleKey}`,
-        'apikey': supabaseServiceRoleKey,
+        apikey: supabaseServiceRoleKey,
         'Content-Type': 'application/json',
       },
     });
 
-    console.log(`Get users response status: ${allUsersResponse.status}`);
-    const allUsersData = await allUsersResponse.json();
+    console.log(`Users response status: ${usersResponse.status}`);
+    const usersData = await usersResponse.json();
+    console.log(`Users data:`, usersData);
 
-    if (!allUsersResponse.ok) {
-      console.error('Error getting users:', allUsersData);
-      return NextResponse.json({ error: 'Error al conectar con Supabase' }, { status: 500 });
-    }
-
-    // Filtrar por email
-    const user = allUsersData.users?.find((u: any) => u.email === email);
-    if (!user) {
+    if (!usersResponse.ok || !usersData || usersData.length === 0) {
       console.error('User not found:', email);
       return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
     }
 
-    const userId = user.id;
+    const userId = usersData[0].id;
     console.log(`User found: ${userId}`);
 
     // Actualizar contraseña
