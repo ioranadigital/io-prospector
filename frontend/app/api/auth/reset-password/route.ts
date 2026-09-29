@@ -15,7 +15,14 @@ export async function POST(req: NextRequest) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+    console.log('Reset password debug:', {
+      urlPresent: !!supabaseUrl,
+      keyPresent: !!supabaseServiceRoleKey,
+      keyLength: supabaseServiceRoleKey?.length,
+    });
+
     if (!supabaseUrl || !supabaseServiceRoleKey) {
+      console.error('Supabase config missing:', { supabaseUrl: !!supabaseUrl, supabaseServiceRoleKey: !!supabaseServiceRoleKey });
       return NextResponse.json({ error: 'Configuración de Supabase incompleta' }, { status: 500 });
     }
 
