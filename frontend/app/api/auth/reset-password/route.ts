@@ -22,12 +22,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Configuración de Supabase incompleta' }, { status: 500 });
     }
 
-    // Buscar el usuario por email usando HTTP directo
+    // Obtener todos los usuarios y filtrar por email
     console.log(`Buscando usuario: ${email}`);
-    const searchUrl = `${supabaseUrl}/auth/v1/admin/users?email=${encodeURIComponent(email)}`;
-    console.log(`URL: ${searchUrl.split('?')[0]}?...`);
+    const allUsersUrl = `${supabaseUrl}/auth/v1/admin/users`;
+    console.log(`URL: ${allUsersUrl}`);
 
-    const searchResponse = await fetch(searchUrl, {
+    const allUsersResponse = await fetch(allUsersUrl, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${supabaseServiceRoleKey}`,
@@ -36,16 +36,22 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    console.log(`Search response status: ${searchResponse.status}`);
-    const searchData = await searchResponse.json();
-    console.log(`Search response:`, searchData);
+    console.log(`Get users response status: ${allUsersResponse.status}`);
+    const allUsersData = await allUsersResponse.json();
 
-    if (!searchResponse.ok || !searchData.users || searchData.users.length === 0) {
-      console.error('User not found in Supabase');
+    if (!allUsersResponse.ok) {
+      console.error('Error getting users:', allUsersData);
+      return NextResponse.json({ error: 'Error al conectar con Supabase' }, { status: 500 });
+    }
+
+    // Filtrar por email
+    const user = allUsersData.users?.find((u: any) => u.email === email);
+    if (!user) {
+      console.error('User not found:', email);
       return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
     }
 
-    const userId = searchData.users[0].id;
+    const userId = user.id;
     console.log(`User found: ${userId}`);
 
     // Actualizar contraseña
