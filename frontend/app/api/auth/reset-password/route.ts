@@ -29,11 +29,14 @@ export async function POST(req: NextRequest) {
     });
 
     if (!getUserResponse.ok) {
-      return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
+      const errorDetails = await getUserResponse.json().catch(() => ({}));
+      console.error('Get user error:', { status: getUserResponse.status, errorDetails });
+      return NextResponse.json({ error: 'Usuario no encontrado', details: errorDetails }, { status: 404 });
     }
 
     const usersData = await getUserResponse.json();
     if (!usersData.users || usersData.users.length === 0) {
+      console.error('No users found for email:', email);
       return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
     }
 
