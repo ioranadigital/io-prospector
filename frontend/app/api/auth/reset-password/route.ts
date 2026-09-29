@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${supabaseServiceRoleKey}`,
+        'apikey': supabaseServiceRoleKey,
         'Content-Type': 'application/json',
       },
     });
@@ -53,6 +54,7 @@ export async function POST(req: NextRequest) {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${supabaseServiceRoleKey}`,
+        'apikey': supabaseServiceRoleKey,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ password: newPassword }),
