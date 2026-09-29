@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PUBLIC_PATHS = ['/login', '/auth', '/auth/reset-password'];
+const PUBLIC_PATHS = ['/login', '/auth', '/api/auth'];
 
 // Refresca la sesión de Supabase (si el access token expiró, usa el refresh
 // token de la cookie) y redirige a /login si no hay usuario autenticado.
