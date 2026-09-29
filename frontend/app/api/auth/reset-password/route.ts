@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,43 +15,59 @@ export async function POST(req: NextRequest) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+    console.log('Reset config:', { url: !!supabaseUrl, key: !!supabaseServiceRoleKey });
+
     if (!supabaseUrl || !supabaseServiceRoleKey) {
       console.error('Supabase config missing');
       return NextResponse.json({ error: 'Configuración de Supabase incompleta' }, { status: 500 });
     }
 
-    // Crear cliente de Supabase con service role key para acceso admin
-    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
+    // Buscar el usuario por email usando HTTP directo
+    console.log(`Buscando usuario: ${email}`);
+    const searchUrl = `${supabaseUrl}/auth/v1/admin/users?email=${encodeURIComponent(email)}`;
+    console.log(`URL: ${searchUrl.split('?')[0]}?...`);
+
+    const searchResponse = await fetch(searchUrl, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${supabaseServiceRoleKey}`,
+        'Content-Type': 'application/json',
       },
     });
 
-    // Obtener el usuario por email
-    const { data: usersData, error: getUserError } = await supabase.auth.admin.listUsers();
+    console.log(`Search response status: ${searchResponse.status}`);
+    const searchData = await searchResponse.json();
+    console.log(`Search response:`, searchData);
 
-    if (getUserError) {
-      console.error('Error listing users:', getUserError);
-      return NextResponse.json({ error: 'Error al buscar usuario' }, { status: 500 });
-    }
-
-    const user = usersData?.users?.find((u) => u.email === email);
-    if (!user) {
-      console.error('User not found:', email);
+    if (!searchResponse.ok || !searchData.users || searchData.users.length === 0) {
+      console.error('User not found in Supabase');
       return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
     }
 
-    // Actualizar la contraseña del usuario
-    const { data: updatedUser, error: updateError } = await supabase.auth.admin.updateUserById(user.id, {
-      password: newPassword,
+    const userId = searchData.users[0].id;
+    console.log(`User found: ${userId}`);
+
+    // Actualizar contraseña
+    const updateUrl = `${supabaseUrl}/auth/v1/admin/users/${userId}`;
+    const updateResponse = await fetch(updateUrl, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${supabaseServiceRoleKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ password: newPassword }),
     });
 
-    if (updateError) {
-      console.error('Error updating password:', updateError);
+    console.log(`Update response status: ${updateResponse.status}`);
+    const updateData = await updateResponse.json();
+    console.log(`Update response:`, updateData);
+
+    if (!updateResponse.ok) {
+      console.error('Error updating password:', updateData);
       return NextResponse.json({ error: 'No se pudo actualizar la contraseña' }, { status: 500 });
     }
 
+    console.log('Password updated successfully');
     return NextResponse.json({ success: true, message: 'Contraseña actualizada correctamente' });
   } catch (error) {
     console.error('Reset password error:', error);
